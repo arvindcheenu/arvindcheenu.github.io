@@ -1,16 +1,19 @@
 {
-  "name": "hella-simple-eleventy-tailwind-starter",
-  "description": "Hella Simple Eleventy + Tailwind Starter",
+  "name": "arvind-resume",
+  "description": "Resume of Arvind Srinivasan",
   "scripts": {
     "serve": "rm -rf _site && npx @11ty/eleventy --serve --quiet & npx tailwindcss -i ./src/tailwind.css -o ./_site/styles.css --watch",
-    "build": "rm -rf _site && ELEVENTY_ENV=production npx @11ty/eleventy && npx tailwindcss -i ./src/tailwind.css -o ./_site/styles.css --minify"
+    "build": "rm -rf _site && ELEVENTY_ENV=production npx @11ty/eleventy && npx tailwindcss -i ./src/tailwind.css -o ./_site/styles.css --minify",
+    "build-ghpages": "rm -rf _site && ELEVENTY_ENV=production npx @11ty/eleventy && npx tailwindcss -i ./src/tailwind.css -o ./_site/styles.css --minify",
+    "clean": "rm -rf _site",
+    "debug": "DEBUG=Eleventy* npx @11ty/eleventy"
   },
   "keywords": [
     "eleventy",
     "tailwindcss",
     "starter"
   ],
-  "author": "Marcel Appelman",
+  "author": "Arvind Srinivasan",
   "license": "MIT",
   "type": "module",
   "browserslist": "defaults, not ie <= 11",
@@ -20,5 +23,8 @@
   },
   "dependencies": {
     "luxon": "^3.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
