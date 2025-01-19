@@ -77,7 +77,8 @@ export default function (eleventyConfig) {
     'src/_includes/js': '.',
     'src/robots.txt': 'robots.txt',
     'src/favicon.ico': 'favicon.ico',
-    'src/CNAME': 'CNAME'
+    'src/CNAME': 'CNAME',
+    'src/_redirects': '_redirects'
   });
 
   // Watch targets for the dev server
