@@ -1,0 +1,480 @@
+{
+  "entities": {
+    "people": {
+      "arvind": {
+        "id": "arvind",
+        "type": "person",
+        "name": "Arvind Srinivasan",
+        "metadata": {
+          "label": "Ph.D. Student and Research Fellow",
+          "picture": "profile.png",
+          "contact": {
+            "email": [
+              {
+                "type": "personal",
+                "value": "arvind@cheenu.net"
+              },
+              {
+                "type": "work",
+                "value": "arvind@cs.au.dk"
+              }
+            ],
+            "phone": [
+              {
+                "type": "mobile",
+                "ext": 45,
+                "tel": 91602472
+              }
+            ],
+            "address": [
+              {
+                "type": "home",
+                "street": "Engtoften 3, 1. 4.",
+                "city": "Viby J",
+                "zip": "8260",
+                "country": "Denmark"
+              },
+              {
+                "type": "work",
+                "street": "Helsingforsgade 14",
+                "city": "Aarhus N",
+                "zip": "8200",
+                "country": "Denmark"
+              }
+            ]
+          },
+          "summary": [
+            "I'm a Ph.D. candidate at the Center for Anytime Anywhere Analytics (CA³) in the Department of Computer Science at Aarhus University, advised by Niklas Elmqvist. Previously, I earned my Masters' in Human-Computer Interaction from the College of Information Studies at the University of Maryland, College Park.",
+            "My research interests include Ubiquitous Analytics, Collaborative Immersive Analytics, Context-Aware Systems, and Human-Centered Artificial Intelligence. I seek to craft systems for an immersive future that enable seamless visualization, analysis, and collaborative mindshare with ubiquitous data, accessible to anyone, anytime, anywhere."
+          ],
+          "languages": [
+            {
+              "language": "English",
+              "fluency": "Professional"
+            },
+            {
+              "language": "Tamil",
+              "fluency": "Native"
+            }
+          ],
+          "profiles": {
+            "github": {
+              "id": "github",
+              "network": "GitHub",
+              "url": "https://github.com/arvindcheenu",
+              "username": "arvindcheenu"
+            },
+            "linkedin": {
+              "id": "linkedin",
+              "network": "LinkedIn",
+              "url": "https://www.linkedin.com/in/arvindcheenu",
+              "username": "arvindcheenu"
+            },
+            "orcid": {
+              "id": "orcid",
+              "network": "ORCID",
+              "url": "https://orcid.org/0000-0002-3409-6077",
+              "username": "0000-0002-3409-6077"
+            },
+            "google_scholar": {
+              "id": "google_scholar",
+              "network": "Google Scholar",
+              "url": "https://scholar.google.com/citations?user=lVhsLEMAAAAJ",
+              "username": "lVhsLEMAAAAJ"
+            },
+            "medium": {
+              "id": "medium",
+              "network": "Medium",
+              "url": "https://arvindcheenu.medium.com",
+              "username": "arvindcheenu"
+            }
+          }
+        }
+      },
+      "joel_chan": {
+        "id": "joel_chan",
+        "type": "person",
+        "name": "Joel Chan"
+      },
+      "niklas_elmqvist": {
+        "id": "niklas_elmqvist",
+        "type": "person",
+        "name": "Niklas Elmqvist"
+      },
+      "johannes_ellemose": {
+        "id": "johannes_ellemose",
+        "type": "person",
+        "name": "Johannes Ellemose"
+      },
+      "peter_butcher": {
+        "id": "peter_butcher",
+        "type": "person",
+        "name": "Peter W. S. Butcher"
+      },
+      "panagiotis_ritsos": {
+        "id": "panagiotis_ritsos",
+        "type": "person",
+        "name": "Panagiotis D. Ritsos"
+      },
+      "zijian_ding": {
+        "id": "zijian_ding",
+        "type": "person",
+        "name": "Zijian Ding"
+      },
+      "stephen_macneil": {
+        "id": "stephen_macneil",
+        "type": "person",
+        "name": "Stephen Macneil"
+      },
+      "abhinav_kannan": {
+        "id": "abhinav_kannan",
+        "type": "person",
+        "name": "Abhinav Kannan"
+      }
+    },
+    "institutions": {
+      "au": {
+        "id": "au",
+        "type": "institution",
+        "name": "Aarhus University",
+        "metadata": {
+          "ror": "01aj84f44",
+          "homepage": "https://cs.au.dk"
+        }
+      },
+      "umd": {
+        "id": "umd",
+        "type": "institution",
+        "name": "University of Maryland",
+        "metadata": {
+          "ror": "047s2c258",
+          "homepage": "https://ischool.umd.edu"
+        }
+      },
+      "srm": {
+        "id": "srm",
+        "type": "institution",
+        "name": "SRM Institute of Science and Technology",
+        "metadata": {
+          "ror": "050113w36",
+          "homepage": "https://www.srmist.edu.in"
+        }
+      }
+    }
+  },
+  "items": {
+    "publications": {
+      "srinivasan2025attention": {
+        "id": "srinivasan2025attention",
+        "picture": "srinivasan2025attention.webp",
+        "type": "publication",
+        "title": "Attention-Aware Visualization: Tracking and Responding to User Perception Over Time",
+        "authors": [
+          "arvind",
+          "johannes_ellemose",
+          "peter_butcher",
+          "panagiotis_ritsos",
+          "niklas_elmqvist"
+        ],
+        "metadata": {
+          "entryType": "Full Paper",
+          "year": 2024,
+          "issueDate": "Jan. 2025",
+          "equal_contributors": ["arvind", "johannes_ellemose"],
+          "journal": "IEEE Transactions on Visualization & Computer Graphics",
+          "publisher": "IEEE Computer Society",
+          "address": "Los Alamitos, CA, USA",
+          "volume": "31",
+          "number": "1",
+          "issn": "1077-2626",
+          "doi": "10.1109/TVCG.2024.3456300",
+          "urls": {
+            "official": {
+              "id": "ieee",
+              "url": "https://doi.ieeecomputersociety.org/10.1109/TVCG.2024.3456300",
+              "label": "Official"
+            },
+            "blog": {
+              "id": "medium",
+              "url": "https://arvindcheenu.medium.com/when-data-pays-attention-b4e87cd59ea3",
+              "label": "Blog Post"
+            },
+            "paper": {
+              "id": "pdf",
+              "url": "https://arxiv.org/pdf/2404.10732",
+              "label": "Paper"
+            },
+            "supplementary": {
+              "id": "osf",
+              "url": "https://osf.io/8mfhp/",
+              "label": "Supplementary"
+            }
+          },
+          "pages": "1017-1027",
+          "month": "sep",
+          "numpages": 11,
+          "keywords": [
+            "Data visualization",
+            "Visualization",
+            "Gaze tracking",
+            "Three-dimensional displays",
+            "Real-time systems",
+            "Time measurement",
+            "Surveys"
+          ],
+          "abstract": "We propose the notion of attention-aware visualizations (AAVs) that track the user's perception of a visual representation over time and feed this information back to the visualization. Such context awareness is particularly useful for ubiquitous and immersive analytics where knowing which embedded visualizations the user is looking at can be used to make visualizations react appropriately to the user's attention: for example, by highlighting data the user has not yet seen. We can separate the approach into three components: (1) measuring the user's gaze on a visualization and its parts; (2) tracking the user's attention over time; and (3) reactively modifying the visual representation based on the current attention metric. In this paper, we present two separate implementations of AAV: a 2D data-agnostic method for web-based visualizations that can use an embodied eyetracker to capture the user's gaze, and a 3D data-aware one that uses the stencil buffer to track the visibility of each individual mark in a visualization. Both methods provide similar mechanisms for accumulating attention over time and changing the appearance of marks in response. We also present results from a qualitative evaluation studying visual feedback and triggering mechanisms for capturing and revisualizing attention.",
+          "bibtex": "@article{srinivasan2025attention, author={Srinivasan, Arvind and Ellemose, Johannes and Butcher, Peter W. S. and Ritsos, Panagiotis D. and Elmqvist, Niklas}, journal={ IEEE Transactions on Visualization \\& Computer Graphics }, title={{ Attention-Aware Visualization: Tracking and Responding to User Perception Over Time }}, year={2025}, volume={31}, number={01}, ISSN={1941-0506}, pages={1017-1027}, abstract={ We propose the notion of attention-aware visualizations (AAVs) that track the user's perception of a visual representation over time and feed this information back to the visualization. Such context awareness is particularly useful for ubiquitous and immersive analytics where knowing which embedded visualizations the user is looking at can be used to make visualizations react appropriately to the user's attention: for example, by highlighting data the user has not yet seen. We can separate the approach into three components: (1) measuring the user's gaze on a visualization and its parts; (2) tracking the user's attention over time; and (3) reactively modifying the visual representation based on the current attention metric. In this paper, we present two separate implementations of AAV: a 2D data-agnostic method for web-based visualizations that can use an embodied eyetracker to capture the user's gaze, and a 3D data-aware one that uses the stencil buffer to track the visibility of each individual mark in a visualization. Both methods provide similar mechanisms for accumulating attention over time and changing the appearance of marks in response. We also present results from a qualitative evaluation studying visual feedback and triggering mechanisms for capturing and revisualizing attention. }, keywords={Data visualization;Visualization;Gaze tracking;Three-dimensional displays;Real-time systems;Time measurement;Surveys}, doi={10.1109/TVCG.2024.3456300}, url = {https://doi.ieeecomputersociety.org/10.1109/TVCG.2024.3456300}, publisher={IEEE Computer Society}, address={Los Alamitos, CA, USA}, month=jan}"
+        }
+      },
+      "srinivasan2023improving": {
+        "id": "srinivasan2023improving",
+        "picture": "srinivasan2023improving.png",
+        "type": "publication",
+        "title": "Improving Selection of Analogical Inspirations through Chunking and Recombination",
+        "authors": ["arvind", "joel_chan"],
+        "metadata": {
+          "entryType": "Full Paper",
+          "year": 2024,
+          "isbn": "9798400704857",
+          "publisher": "Association for Computing Machinery",
+          "address": "New York, NY, USA",
+          "openaccess": true,
+          "urls": {
+            "official": {
+              "id": "acm",
+              "url": "https://doi.org/10.1145/3635636.3656207",
+              "label": "Official"
+            },
+            "paper": {
+              "id": "pdf",
+              "url": "https://dl.acm.org/doi/pdf/10.1145/3635636.3656207",
+              "label": "Paper"
+            }
+          },
+          "doi": "10.1145/3635636.3656207",
+          "abstract": "Analogies can be a powerful source of new ideas; however, creators often fail to recognize and harness potentially beneficial analogical leads, especially from other problem domains. In this paper, we introduce AnalogiLead, an interactive interface designed to reduce premature dismissal of analogies by facilitating playful exploration of analogical leads. Drawing on cognitive mechanisms of conceptual chunking and recombination, AnalogiLead scaffolds users to engage with meaningful chunks of problems and analogies and recombine them into inspiring brainstorming questions. In a within-subjects experiment, participants (N=23) who used AnalogiLead dismissed analogies 4x less often, with 12x fewer decision changes, compared to a baseline interface with no chunking or recombination. This reduction in premature dismissal was associated with 64% longer processing time. Through qualitative analysis of video and think-aloud data, we describe how the chunking and recombination mechanisms facilitated playful engagement with analogies. These findings highlight opportunities and challenges for improving analogical innovation through careful theory-driven design of interfaces for selecting analogical leads.",
+          "booktitle": "Proceedings of the 16th Conference on Creativity & Cognition",
+          "pages": "374-397",
+          "numpages": 24,
+          "keywords": [
+            "Analogy",
+            "Creativity Support Tools",
+            "Large Language Models"
+          ],
+          "location": "Chicago, IL, USA",
+          "series": "C&C '24",
+          "award": "Best Paper Honorable Mention",
+          "bibtex": "@inproceedings{srinivasan2023improving, author = {Srinivasan, Arvind and Chan, Joel}, title = {Improving Selection of Analogical Inspirations through Chunking and Recombination}, year = {2024}, isbn = {9798400704857}, publisher = {Association for Computing Machinery}, address = {New York, NY, USA}, url = {https://doi.org/10.1145/3635636.3656207}, doi = {10.1145/3635636.3656207}, abstract = {Analogies can be a powerful source of new ideas; however, creators often fail to recognize and harness potentially beneficial analogical leads, especially from other problem domains. In this paper, we introduce AnalogiLead, an interactive interface designed to reduce premature dismissal of analogies by facilitating playful exploration of analogical leads. Drawing on cognitive mechanisms of conceptual chunking and recombination, AnalogiLead scaffolds users to engage with meaningful chunks of problems and analogies and recombine them into inspiring brainstorming questions. In a within-subjects experiment, participants (N=23) who used AnalogiLead dismissed analogies 4x less often, with 12x fewer decision changes, compared to a baseline interface with no chunking or recombination. This reduction in premature dismissal was associated with &nbsp;64\\% longer processing time. Through qualitative analysis of video and think-aloud data, we describe how the chunking and recombination mechanisms facilitated playful engagement with analogies. These findings highlight opportunities and challenges for improving analogical innovation through careful theory-driven design of interfaces for selecting analogical leads.}, booktitle = {Proceedings of the 16th Conference on Creativity \\& Cognition}, pages = {374–397}, numpages = {24}, keywords = {Analogy, Creativity Support Tools, Large Language Models}, location = {Chicago, IL, USA}, series = {C&C '24} }"
+        }
+      },
+      "srinivasan2023analogilead": {
+        "id": "srinivasan2023analogilead",
+        "picture": "srinivasan2023analogilead.png",
+        "type": "publication",
+        "title": "AnalogiLead: Improving Selection of Analogical Inspirations with Chunking and Recombination",
+        "authors": ["arvind", "joel_chan"],
+        "metadata": {
+          "entryType": "Technical Demonstration",
+          "year": 2023,
+          "isbn": "9798400701801",
+          "publisher": "Association for Computing Machinery",
+          "address": "New York, NY, USA",
+          "urls": {
+            "official": {
+              "id": "acm",
+              "url": "https://doi.org/10.1145/3591196.3596817",
+              "label": "Official"
+            },
+            "video": {
+              "id": "video",
+              "url": "https://youtu.be/l6z20KZWum0?si=CwsWvkcFHCrp7s5O",
+              "label": "YouTube"
+            }
+          },
+          "doi": "10.1145/3591196.3596817",
+          "abstract": "Analogical reasoning, a process that integrates potential leads across domains and disciplines, has been proven to contribute to breakthrough innovations. Selecting the right analogical leads is crucial, as it determines the quality and effectiveness of the generated ideas. However, identifying relevant analogical leads can be challenging and may be missed due to premature rejection or design fixation. To address this problem, our system, \"AnalogiLead\", draws on the cognitive mechanisms of chunking and recombination as a medium of interaction for selecting beneficial analogies. Users interact with meaningful chunks or segments from a design problem and analogy, represented as interactive tiles called \"magnets\", and evaluate the analogies by recombining the \"magnets\" into brainstorming questions. These mechanisms are designed to foster playful and divergent exploration of analogical leads (vs. restrictive, relevance-based screening), to reduce premature rejection of analogical leads and foster more analogical innovations.",
+          "booktitle": "Proceedings of the 15th Conference on Creativity and Cognition",
+          "pages": "338-341",
+          "numpages": 4,
+          "keywords": [
+            "Creativity Support",
+            "Information Seeking & Search",
+            "Machine Learning",
+            "User Interface Design"
+          ],
+          "location": "Virtual Event, USA",
+          "series": "C&C '23",
+          "bibtex": "@inproceedings{srinivasan2023analogilead, type = {Technical Demo}, author = {Srinivasan, Arvind and Chan, Joel}, title = {AnalogiLead: Improving Selection of Analogical Inspirations with Chunking and Recombination}, year = {2023}, isbn = {9798400701801}, publisher = {Association for Computing Machinery}, address = {New York, NY, USA}, url = {https://doi.org/10.1145/3591196.3596817}, doi = {10.1145/3591196.3596817}, abstract = {Analogical reasoning, a process that integrates potential leads across domains and disciplines, has been proven to contribute to breakthrough innovations. Selecting the right analogical leads is crucial, as it determines the quality and effectiveness of the generated ideas. However, identifying relevant analogical leads can be challenging and may be missed due to premature rejection or design fixation. To address this problem, our system, 'AnalogiLead', draws on the cognitive mechanisms of chunking and recombination as a medium of interaction for selecting beneficial analogies. Users interact with meaningful chunks or segments from a design problem and analogy, represented as interactive tiles called 'magnets', and evaluate the analogies by recombining the 'magnets' into brainstorming questions. These mechanisms are designed to foster playful and divergent exploration of analogical leads (vs. restrictive, relevance-based screening), to reduce premature rejection of analogical leads and foster more analogical innovations.}, booktitle = {Proceedings of the 15th Conference on Creativity and Cognition}, pages = {338–341}, numpages = {4}, keywords = {Creativity Support, Information Seeking \\& Search, Machine Learning, User Interface Design}, location = {Virtual Event, USA}, series = {C&C '23} }"
+        }
+      },
+      "ding2023fluid": {
+        "id": "ding2023fluid",
+        "picture": "ding2023fluid.png",
+        "type": "publication",
+        "title": "Fluid Transformers and Creative Analogies: Exploring Large Language Models' Capacity for Augmenting Cross-Domain Analogical Creativity",
+        "authors": ["zijian_ding", "arvind", "stephen_macneil", "joel_chan"],
+        "metadata": {
+          "entryType": "Full Paper",
+          "year": 2023,
+          "isbn": "9798400701801",
+          "publisher": "Association for Computing Machinery",
+          "address": "New York, NY, USA",
+          "doi": "10.1145/3591196.3593516",
+          "openaccess": true,
+          "urls": {
+            "official": {
+              "id": "acm",
+              "url": "https://doi.org/10.1145/3591196.3593516",
+              "label": "Official"
+            },
+            "paper": {
+              "id": "pdf",
+              "url": "https://dl.acm.org/doi/pdf/10.1145/3591196.3593516",
+              "label": "Paper"
+            }
+          },
+          "abstract": "Cross-domain analogical reasoning is a core creative ability that can be challenging for humans. Recent work has shown some proofs-of-concept of Large language Models' (LLMs) ability to generate cross-domain analogies. However, the reliability and potential usefulness of this capacity for augmenting human creative work has received little systematic exploration. In this paper, we systematically explore LLMs capacity to augment cross-domain analogical reasoning. Across three studies, we found: 1) LLM-generated cross-domain analogies were frequently judged as helpful in the context of a problem reformulation task (median 4 out of 5 helpfulness rating), and frequently (~80% of cases) led to observable changes in problem formulations, and 2) there was an upper bound of ~25% of outputs being rated as potentially harmful, with a majority due to potentially upsetting content, rather than biased or toxic content. These results demonstrate the potential utility — and risks — of LLMs for augmenting cross-domain analogical creativity.",
+          "booktitle": "Proceedings of the 15th Conference on Creativity and Cognition",
+          "pages": "489-505",
+          "numpages": 17,
+          "keywords": [
+            "Analogy",
+            "Creativity Support Tools",
+            "Large Language Models"
+          ],
+          "location": "Virtual Event, USA",
+          "series": "C&C '23",
+          "award": "Best Paper Honorable Mention",
+          "bibtex": "@inproceedings{ding2023fluid, type = {Full Paper}, author = {Ding, Zijian and Srinivasan, Arvind and Macneil, Stephen and Chan, Joel}, title = {Fluid Transformers and Creative Analogies: Exploring Large Language Models' Capacity for Augmenting Cross-Domain Analogical Creativity}, year = {2023}, isbn = {9798400701801}, publisher = {Association for Computing Machinery}, address = {New York, NY, USA}, url = {https://doi.org/10.1145/3591196.3593516}, doi = {10.1145/3591196.3593516}, abstract = {Cross-domain analogical reasoning is a core creative ability that can be challenging for humans. Recent work has shown some proofs-of-concept of Large language Models' (LLMs) ability to generate cross-domain analogies. However, the reliability and potential usefulness of this capacity for augmenting human creative work has received little systematic exploration. In this paper, we systematically explore LLMs capacity to augment cross-domain analogical reasoning. Across three studies, we found: 1) LLM-generated cross-domain analogies were frequently judged as helpful in the context of a problem reformulation task (median 4 out of 5 helpfulness rating), and frequently (∼ 80\\% of cases) led to observable changes in problem formulations, and 2) there was an upper bound of ∼ 25\\% of outputs being rated as potentially harmful, with a majority due to potentially upsetting content, rather than biased or toxic content. These results demonstrate the potential utility — and risks — of LLMs for augmenting cross-domain analogical creativity.}, booktitle = {Proceedings of the 15th Conference on Creativity and Cognition}, pages = {489–505}, numpages = {17}, keywords = {Analogy, Creativity Support Tools, Large Language Models}, location = {Virtual Event, USA}, series = {C&C '23} }"
+        }
+      },
+      "srinivasan2022hotshots": {
+        "id": "srinivasan2022hotshots",
+        "picture": "srinivasan2022hotshots.png",
+        "type": "publication",
+        "title": "Hotshots: Visualizing stroke-by-stroke tennis data",
+        "authors": ["arvind", "abhinav_kannan", "niklas_elmqvist"],
+        "metadata": {
+          "entryType": "Poster Presentation",
+          "year": 2022,
+          "publisher": "IEEE",
+          "booktitle": "Proceedings of the IEEE VIS 2022 Conference",
+          "series": "IEEE Vis: Visualization & Visual Analytics",
+          "location": "Oklahoma City, OK, USA",
+          "urls": {
+            "official": {
+              "id": "ieee",
+              "url": "https://ieeevis.b-cdn.net/vis_2022/posters/v-vis-posters-1037.pdf",
+              "label": "Poster"
+            },
+            "summary": {
+              "id": "pdf",
+              "url": "https://ieeevis.b-cdn.net/vis_2022/posters/v-vis-posters-1037-summary.pdf",
+              "label": "Summary"
+            }
+          },
+          "month": "oct",
+          "keywords": [
+            "Data Visualization",
+            "Tennis Analytics",
+            "Sports Visualization"
+          ],
+          "bibtex": "@inproceedings{srinivasan2022hotshots, author = {Srinivasan, Arvind and Kannan, Abhinav and Elmqvist, Niklas}, title = {Hotshots: Visualizing stroke-by-stroke tennis data}, booktitle = {Proceedings of the IEEE VIS 2022 Conference}, series = {IEEE Vis: Visualization \\& Visual Analytics}, year = {2022}, month = {oct}, url = {https://ieeevis.b-cdn.net/vis_2022/posters/v-vis-posters-1037-summary.pdf}, location = {Oklahoma City, OK, USA}, publisher = {IEEE}}"
+        }
+      }
+    },
+    "education": {
+      "phd_au": {
+        "id": "phd_au",
+        "type": "education",
+        "institution": "au",
+        "area": "Computer Science",
+        "degree": "Ph.D. Student and Research Fellow",
+        "startDate": "2024-01",
+        "endDate": "2026-12",
+        "metadata": {
+          "location": "Aarhus, Denmark"
+        }
+      },
+      "ms_umd": {
+        "id": "ms_umd",
+        "type": "education",
+        "institution": "umd",
+        "area": "College of Information Studies",
+        "degree": "Master of Science in Human-Computer Interaction",
+        "startDate": "2021-08",
+        "endDate": "2023-05",
+        "metadata": {
+          "score": "3.93/4.00",
+          "location": "College Park, MD, USA",
+          "thesis": {
+            "title": "Improving Selection of Analogical Inspirations with Chunking and Recombination",
+            "advisor": "joel_chan",
+            "committee": ["niklas_elmqvist", "susannah_paletz"],
+            "url": "https://www.proquest.com/openview/5c1d854b35961b28251685dd7095fcba/"
+          }
+        }
+      },
+      "btech_srm": {
+        "id": "btech_srm",
+        "type": "education",
+        "institution": "srm",
+        "area": "Computer Science and Engineering",
+        "degree": "Bachelor of Technology",
+        "startDate": "2016-08",
+        "endDate": "2020-05",
+        "metadata": {
+          "score": "3.82/4.00",
+          "location": "Kattankulathur, India"
+        }
+      }
+    },
+    "updates": [
+      {
+        "id": "start_phd",
+        "type": "update",
+        "date": {
+          "year": "2024",
+          "month": "January"
+        },
+        "title": "Started Ph.D. at Aarhus University",
+        "category": "education",
+        "metadata": {
+          "associations": {
+            "education": ["au"]
+          }
+        }
+      },
+      {
+        "id": "graduate_ms",
+        "type": "update",
+        "date": {
+          "year": "2023",
+          "month": "May"
+        },
+        "title": "Graduated with M.S. in Human-Computer Interaction from University of Maryland",
+        "category": "education",
+        "metadata": {
+          "associations": {
+            "education": ["umd"]
+          }
+        }
+      },
+      {
+        "id": "graduate_btech",
+        "type": "update",
+        "date": {
+          "year": "2020",
+          "month": "May"
+        },
+        "title": "Graduated with B.Tech. in Computer Science and Engineering from SRM Institute of Science and Technology",
+        "category": "education",
+        "metadata": {
+          "associations": {
+            "education": ["srm"]
+          }
+        }
+      }
+    ]
+  }
+}

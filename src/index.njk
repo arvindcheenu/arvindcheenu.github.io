@@ -1,0 +1,256 @@
+---
+layout: default
+title: "Home"
+---
+
+<!-- Hero Section with full-bleed background -->
+<div class="w-full border-b dark:bg-zinc-800 dark:border-b-zinc-700 bg-slate-100 border-b-slate-200 mb-8 sm:mb-12 lg:mb-16">
+  <div class="container mx-auto pt-16 max-w-4xl">
+    <div class="flex flex-col lg:flex-row items-center lg:items-end lg:gap-12">
+      <div class="lg:flex-1 lg:mb-16">
+        <h1 class="text-[clamp(2rem,5vw,3.5rem)] text-center lg:text-left font-semibold tracking-tight dark:text-zinc-100 text-slate-900">
+          {{ resume.entities.people.arvind.name }}
+        </h1>
+        <p class="text-[clamp(1.25rem,2vw,1.75rem)] text-center lg:text-left font-normal dark:text-zinc-400 text-slate-500 mt-2">
+          {{ resume.entities.people.arvind.metadata.label }}
+        </p>
+      </div>
+      <div class="w-[280px] h-[280px] lg:w-[320px] lg:h-[320px] flex-shrink-0">
+        <img src="assets/{{resume.entities.people.arvind.metadata.picture}}" alt="Profile" class="w-full h-full object-cover">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mx-auto px-8 sm:px-6 max-w-4xl">
+  <!-- Summary Section -->
+  <section class="mb-20">
+    {% for summary in resume.entities.people.arvind.metadata.summary %}
+    <p class="text-[clamp(1rem,1.5vw,1.2rem)] leading-relaxed dark:text-zinc-300 text-slate-600 font-normal pb-6">{{ summary }}</p>
+    {% endfor %}
+  </section>
+
+  <!-- Publications Section -->
+  <section class="mb-16 sm:mb-24" x-data="{ 
+    zoomOpen: false,
+    zoomSrc: null,
+    scrollPosition: 0,
+    lockScroll() {
+        this.scrollPosition = window.scrollY;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${this.scrollPosition}px`;
+        document.body.style.width = '100%';
+    },
+    unlockScroll() {
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('position');
+        document.body.style.removeProperty('top');
+        document.body.style.removeProperty('width');
+        window.scrollTo(0, this.scrollPosition);
+    },
+    openZoom(event) {
+        this.zoomSrc = event.target.getAttribute('data-zoom-src');
+        this.zoomOpen = true;
+        this.lockScroll();
+    },
+    closeZoom() {
+        this.zoomOpen = false;
+        this.unlockScroll();
+        setTimeout(() => this.zoomSrc = null, 300);
+    }
+  }">
+    <h2 class="flex justify-between items-end text-[clamp(1rem,1.5vw,1.125rem)] font-bold dark:text-zinc-200 text-slate-900 mb-12">
+      <span class="flex items-start flex-col">
+        <span>Publications</span>
+        <span class="text-sm dark:text-zinc-500 text-slate-500 font-normal mt-0.5">† indicates equal contribution</span>
+      </span>
+    </h2>
+
+    <!-- Zoom Modal -->
+    <div 
+        x-show="zoomOpen" 
+        x-transition:enter="transition ease-in-out duration-300" 
+        x-transition:enter-start="opacity-0" 
+        x-transition:leave="transition ease-in-in duration-300" 
+        x-transition:leave-end="opacity-0" 
+        @click="closeZoom" 
+        @keydown.window.escape="closeZoom" 
+        class="fixed inset-0 z-[99] flex items-center justify-center backdrop-blur-md bg-black bg-opacity-50 select-none cursor-zoom-out" 
+        style="display: none;">
+        <div class="relative flex items-center justify-center max-w-[90vw] max-h-[90vh] w-full h-full">
+            <img 
+                x-show="zoomOpen" 
+                :src="zoomSrc" 
+                alt="Zoomed image"
+                class="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-md object-center select-none cursor-zoom-out">
+        </div>
+    </div>
+
+    {% for pubId, pub in resume.items.publications %}
+    <div class="flex flex-row gap-8">
+      <div class="hidden sm:flex w-40 h-fit aspect-square flex-shrink-0 dark:bg-zinc-800 bg-slate-100 rounded-lg object-cover">
+        <img 
+            @click="openZoom($event)" 
+            src="assets/{{pub.picture}}" 
+            data-zoom-src="assets/{{pub.picture}}"
+            alt="{{pub.title}}"
+            class="w-full h-full object-cover rounded-lg transition-opacity hover:opacity-80 cursor-zoom-in"
+            onerror="this.onerror=null;"
+        />
+      </div>
+      <div class="flex flex-col mb-16 w-full">
+        <div class="flex justify-start items-start flex-col md:flex-row">
+          <p class="text-sm pb-2 dark:text-zinc-400 text-slate-600 font-medium flex items-center gap-4 mr-4">
+            <span class="flex items-center gap-x-0.5">{{ pub.metadata.year }} {% if pub.metadata.openaccess %}<span class="inline-flex flex-row pr-0.5"><svg class="w-4 h-4 mt-[0.0625rem] -ml-px text-orange-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path fill="currentColor" d="m 128.23305,64.000002 c -56.460308,0 -102.670899,46.211658 -102.670899,102.672438 v 14.02215 h 41.118177 v -14.02215 c 0,-34.23923 27.314786,-61.55425 61.552722,-61.55425 34.23793,0 61.55272,27.31502 61.55272,61.55425 v 56.25186 c -18.11316,-10.82348 -39.2508,-17.06007 -61.78576,-17.06007 -66.62047,0 -121.0678874,54.44743 -121.0678874,121.06788 C 6.9321226,393.55258 61.37954,448 128.00001,448 c 66.62047,0 121.06787,-54.44742 121.06787,-121.06789 0,-23.29025 -6.66132,-45.0879 -18.16393,-63.59639 v -96.66328 c 0,-56.46078 -46.21063,-102.672437 -102.6709,-102.672438 z m -0.23301,182.982408 c 44.39846,0 79.94968,35.55122 79.94968,79.9497 0,44.39849 -35.55122,79.94973 -79.94968,79.94973 -44.398491,0 -79.949707,-35.55124 -79.949707,-79.94973 0,-44.39848 35.551216,-79.9497 79.949707,-79.9497 z m 0.39478,46.39298 c -18.7346,0 -33.921611,15.187 -33.921611,33.92161 0,18.73459 15.187011,33.92238 33.921611,33.92238 18.7346,0 33.92238,-15.18779 33.92238,-33.92238 0,-18.73461 -15.18778,-33.92161 -33.92238,-33.92161 z" /></svg><span class="text-orange-500">Open Access</span></span>{% endif %} {{pub.metadata.entryType}}</span>
+          </p>
+        </div>
+        <div class="sm:hidden flex w-full mt-2 mb-4 h-40 flex-shrink-0 dark:bg-zinc-800 bg-slate-100 rounded-lg object-cover">
+          <img 
+              @click="openZoom($event)" 
+              src="assets/{{pub.picture}}" 
+              data-zoom-src="assets/{{pub.picture}}"
+              alt="{{pub.title}}"
+              class="w-full h-full object-cover rounded-lg transition-opacity hover:opacity-80 cursor-zoom-in"
+              onerror="this.onerror=null;"
+            />
+        </div>
+        <h3 class="text-[clamp(1.25rem,2.5vw,1.6rem)] font-semibold dark:text-zinc-200 text-slate-900 leading-tight">{{ pub.title }}</h3>
+        <p class="text-[clamp(1.125rem,1.5vw,1.25rem)] dark:text-zinc-400 text-slate-600 mt-4 font-light gap-0">
+          {% for author in pub.authors %}
+          {% if loop.last and loop.length > 1 %} and {% endif %}
+          <span class="{{ 'font-medium' if resume.entities.people[author].name == 'Arvind Srinivasan' else 'font-normal' }}">{{ resume.entities.people[author].name }}{% if pub.metadata.equal_contributors and (author in pub.metadata.equal_contributors) %}†{% endif %}{% if not loop.last and loop.revindex != 2 %},{% endif %}</span>
+          {% endfor %}
+        </p>
+        <p class="text-[clamp(0.875rem,1.25vw,1rem)] dark:text-zinc-500 text-slate-500 mt-2">
+          {{ pub.metadata.journal if pub.metadata.journal else pub.metadata.booktitle }}
+        </p>
+        {% if pub.metadata.award %}
+          <span class="pt-2.5 inline-flex items-center gap-1 font-normal text-[clamp(0.875rem,1.25vw,1rem)] text-amber-500">
+            <span class="dark:text-zinc-500 text-slate-500">recieved</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.496 13.983l1.966 3.406a1.001 1.001 0 0 1 -.705 1.488l-.113 .011l-.112 -.001l-2.933 -.19l-1.303 2.636a1.001 1.001 0 0 1 -1.608 .26l-.082 -.094l-.072 -.11l-1.968 -3.407a8.994 8.994 0 0 0 6.93 -3.999z" /><path d="M11.43 17.982l-1.966 3.408a1.001 1.001 0 0 1 -1.622 .157l-.076 -.1l-.064 -.114l-1.304 -2.635l-2.931 .19a1.001 1.001 0 0 1 -1.022 -1.29l.04 -.107l.05 -.1l1.968 -3.409a8.994 8.994 0 0 0 6.927 4.001z" /><path d="M12 2l.24 .004a7 7 0 0 1 6.76 6.996l-.003 .193l-.007 .192l-.018 .245l-.026 .242l-.024 .178a6.985 6.985 0 0 1 -.317 1.268l-.116 .308l-.153 .348a7.001 7.001 0 0 1 -12.688 -.028l-.13 -.297l-.052 -.133l-.08 -.217l-.095 -.294a6.96 6.96 0 0 1 -.093 -.344l-.06 -.271l-.049 -.271l-.02 -.139l-.039 -.323l-.024 -.365l-.006 -.292a7 7 0 0 1 6.76 -6.996l.24 -.004z" /></svg>
+            <p class="text-sm text-amber-500 font-medium">{{ pub.metadata.award }}</p>
+          </span>
+        {% endif %}
+        <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2 mr-4">
+          {% if pub.metadata.abstract %}
+          <div x-data="{ 
+            isOpen: false,
+            init() {
+              this.$refs.content.style.height = '0px';
+              
+              // Update height when window resizes
+              window.addEventListener('resize', () => {
+                if (this.isOpen) {
+                  this.updateHeight();
+                }
+              });
+            },
+            updateHeight() {
+              requestAnimationFrame(() => {
+                this.$refs.content.style.height = `${this.$refs.inner.scrollHeight}px`;
+              });
+            },
+            toggle() {
+              this.isOpen = !this.isOpen;
+              if (this.isOpen) {
+                this.updateHeight();
+              } else {
+                this.$refs.content.style.height = '0px';
+              }
+            }
+          }" class="pb-2.5">
+            <button @click="toggle()" 
+                    class="group inline-flex cursor-pointer items-center text-[clamp(0.875rem,1.25vw,1rem)] text-rose-500 hover:text-rose-700 dark:hover:text-rose-300 transition-colors">
+              <span x-text="isOpen ? 'Hide Abstract' : 'View Abstract'"></span>
+              <svg class="w-4 h-4 ml-2 transform transition-transform duration-200 group-hover:translate-x-1" 
+                  :class="isOpen ? 'rotate-90' : ''" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  stroke-width="2">
+                <path d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+            <div x-ref="content" 
+                class="overflow-hidden transition-all duration-300 ease-in-out">
+              <div x-ref="inner">
+                <p class="text-[clamp(0.95rem,1.25vw,1.05rem)] py-2.5 dark:text-zinc-400 text-slate-600">
+                  {{ pub.metadata.abstract | escape }}
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          {% if pub.metadata.urls %}
+          {% for urlId, link in pub.metadata.urls %}
+          <a href="{{ link.url }}" target="_blank" 
+            class="group inline-flex items-center text-[clamp(0.875rem,1.25vw,1rem)] text-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+            <span>{{ link.label }}</span>
+            <svg  xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2 transform transition-transform group-hover:translate-x-1" viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-external-link"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg>
+          </a>
+          {% endfor %}
+          {% endif %}
+          <div x-data="{
+            copyText: $el.dataset.bibtex,
+            copyNotification: false,
+            copyToClipboard() {
+                navigator.clipboard.writeText(this.copyText);
+                this.copyNotification = true;
+                let that = this;
+                setTimeout(function(){
+                    that.copyNotification = false;
+                }, 3000);
+            }
+        }" 
+        data-bibtex="{{ pub.metadata.bibtex | escape }}" class="group relative z-20 flex items-center mr-1.5 text-[clamp(0.875rem,1.25vw,1rem)]">
+              <button @click="copyToClipboard();" class="flex items-center justify-center text-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                <span x-show="!copyNotification">Copy Bibtex</span>
+                <svg x-show="!copyNotification" class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>                  
+                <span x-show="copyNotification" class="text-green-500 dark:text-lime-500" x-cloak>Copied Bibtex</span>
+                <svg x-show="copyNotification" class="w-4 h-4 ml-2 transition-transform  group-hover:translate-x-1 text-green-500 dark:text-lime-500 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" x-cloak><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" /></svg>
+              </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <!-- Education Section -->
+  <section class="mb-16 sm:mb-24">
+    <h2 class="text-[clamp(1rem,1.5vw,1.125rem)] font-bold dark:text-zinc-200 text-slate-900 mb-12">Education</h2>
+    {% for eduId, edu in resume.items.education %}
+    <div class="mb-12">
+      <div class="flex justify-between items-start">
+        <div class="flex flex-col">
+          <p class="block md:hidden pb-2 text-[clamp(0.875rem,1.25vw,1rem)] font-medium dark:text-zinc-300 text-slate-900">{{ edu.startDate | dateformat("MONTH_YEAR") }} → {{ edu.endDate | dateformat("MONTH_YEAR") }}</p>
+          <h3 class="text-[clamp(1.25rem,2.5vw,1.6rem)] font-semibold dark:text-zinc-200 text-slate-900">{{ edu.degree }}</h3>
+          <p class="text-[clamp(1.125rem,1.5vw,1.25rem)] dark:text-zinc-400 text-slate-600 mt-2">{{ resume.entities.institutions[edu.institution].name }}</p>
+          <p class="block md:hidden my-1 text-[clamp(0.875rem,1.25vw,1rem)] dark:text-zinc-300 text-slate-600">{{ edu.metadata.location }}</p>
+          {% if edu.metadata.score %}
+          <p class="text-[clamp(0.875rem,1.25vw,1rem)] text-zinc-500 mt-2">GPA: {{ edu.metadata.score }}</p>
+          {% endif %}
+        </div>
+        <div class="text-right hidden md:block">
+          <p class="text-[clamp(0.875rem,1.25vw,1rem)] font-medium dark:text-zinc-400 text-slate-900">{{ edu.startDate | dateformat("MONTH_YEAR") }} → {{ edu.endDate| dateformat("MONTH_YEAR") }}</p>
+          <p class="text-[clamp(0.875rem,1.25vw,1rem)] dark:text-zinc-500 text-slate-500">{{ edu.metadata.location }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+</div>
+
+<!-- Footer with Social Links -->
+<footer class="border-t dark:border-zinc-800 border-slate-100 p-8 dark:bg-zinc-900 bg-slate-50">
+  <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+    {% for profileId, profile in resume.entities.people.arvind.metadata.profiles %}
+    <a href="{{ profile.url }}" target="_blank"
+       class="font-medium group inline-flex items-center text-[clamp(0.875rem,1.25vw,1rem)] dark:text-zinc-500 dark:hover:text-zinc-300 text-slate-500 hover:text-slate-800 transition-colors">
+      <span>{{ profile.network }}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2 transform transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-external-link"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg>
+    </a>
+    {% endfor %}
+  </div>
+</footer>
