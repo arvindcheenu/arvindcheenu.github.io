@@ -4,7 +4,82 @@
   "id": "./",
   "start_url": "./",
   "scope": "./",
-  "description": "Grow a rock into a star, chain supernovae, and collapse into a black hole.",
+  "description": "Grow a rock into a star, chain supernovae and collapse into a black hole. Play the AI, pass and play, or invite friends to an online room. Teams and knockout tournaments included, and it plays offline.",
+  "screenshots": [
+    {
+      "src": "screenshots/wide-1-board.webp",
+      "sizes": "1920x1080",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "A four-star game in teams"
+    },
+    {
+      "src": "screenshots/wide-2-chain.webp",
+      "sizes": "1920x1080",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "A chain of supernovae sweeps the field"
+    },
+    {
+      "src": "screenshots/wide-3-blackhole.webp",
+      "sizes": "1920x1080",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "The winner collapses into a black hole"
+    },
+    {
+      "src": "screenshots/wide-4-setup.webp",
+      "sizes": "1920x1080",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Modes, rules, teams and field size"
+    },
+    {
+      "src": "screenshots/wide-5-online.webp",
+      "sizes": "1920x1080",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Online rooms with friends and AI stand-ins"
+    },
+    {
+      "src": "screenshots/narrow-1-board.webp",
+      "sizes": "780x1688",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "A four-star game in teams"
+    },
+    {
+      "src": "screenshots/narrow-2-chain.webp",
+      "sizes": "780x1688",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "A chain of supernovae sweeps the field"
+    },
+    {
+      "src": "screenshots/narrow-3-blackhole.webp",
+      "sizes": "780x1688",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "The winner collapses into a black hole"
+    },
+    {
+      "src": "screenshots/narrow-4-setup.webp",
+      "sizes": "780x1688",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Modes, rules, teams and field size"
+    },
+    {
+      "src": "screenshots/narrow-5-online.webp",
+      "sizes": "780x1688",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Online rooms with friends and AI stand-ins"
+    }
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "display": "fullscreen",
   "display_override": [
     "fullscreen",
@@ -14,7 +89,8 @@
   "background_color": "#04060a",
   "theme_color": "#04060a",
   "categories": [
-    "games"
+    "games",
+    "entertainment"
   ],
   "icons": [
     {
