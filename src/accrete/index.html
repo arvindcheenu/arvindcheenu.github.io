@@ -1565,8 +1565,10 @@ void main(){
   float big = smoothstep(1.2, 2.2, uRs);
   // gravitational lensing of the field: thin-lens point mass, Einstein radius rE, easing to zero before the canvas edge
   float rE = rs * mix(1.55, 1.12, big);
-  float reach = 1.0 - smoothstep(rs * 2.0, lim * 1.02, d);
-  float rEf = uRs * mix(1.55, 1.0, big);
+  // bending stays local to the hole: dense fields and the large result shadow bend less, so cells never smear into rings
+  float dense = smoothstep(14.0, 34.0, uSize.x);
+  float reach = 1.0 - smoothstep(uRs * 1.15, min(uRs * mix(3.4, 2.1, big), lim * 1.02), d);
+  float rEf = uRs * mix(mix(1.4, 0.95, dense), mix(0.7, 0.55, dense), big);
   float bend = uT * uT * (3.0 - 2.0 * uT);
   vec2 q = p - (d > 1e-4 ? p / d : vec2(0.0)) * (rEf * rEf / max(d, uRs * 0.6)) * bend * reach;
   vec4 bg = field(q);
@@ -3421,7 +3423,9 @@ void main(){
     const k = wr.width / L.W, sx = W0 / (cr.width || W0), sy = H0 / (cr.height || H0);
     const cx = (wr.left + wr.width / 2 + L.cx * k - cr.left) * sx, cy = (wr.top + wr.height / 2 - L.cy * k - cr.top) * sy;
     const big = Math.min(1, Math.max(0, (L.rs - 1.2) / 1.0)), bs = big * big * (3 - 2 * big);
-    const rs = L.rs * k, rE = rs * (1.55 + (1.0 - 1.55) * bs);
+    const dn = Math.min(1, Math.max(0, (L.W - 14) / 20)), ds = dn * dn * (3 - 2 * dn);
+    const k0 = 1.4 + (0.95 - 1.4) * ds, k1 = 0.7 + (0.55 - 0.7) * ds;
+    const rs = L.rs * k, rE = rs * (k0 + (k1 - k0) * bs);
     return { cx, cy, rs, rE, on: L.t };
   }
   function draw(now) {
