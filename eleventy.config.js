@@ -78,8 +78,12 @@ export default function (eleventyConfig) {
     'src/robots.txt': 'robots.txt',
     'src/favicon.ico': 'favicon.ico',
     'src/CNAME': 'CNAME',
-    'src/_redirects': '_redirects'
+    'src/_redirects': '_redirects',
+    'src/accrete': 'accrete'
   });
+
+  // Accrete (the game at /accrete) is a finished static app: copy it as-is, never run it through templates
+  eleventyConfig.ignores.add("src/accrete/**");
 
   // Watch targets for the dev server
   eleventyConfig.addWatchTarget("./src/assets/");
