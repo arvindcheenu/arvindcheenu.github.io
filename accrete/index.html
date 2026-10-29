@@ -67,7 +67,7 @@ body {
 }
 #sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 /* Splash: the logo draws itself in, the name settles, then everything fades into the field */
-.splash { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: radial-gradient(60% 60% at 50% 50%, #0a0d12, #030405 75%); cursor: pointer;
+.splash { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: radial-gradient(60% 60% at 50% 50%, #0a0d12, #030405 75%); cursor: var(--cur-pointer, pointer);
   transition: opacity .9s ease, visibility 0s .9s; }
 .splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash-in { display: grid; justify-items: center; gap: 18px; transition: transform 1.1s cubic-bezier(.3, .6, .2, 1), filter .9s; }
@@ -149,7 +149,7 @@ body {
   --cut: 7px;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   height: 34px; padding: 0 13px; border: 0;
-  color: var(--fg); background: var(--line); cursor: pointer; white-space: nowrap; flex: none;
+  color: var(--fg); background: var(--line); cursor: var(--cur-pointer, pointer); white-space: nowrap; flex: none;
   font: 600 13px/1 var(--hud-font); letter-spacing: .08em; text-transform: uppercase;
   touch-action: manipulation; position: relative; isolation: isolate;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
@@ -161,7 +161,7 @@ body {
 .btn:hover { background: var(--line-2); color: #fff; }
 .btn:hover::before { background: var(--sheen), color-mix(in oklab, var(--panel-2) 45%, var(--panel-solid)); }
 .btn:focus-visible { outline: none; background: var(--hud); }
-.btn:disabled { opacity: .35; cursor: default; }
+.btn:disabled { opacity: .35; cursor: var(--cur-arrow, default); }
 .btn.primary { background: var(--hud); color: #031018; }
 .btn.primary::before { background: var(--sheen), var(--hud); }
 .btn.primary:hover::before { background: var(--sheen), color-mix(in oklab, var(--hud) 90%, #fff); }
@@ -179,7 +179,7 @@ body {
 .mbar i.out { opacity: .12; }
 .ticks { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgb(4 6 10 / .9) calc(10% - 1px) 10%); }
 .mlabels { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: 6px; }
-.mlabels.tight .tag:not(.you) { display: none; }
+.mlabels.tight .tag:not(.you):not(.team) { display: none; }
 .mlabels.tight .ml { padding-right: 6px; gap: 5px; }
 .mlabels.tight .mrow .ms { font-size: 12px; }
 .ml { --cut: 7px; display: flex; align-items: center; gap: 8px; min-width: 0; padding: 6px 9px 6px 7px; transition: background .25s, opacity .25s, transform .2s; }
@@ -199,6 +199,8 @@ body {
 .ml small { font: 500 12px var(--hud-font); color: var(--muted); letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ml.turn small { color: var(--fg); }
 .tag { font: 500 12px var(--hud-font); color: var(--muted); border: 1px solid var(--line); padding: 0 3px; flex: none; letter-spacing: .06em; }
+.tag.team { color: var(--fg); border-color: var(--line-2); background: rgb(255 255 255 / .04); }
+.tag.away { color: #ffb15d; border-color: color-mix(in oklab, #ffb15d 40%, transparent); }
 .wins { font: 500 12px var(--hud-font); color: var(--hud); flex: none; letter-spacing: .06em; }
 
 /* Field */
@@ -229,12 +231,14 @@ body {
 .gl-canvas { pointer-events: none; }
 #hits { overflow: visible; }
 .hit { fill: transparent; stroke: none; cursor: var(--cur-ok, crosshair); outline: none; }
+html, body { cursor: var(--cur-arrow, default); }
+input[type=text], input:not([type]), textarea { cursor: text; }
 .hit.blocked { cursor: var(--cur-no, not-allowed); }
 .hit:focus-visible { stroke: var(--hud); stroke-width: .06; }
 #hits:focus, #hits:focus-visible, .viewport:focus, .boardwrap:focus { outline: none; }
 .busy .hit { cursor: var(--cur-wait, progress); }
-.zoomed .viewport { cursor: grab; }
-.viewport.dragging, .viewport.dragging * { cursor: grabbing !important; }
+.zoomed .viewport { cursor: var(--cur-grab, grab); }
+.viewport.dragging, .viewport.dragging * { cursor: var(--cur-grabbing, grabbing) !important; }
 
 /* Readout bar: shown only for tutorial instructions */
 #app:not(.tut) .bar { display: none; }
@@ -279,7 +283,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .field .note { font: 400 12px var(--hud-font); color: var(--muted); letter-spacing: .02em; text-transform: none; }
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; padding: 3px; background: var(--bg); border: 1px solid var(--line); }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg label { text-align: center; padding: 8px 2px; font: 600 13.5px var(--hud-font); color: var(--muted); cursor: pointer; transition: background .15s, color .15s, transform .12s; letter-spacing: .02em; }
+.seg label { text-align: center; padding: 8px 2px; font: 600 13.5px var(--hud-font); color: var(--muted); cursor: var(--cur-pointer, pointer); transition: background .15s, color .15s, transform .12s; letter-spacing: .02em; }
 .seg label:hover { color: var(--fg); background: color-mix(in oklab, var(--hud) 7%, transparent); }
 .seg label:active { transform: scale(.96); }
 /* console segments and tabs: the same faint sheen and edge light as buttons */
@@ -293,12 +297,12 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 }
 .seg label small { display: block; font: 400 12px var(--hud-font); color: var(--muted); margin-top: 2px; }
 .seg input:checked + label { background: var(--elev); color: var(--fg); box-shadow: inset 0 -1.5px 0 var(--hud); }
-.seg input:disabled + label { opacity: .3; cursor: not-allowed; }
+.seg input:disabled + label { opacity: .3; cursor: var(--cur-off, not-allowed); }
 .seg input:focus-visible + label { outline: 1.5px solid var(--hud); outline-offset: 1px; }
 .roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
 .seat { position: relative; display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 5px; border: 1px solid var(--line); background: var(--bg); transition: border-color .2s; }
 .seat:focus-within { border-color: color-mix(in oklab, var(--c) 70%, transparent); }
-.seat .swatch { flex: none; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: var(--c); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px color-mix(in oklab, var(--c) 60%, transparent), 0 0 10px var(--c); transition: transform .15s; }
+.seat .swatch { flex: none; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; cursor: var(--cur-pointer, pointer); background: var(--c); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px color-mix(in oklab, var(--c) 60%, transparent), 0 0 10px var(--c); transition: transform .15s; }
 .seat .swatch:hover { transform: scale(1.12); }
 .seat .swatch:focus-visible { outline: 1.5px solid var(--fg); outline-offset: 3px; }
 .seat input { flex: 1; min-width: 0; padding: 5px 2px; border: 0; background: none; color: var(--fg); font: 600 13.5px var(--hud-font); letter-spacing: .02em; outline: none; }
@@ -306,28 +310,81 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .seat .seat-name { flex: 1; min-width: 0; padding: 5px 2px; font: 600 13.5px var(--hud-font); color: var(--fg); letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .seat em { flex: none; font: 500 12px var(--hud-font); color: var(--muted); font-style: normal; text-transform: uppercase; letter-spacing: .06em; }
 .palette { position: absolute; z-index: 5; left: -1px; top: calc(100% + 4px); display: grid; grid-template-columns: repeat(5, 22px); gap: 8px; padding: 10px; background: var(--panel-solid); border: 1px solid var(--line-2); box-shadow: 0 12px 30px rgb(0 0 0 / .5); }
-.palette button { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: var(--sw); box-shadow: 0 0 8px color-mix(in oklab, var(--sw) 60%, transparent); transition: transform .12s; }
+.palette button { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; cursor: var(--cur-pointer, pointer); background: var(--sw); box-shadow: 0 0 8px color-mix(in oklab, var(--sw) 60%, transparent); transition: transform .12s; }
 .palette button:hover { transform: scale(1.15); }
 .palette button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--panel-solid), 0 0 0 3.5px var(--sw); }
 .palette button.taken { opacity: .45; }
 .actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+/* online rooms */
+.online { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); background: color-mix(in oklab, var(--hud) 4%, var(--bg)); }
+.online-join, .online-room { display: grid; gap: 10px; }
+.join-row { display: flex; gap: 8px; }
+.join-row input { flex: 1; min-width: 0; height: 34px; padding: 0 10px; border: 1px solid var(--line-2); background: var(--bg); color: var(--fg); font: 600 15px var(--hud-font); letter-spacing: .3em; text-transform: uppercase; outline: none; }
+.join-row input::placeholder { letter-spacing: .06em; color: var(--muted); font-weight: 500; }
+.join-row input:focus { border-color: var(--hud); }
+.room-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.room-id { flex: 1; display: flex; align-items: baseline; gap: 10px; min-width: 150px; }
+.room-id span { font: 600 12px var(--hud-font); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.room-id b { font: 700 22px var(--hud-font); letter-spacing: .28em; color: var(--hud); }
+.room-id .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); align-self: center; }
+.room-id .dot.on { background: #6ce39a; box-shadow: 0 0 8px #6ce39a; }
+.room-id .dot.retry { background: #ffb15d; box-shadow: 0 0 8px #ffb15d; }
+.btn.mini { height: 26px; padding: 0 8px; font-size: 12px; --cut: 5px; }
+.seat.open { border-style: dashed; }
+.seat.open .seat-name { color: var(--muted); }
+.seat .swatch:disabled { cursor: var(--cur-arrow, default); }
+.seat .swatch:disabled:hover { transform: none; }
+.invite { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.players { display: grid; gap: 4px; }
+.players .team-h { display: flex; align-items: center; justify-content: space-between; min-height: 28px; margin: 6px 0 0; font: 600 12px var(--hud-font); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.players .team-h .btn { height: 26px; padding: 0 10px; font-size: 12px; --cut: 5px; }
+.prow { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; min-height: 40px; padding: 4px 6px 4px 10px; border: 1px solid var(--line); background: var(--bg); }
+.prow.open { border-style: dashed; }
+.prow i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.prow.open i { background: none; box-shadow: inset 0 0 0 1.5px var(--line-2); }
+.prow .pn { font: 600 14px var(--hud-font); letter-spacing: .02em; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prow.open .pn { color: var(--muted); font-weight: 500; }
+.prow .pill { font: 500 12px var(--hud-font); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.prow .pill.you { color: var(--hud); }
+.prow .pill.away { color: #ffb15d; }
+.prow .btn { height: 28px; padding: 0 10px; font-size: 12px; --cut: 5px; }
+.prow .act-none { width: 0; }
+.room-foot { display: flex; justify-content: space-between; gap: 8px; }
+.btn.ghost.danger { color: #ff8a7a; }
+.btn.ghost.danger:hover { color: #ffb0a5; }
+#app.net-lobby .roster { display: none; }
+/* knockout bracket */
+.tour { --cut: 10px; display: grid; gap: 8px; margin-top: 6px; padding: 10px 12px; }
+.tour-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 600 12px var(--hud-font); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.tour-h b { color: var(--fg); font-weight: 600; }
+.rounds { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; align-items: center; }
+.round { display: grid; gap: 6px; align-content: space-around; height: 100%; }
+.match { display: grid; gap: 1px; padding: 3px 6px; border: 1px solid var(--line); background: var(--bg); }
+.match.now { border-color: color-mix(in oklab, var(--hud) 70%, transparent); box-shadow: 0 0 10px color-mix(in oklab, var(--hud) 25%, transparent); }
+.match span { display: flex; align-items: center; gap: 5px; min-width: 0; font: 500 12px var(--hud-font); color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.match span i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.match span.lost { color: var(--muted); text-decoration: line-through; text-decoration-color: rgb(255 255 255 / .25); }
+.match span.won { font-weight: 700; }
+.match span.tbd { color: var(--muted); }
+.match span.tbd i { background: none; box-shadow: inset 0 0 0 1px var(--line-2); }
+@media (max-width: 899px), (max-height: 539px) { .tour .round:not(.now) { display: none; } .tour .rounds { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .tour .round.now { display: contents; } }
 /* Start stays in reach on short screens */
 .start-bar { position: sticky; bottom: -1px; z-index: 3; margin: 0 -2px; padding: 12px 2px 2px; background: linear-gradient(transparent, var(--panel-solid) 14px); }
 @media (max-width: 899px) { .ml .pct { display: none; } }
 .links { display: flex; gap: 8px; flex-wrap: wrap; }
 .sep { height: 1px; background: var(--line); }
 .settings { display: grid; gap: 12px; }
-.switch { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.switch { display: flex; align-items: center; gap: 12px; cursor: var(--cur-pointer, pointer); }
 .switch span { flex: 1; min-width: 0; font: 600 13px var(--hud-font); letter-spacing: .06em; text-transform: uppercase; }
 .switch small { display: block; color: var(--muted); font: 400 13.5px var(--font); letter-spacing: 0; text-transform: none; margin-top: 2px; }
-.switch input { appearance: none; -webkit-appearance: none; margin: 0; flex: none; width: 36px; height: 20px; background: var(--elev); border: 1px solid var(--line-2); position: relative; cursor: pointer; transition: background .15s; }
+.switch input { appearance: none; -webkit-appearance: none; margin: 0; flex: none; width: 36px; height: 20px; background: var(--elev); border: 1px solid var(--line-2); position: relative; cursor: var(--cur-pointer, pointer); transition: background .15s; }
 .switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: var(--muted); transition: transform .15s, background .15s; }
 .switch input:checked { background: color-mix(in oklab, var(--hud) 30%, var(--elev)); border-color: var(--hud); }
 .switch input:checked::after { transform: translateX(16px); background: var(--hud); box-shadow: 0 0 8px var(--hud); }
 .switch input:focus-visible { outline: 1.5px solid var(--hud); outline-offset: 2px; }
-.audio-row { cursor: default; }
+.audio-row { cursor: var(--cur-arrow, default); }
 .audio-row > span { display: grid; gap: 2px; }
-.audio-row label { cursor: pointer; }
+.audio-row label { cursor: var(--cur-pointer, pointer); }
 .switch input.vol { width: 100%; height: 22px; background: transparent; border: 0; flex: auto; }
 .switch input.vol::after { content: none; }
 .audio-row.off input.vol { opacity: .4; }
@@ -374,7 +431,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 #win:not([hidden]) ~ #zoomBar { opacity: 0; pointer-events: none; transition: opacity .4s; }
 .win.gl.peek .horizon { scale: 1; }
 .hz-chip { --cut: 10px; position: absolute; left: 50%; bottom: 10px; translate: -50% 0; display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; pointer-events: auto;
-  color: var(--fg); font: 600 13.5px var(--hud-font); letter-spacing: .02em; border: 0; cursor: pointer; background: color-mix(in oklab, var(--c) 60%, transparent);
+  color: var(--fg); font: 600 13.5px var(--hud-font); letter-spacing: .02em; border: 0; cursor: var(--cur-pointer, pointer); background: color-mix(in oklab, var(--c) 60%, transparent);
   opacity: 0; translate: -50% 12px; transition: opacity .3s, translate .3s; pointer-events: none; }
 .hz-chip::before { background: var(--sheen), rgb(8 12 20 / .94) !important; }
 .hz-chip .bh { width: 30px; }
@@ -400,7 +457,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 
 /* Console tabs */
 .tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; border-bottom: 1px solid var(--line); }
-.tab { appearance: none; border: 0; background: none; color: var(--muted); padding: 10px 2px 11px; cursor: pointer; position: relative;
+.tab { appearance: none; border: 0; background: none; color: var(--muted); padding: 10px 2px 11px; cursor: var(--cur-pointer, pointer); position: relative;
   font: 600 12.5px var(--hud-font); letter-spacing: .1em; text-transform: uppercase; touch-action: manipulation; transition: color .15s; }
 .tab:hover { color: var(--fg); }
 .tab[aria-selected="true"] { color: var(--fg); }
@@ -431,7 +488,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .size-read { font: 700 15px var(--hud-font); color: var(--fg); letter-spacing: .01em; }
 .size-read b { color: var(--hud); font-weight: 700; }
 .range-wrap { position: relative; padding-top: 22px; }
-.range { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 26px; margin: 0; background: transparent; cursor: pointer; --p: 50%; }
+.range { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 26px; margin: 0; background: transparent; cursor: var(--cur-pointer, pointer); --p: 50%; }
 .range:focus { outline: none; }
 .range::-webkit-slider-runnable-track { height: 6px; border: 1px solid var(--line-2); background: linear-gradient(90deg, var(--hud) 0 var(--p), var(--elev) var(--p) 100%); box-shadow: 0 0 12px -4px var(--hud); }
 .range::-moz-range-track { height: 6px; border: 1px solid var(--line-2); background: var(--elev); }
@@ -447,12 +504,12 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .bubble { position: absolute; top: 0; left: calc(9px + (100% - 18px) * var(--f, .5)); transform: translateX(-50%); font: 700 12px var(--hud-font); color: var(--bg); background: var(--hud); padding: 2px 6px; letter-spacing: .04em; pointer-events: none; transition: left .08s; }
 .bubble::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 7px; height: 7px; background: var(--hud); transform: translateX(-50%) rotate(45deg); z-index: -1; }
 .rticks { position: relative; height: 26px; margin: 2px 9px 0; }
-.rticks button { position: absolute; top: 0; left: calc(var(--i) * 12.5%); transform: translateX(-50%); min-width: 28px; appearance: none; background: none; border: 0; padding: 7px 0 2px; cursor: pointer; color: var(--muted); font: 600 12px var(--hud-font); transition: color .15s; }
+.rticks button { position: absolute; top: 0; left: calc(var(--i) * 12.5%); transform: translateX(-50%); min-width: 28px; appearance: none; background: none; border: 0; padding: 7px 0 2px; cursor: var(--cur-pointer, pointer); color: var(--muted); font: 600 12px var(--hud-font); transition: color .15s; }
 .rticks button::before { content: ""; position: absolute; top: 0; left: 50%; width: 1px; height: 4px; background: var(--line-2); }
 .rticks button:hover { color: var(--fg); }
 .rticks button.on { color: var(--hud); }
 .rticks button.on::before { background: var(--hud); height: 6px; }
-.rticks button:disabled { opacity: .3; cursor: not-allowed; }
+.rticks button:disabled { opacity: .3; cursor: var(--cur-off, not-allowed); }
 @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
 
 /* Desktop: field left, side panel right */
@@ -569,6 +626,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 
   <section class="mass" id="mass" aria-label="Players">
     <div class="mlabels" id="mlabels"></div>
+    <div class="tour hud" id="tour" hidden></div>
   </section>
 
   <aside class="side" aria-label="Turn">
@@ -667,6 +725,38 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         <div class="seg">
           <input type="radio" name="mode" id="mdSolo" value="solo"><label for="mdSolo">Solo vs AI</label>
           <input type="radio" name="mode" id="mdPass" value="pass"><label for="mdPass">Pass and play</label>
+          <input type="radio" name="mode" id="mdNet" value="online"><label for="mdNet">Online</label>
+        </div>
+      </div>
+      <div class="online" id="onlineBox" hidden>
+        <div class="online-join" id="onlineJoin">
+          <p class="vnote" id="joinNote">Play friends on their own devices. Create a room and share its code, or join one.</p>
+          <div class="join-row" id="joinRow"><input type="text" id="joinCode" maxlength="5" placeholder="Room code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Room code"><button class="btn" type="button" id="joinBtn">Join</button></div>
+        </div>
+        <div class="online-room" id="onlineRoom" hidden>
+          <div class="invite">
+            <div class="room-id"><span>Room</span><b id="roomCode">-----</b><i class="dot" id="roomDot" aria-hidden="true"></i></div>
+            <button class="btn primary" type="button" id="copyLink">Invite</button>
+          </div>
+          <p class="vnote" id="roomNote"></p>
+          <div class="players" id="players"></div>
+          <p class="vnote watchers" id="watchers" hidden></p>
+          <div class="room-foot"><button class="btn ghost" type="button" id="leaveRoom">Leave room</button><button class="btn ghost danger" type="button" id="closeRoom" hidden>Close room</button></div>
+        </div>
+      </div>
+      <div class="field" id="formatField">
+        <span>Format</span>
+        <div class="seg">
+          <input type="radio" name="format" id="fmS" value="single"><label for="fmS">Single game</label>
+          <input type="radio" name="format" id="fmK" value="knockout"><label for="fmK">Knockout</label>
+        </div>
+        <p class="vnote" id="formatNote"></p>
+      </div>
+      <div class="field" id="entrantField" hidden>
+        <span>Entrants</span>
+        <div class="seg">
+          <input type="radio" name="entrants" id="en4" value="4"><label for="en4">4 stars</label>
+          <input type="radio" name="entrants" id="en8" value="8"><label for="en8">8 stars</label>
         </div>
       </div>
       <div class="field">
@@ -680,7 +770,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         </div>
         <p class="vnote" id="variantNote"></p>
       </div>
-      <div class="field">
+      <div class="field" id="starsField">
         <span>Stars</span>
         <div class="seg">
           <input type="radio" name="players" id="pl2" value="2"><label for="pl2">2</label>
@@ -689,6 +779,15 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
           <input type="radio" name="players" id="pl5" value="5"><label for="pl5">5</label>
           <input type="radio" name="players" id="pl6" value="6"><label for="pl6">6</label>
         </div>
+      </div>
+      <div class="field" id="teamField">
+        <span>Teams</span>
+        <div class="seg">
+          <input type="radio" name="teams" id="tm0" value="0"><label for="tm0">Off</label>
+          <input type="radio" name="teams" id="tm2" value="2"><label for="tm2">2 teams</label>
+          <input type="radio" name="teams" id="tm3" value="3"><label for="tm3">3 teams</label>
+        </div>
+        <p class="vnote" id="teamNote"></p>
       </div>
       <div class="field" id="levelField">
         <span>AI level</span>
@@ -732,6 +831,9 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         <li>A cell's ring shows its limit. Go past it and the body goes <strong>supernova</strong>, taking every touching cell.</li>
         <li>Bodies holding 6 or 7 leave a <strong>neutron star</strong> behind.</li>
         <li>Swallow every other star to collapse into a <strong>black hole</strong>.</li>
+        <li><strong>Teams</strong> split four or six stars into sides. Allies share reach, and a blast that lands on an ally feeds it instead of taking it.</li>
+        <li><strong>Online</strong> rooms let friends play from their own devices. Share the room code or link; the host picks seats, rules and AI stand-ins.</li>
+        <li><strong>Knockout</strong> runs a 4 or 8 star bracket of one-on-one matches, against the AI or online. Tournament games have no hints, no undo, and every tap places.</li>
         <li><strong>Race</strong> is drawn if every cell is covered before one star remains. <strong>Blitz</strong> gives six seconds a move. <strong>Epoch</strong> ends after a set number of rounds and the most massive star wins. <strong>Belt</strong> scatters asteroids over the field.</li>
       </ul>
       <div class="links"><button class="btn primary" type="button" id="tutorialBtn">Tutorial</button><button class="btn" type="button" id="rulesBtn">Full rules</button></div>
@@ -830,18 +932,29 @@ const SF = (function () {
 
   // limit: total moves before the epoch ends (0 = play to the last star)
   // race: the game is drawn if every cell is occupied before one star remains
-  function newState(b, n, limit, race) {
-    return {
+  // teams: 0 for every star on its own, or the number of teams; seat q plays for team q % teams so turns alternate between teams
+  function newState(b, n, limit, race, teams) {
+    const s = {
       n, limit: limit || 0, race: !!race, draw: false, units: new Array(b.N).fill(0), owner: new Array(b.N).fill(-1), rem: new Array(b.N).fill(false),
       played: new Array(n).fill(false), out: new Array(n).fill(false), turn: 0, moves: 0, winner: -1,
     };
+    if (teams >= 2 && n % teams === 0 && n > teams) s.team = Array.from({ length: n }, (_, q) => q % teams);
+    return s;
   }
+  // allies: the same star, or two stars on the same team
+  const mate = (s, a, c) => a === c || (!!s.team && a >= 0 && c >= 0 && s.team[a] === s.team[c]);
 
   function clone(s) {
     return {
       n: s.n, limit: s.limit || 0, race: !!s.race, draw: !!s.draw, units: s.units.slice(), owner: s.owner.slice(), rem: s.rem.slice(),
-      played: s.played.slice(), out: s.out.slice(), turn: s.turn, moves: s.moves, winner: s.winner,
+      played: s.played.slice(), out: s.out.slice(), turn: s.turn, moves: s.moves, winner: s.winner, ...(s.team ? { team: s.team } : {}),
     };
+  }
+  function teamMass(s, p) {
+    if (!s.team) return mass(s, p);
+    let m = 0;
+    for (let i = 0; i < s.units.length; i++) if (s.owner[i] >= 0 && s.team[s.owner[i]] === s.team[p]) m += s.units[i];
+    return m;
   }
 
   function mass(s, p) {
@@ -853,7 +966,8 @@ const SF = (function () {
   function reachable(b, s, i, p) {
     if (s.owner[i] !== -1) return false;
     const l = b.nb[i];
-    for (let k = 0; k < l.length; k++) if (s.owner[l[k]] === p) return true;
+    // a team shares its reach: you may seed beside an ally's territory as well as your own
+    for (let k = 0; k < l.length; k++) if (mate(s, s.owner[l[k]], p)) return true;
     return false;
   }
 
@@ -890,6 +1004,8 @@ const SF = (function () {
       for (let k = 0; k < b.N; k++) if (s.units[k] >= b.crit[k]) boom.push(k);
       if (!boom.length) break;
       novae += boom.length;
+      // each blast throws matter in its own color; matter landing on an ally's body feeds that body instead of taking it
+      const from = boom.map((k) => s.owner[k]);
       for (const k of boom) {
         biggest = Math.max(biggest, b.cap[k]);
         s.units[k] -= b.nb[k].length;
@@ -897,12 +1013,12 @@ const SF = (function () {
         else { s.rem[k] = true; remnants++; }
       }
       const mid = record ? snap(s) : null;
-      for (const k of boom) for (const j of b.nb[k]) { s.units[j]++; s.owner[j] = p; s.rem[j] = false; }
+      boom.forEach((k, z) => { const e = from[z]; for (const j of b.nb[k]) { s.units[j]++; if (!(s.team && s.owner[j] >= 0 && mate(s, s.owner[j], e))) s.owner[j] = e; s.rem[j] = false; } });
       if (record) waves.push({ boom, mid, end: snap(s) });
       else waves.push(null);
       if (s.played.every(Boolean)) {
         let solo = true;
-        for (let k = 0; k < b.N; k++) if (s.owner[k] !== -1 && s.owner[k] !== p) { solo = false; break; }
+        for (let k = 0; k < b.N; k++) if (s.owner[k] !== -1 && !mate(s, s.owner[k], p)) { solo = false; break; }
         if (solo) break;
       }
       if (++guard > 600) break;
@@ -910,7 +1026,8 @@ const SF = (function () {
     for (let q = 0; q < s.n; q++) if (s.played[q] && !s.out[q] && mass(s, q) === 0) s.out[q] = true;
     const alive = [];
     for (let q = 0; q < s.n; q++) if (!s.out[q]) alive.push(q);
-    if (s.played.every(Boolean) && alive.length === 1) s.winner = alive[0];
+    const oneSide = alive.length >= 1 && alive.every((q) => mate(s, q, alive[0]));
+    if (s.played.every(Boolean) && oneSide) s.winner = alive.includes(p) ? p : alive[0];
     else if (s.limit && s.moves >= s.limit) s.winner = leader(b, s, alive);
     else if (s.race && s.played.every(Boolean) && s.owner.every((o) => o >= 0)) s.draw = true;
     else { let t = p; do { t = (t + 1) % s.n; } while (s.out[t]); s.turn = t; }
@@ -924,30 +1041,35 @@ const SF = (function () {
     let best = alive[0], bm = -1, bc = -1;
     for (const q of alive) {
       let m = 0, c = 0;
-      for (let i = 0; i < b.N; i++) if (s.owner[i] === q) { m += s.units[i]; c++; }
+      for (let i = 0; i < b.N; i++) if (mate(s, s.owner[i], q)) { m += s.units[i]; c++; }
       if (m > bm || (m === bm && c > bc)) { best = q; bm = m; bc = c; }
     }
+    // on a team, the heaviest ally collapses for everyone
+    if (s.team) { let top = best, tm = -1; for (const q of alive) if (mate(s, q, best)) { const m = mass(s, q); if (m > tm) { tm = m; top = q; } } best = top; }
     return best;
   }
 
   // ---- AI ----
   function evalFor(b, s, p) {
-    if (s.winner === p) return 1e6;
-    if (s.out[p]) return -1e6;
+    if (s.winner >= 0) return mate(s, s.winner, p) ? 1e6 : -1e6;
+    if (s.out[p] && !s.team) return -1e6;
     if (s.draw) return -400;
     let mine = 0, theirs = 0, cellsMine = 0, exposed = 0;
     for (let i = 0; i < b.N; i++) {
       const o = s.owner[i];
       if (o === -1) continue;
-      if (o === p) {
-        mine += s.units[i]; cellsMine++;
+      if (mate(s, o, p)) {
+        // an ally's matter counts almost as much as your own
+        const w = o === p ? 1 : 0.85;
+        mine += s.units[i] * w; cellsMine += w;
         if (s.units[i] === b.cap[i]) {
           // A loaded body next to a loaded enemy body is lost if they move first.
-          for (const j of b.nb[i]) if (s.owner[j] !== -1 && s.owner[j] !== p && s.units[j] === b.cap[j]) { exposed += s.units[i]; break; }
+          for (const j of b.nb[i]) if (s.owner[j] !== -1 && !mate(s, s.owner[j], p) && s.units[j] === b.cap[j]) { exposed += s.units[i] * w; break; }
         }
       } else theirs += s.units[i];
     }
-    return mine - theirs + 0.25 * cellsMine - 0.6 * exposed + 0.15 * b.depth.reduce((a, d, i) => a + (s.owner[i] === p ? d : 0), 0);
+    if (s.out[p]) mine -= 40;
+    return mine - theirs + 0.25 * cellsMine - 0.6 * exposed + 0.15 * b.depth.reduce((a, d, i) => a + (mate(s, s.owner[i], p) ? d : 0), 0);
   }
 
   function rankMoves(b, s, p) {
@@ -970,7 +1092,7 @@ const SF = (function () {
     const p = s.turn;
     const ranked = rankMoves(b, s, p);
     if (!ranked.length) return -1;
-    if (ranked[0].r.state.winner === p) return ranked[0].m;
+    if (ranked[0].r.state.winner >= 0 && mate(ranked[0].r.state, ranked[0].r.state.winner, p)) return ranked[0].m;
     if (level === "easy") {
       if (rand() < 0.8) return ranked[Math.floor(rand() * ranked.length)].m;
       return pickTop(ranked, rand, 2);
@@ -982,14 +1104,14 @@ const SF = (function () {
     for (const c of shortlist) {
       const s1 = c.r.state;
       if (s1.winner >= 0) { c.v2 = s1.winner === p ? 1e6 : -1e6; continue; }
-      const q = s1.turn;
-      let worst = Infinity;
+      const q = s1.turn, friend = mate(s1, q, p);
+      let worst = friend ? -Infinity : Infinity;
       const replies = rankMoves(b, s1, q).slice(0, 8);
       for (const rep of replies) {
         const v = evalFor(b, rep.r.state, p);
-        if (v < worst) worst = v;
+        if (friend ? v > worst : v < worst) worst = v;
       }
-      c.v2 = worst === Infinity ? c.v : worst;
+      c.v2 = !isFinite(worst) ? c.v : worst;
     }
     shortlist.sort((a, c) => c.v2 - a.v2);
     const best = shortlist[0].v2;
@@ -999,7 +1121,7 @@ const SF = (function () {
 
   // expert: every candidate move, the opponent's strongest replies, then a threat-aware evaluation
   function leafValue(b, s, p) {
-    if (s.winner >= 0) return s.winner === p ? 1e6 : -1e6;
+    if (s.winner >= 0) return mate(s, s.winner, p) ? 1e6 : -1e6;
     let v = evalFor(b, s, p);
     if (s.turn === p) {
       // my move next: what I can take now counts, what they hold over me counts a little
@@ -1015,13 +1137,14 @@ const SF = (function () {
     const shortlist = ranked.slice(0, 16);
     for (const c of shortlist) {
       const s1 = c.r.state;
-      if (s1.winner >= 0) { c.v3 = s1.winner === p ? 1e6 : -1e6; continue; }
-      let worst = Infinity;
+      if (s1.winner >= 0) { c.v3 = mate(s1, s1.winner, p) ? 1e6 : -1e6; continue; }
+      const friend = mate(s1, s1.turn, p);
+      let worst = friend ? -Infinity : Infinity;
       for (const rep of rankMoves(b, s1, s1.turn).slice(0, 10)) {
         const v = leafValue(b, rep.r.state, p);
-        if (v < worst) worst = v;
+        if (friend ? v > worst : v < worst) worst = v;
       }
-      c.v3 = worst === Infinity ? c.v : worst;
+      c.v3 = !isFinite(worst) ? c.v : worst;
     }
     shortlist.sort((a, c) => c.v3 - a.v3);
     const best = shortlist[0].v3;
@@ -1039,7 +1162,7 @@ const SF = (function () {
     const victimAll = me < 0;
     const victim = victimAll ? -1 - me : me;
     for (let q = 0; q < s.n; q++) {
-      if (victimAll ? q !== attacker : (q === victim || s.out[q] || !s.played[q])) continue;
+      if (victimAll ? q !== attacker : (mate(s, q, victim) || s.out[q] || !s.played[q])) continue;
       const t = clone(s); t.turn = q;
       let best = 0;
       for (let i = 0; i < b.N; i++) {
@@ -1048,7 +1171,7 @@ const SF = (function () {
         let hit = false, took = 0;
         for (let k = 0; k < b.N; k++) {
           const was = s.owner[k];
-          const lost = victimAll ? (was !== -1 && was !== q && r.state.owner[k] === q) : (was === victim && r.state.owner[k] !== victim);
+          const lost = victimAll ? (was !== -1 && !mate(s, was, q) && mate(s, r.state.owner[k], q)) : (was === victim && r.state.owner[k] !== victim);
           if (lost) { if (!victimAll) endangered.add(k); hit = true; took += s.units[k]; }
         }
         if (hit) { sources.add(i); if (took > best) best = took; }
@@ -1058,7 +1181,30 @@ const SF = (function () {
     return { endangered, sources, gain };
   }
 
-  return { makeBoard, makeVoids, newState, clone, mass, reachable, legal, legalMoves, enclosed, apply, choose, evalFor, threats };
+  // ---- Knockout bracket ----
+  // entrants: 4 or 8 slots. rounds[r][m] = { a, b, w }: slot numbers, w = winning slot or -1.
+  function bracket(size, rand) {
+    rand = rand || Math.random;
+    const order = [...Array(size).keys()];
+    for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+    const rounds = [];
+    for (let n = size / 2, r = 0; n >= 1; n /= 2, r++) rounds.push(Array.from({ length: n }, (_, m) => (r === 0 ? { a: order[2 * m], b: order[2 * m + 1], w: -1 } : { a: -1, b: -1, w: -1 })));
+    return { size, rounds, r: 0, m: 0, champion: -1 };
+  }
+  function bracketReport(t, w) {
+    const M = t.rounds[t.r][t.m];
+    if (w !== M.a && w !== M.b) return false;
+    M.w = w;
+    if (t.r + 1 < t.rounds.length) { const N = t.rounds[t.r + 1][t.m >> 1]; if (t.m % 2 === 0) N.a = w; else N.b = w; }
+    else t.champion = w;
+    if (t.m + 1 < t.rounds[t.r].length) t.m++;
+    else if (t.r + 1 < t.rounds.length) { t.r++; t.m = 0; }
+    return true;
+  }
+  const bracketMatch = (t) => (t && t.champion < 0 ? t.rounds[t.r][t.m] : null);
+  const roundName = (t, r) => { const left = t.rounds.length - r; return left === 1 ? "Final" : left === 2 ? "Semifinal" : "Quarterfinal"; };
+
+  return { bracket, bracketReport, bracketMatch, roundName, makeBoard, makeVoids, newState, clone, mass, teamMass, mate, reachable, legal, legalMoves, enclosed, apply, choose, evalFor, threats };
 })();
 if (typeof module !== "undefined") module.exports = SF;
 
@@ -1941,7 +2087,7 @@ const GL = (() => {
 if (GL) wrap.classList.add("gl");
 
 /* ---------- Game state ---------- */
-const DEFAULT_CFG = { mode: "solo", n: 2, level: "medium", size: "standard", variant: "classic" };
+const DEFAULT_CFG = { mode: "solo", format: "single", n: 2, level: "medium", size: "standard", variant: "classic", teams: 0 };
 const VARIANTS = ["classic", "race", "blitz", "epoch", "belt"];
 const LEGACY = { small: 2, standard: 3, large: 4 };
 const radiusOf = (sz) => (typeof sz === "number" ? sz : LEGACY[sz] || +sz || 3);
@@ -1951,6 +2097,16 @@ let CFG = load("sf2-prefs") || { ...DEFAULT_CFG };
 CFG.size = radiusOf(CFG.size);
 if (!(CFG.size >= 2 && CFG.size <= 10) || !(CFG.n >= 2 && CFG.n <= maxStars(CFG.size)) || !["solo", "pass"].includes(CFG.mode)) CFG = { ...DEFAULT_CFG, size: 3 };
 if (!VARIANTS.includes(CFG.variant)) CFG.variant = "classic";
+// teams: 2 teams for four or six stars, 3 teams for six
+const teamsOk = (n, t) => (t === 2 && (n === 4 || n === 6)) || (t === 3 && n === 6);
+if (!teamsOk(CFG.n, CFG.teams)) CFG.teams = 0;
+CFG.format = "single";
+// knockout tournaments: no hints, no undo, and every tap places
+const KO = () => CFG.format === "knockout";
+const TEAM_NAMES = ["Alpha", "Beta", "Gamma"];
+const teamOf = (q) => (S && S.team ? S.team[q] : -1);
+const membersOf = (t) => (S && S.team ? [...Array(S.n).keys()].filter((q) => S.team[q] === t) : []);
+const andList = (a) => (a.length <= 1 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
 const blitzMs = () => (B && B.R >= 6 ? 9000 : 6000);
 const epochRounds = (N) => Math.max(8, Math.round(N * 0.4));
 const VNOTE = {
@@ -1970,22 +2126,112 @@ const hexOff = () => (FLAT ? 0 : -30);
 if (matchMedia("(hover: hover) and (pointer: fine)").matches) pointerKind = "mouse";
 
 const over = (s) => !!s && (s.winner >= 0 || !!s.draw);
-const isAI = (p) => CFG.mode === "solo" && p !== 0;
+const isAI = (p) => (CFG.mode === "solo" ? p !== 0 : CFG.mode === "online" ? NET.seatKind(p) === "ai" : false);
+// the seat this page plays: seat 0 against the AI, your own seat online
+const isMe = (p) => (CFG.mode === "solo" && p === 0) || (CFG.mode === "online" && NET.mine(p));
 const snapOf = (s) => ({ units: s.units.slice(), owner: s.owner.slice(), rem: s.rem.slice() });
 const panOf = (i) => Math.max(-1, Math.min(1, cx(i) / (W / 2))) * 0.75;
 const LESSONS = SF_DATA.lessons;
 
 function canPlay() {
   if (!S || busy || over(S) || isAI(S.turn)) return false;
+  if (CFG.mode === "online" && (!NET.mine(S.turn) || NET.status !== "open")) return false;
   if (CFG.mode === "tutorial" && TU && (TU.done || TU.fail)) return false;
   return true;
 }
 function threatsOn() {
   if (CFG.mode === "tutorial") return !!TU && ["threat", "survive"].includes(LESSONS[TU.k].id);
-  return SET.hints;
+  return SET.hints && !KO();
 }
-const hintsOn = () => CFG.mode === "tutorial" || SET.hints;
-const oneTap = () => SET.oneTap;
+const hintsOn = () => CFG.mode === "tutorial" || (SET.hints && !KO());
+const oneTap = () => SET.oneTap || KO();
+
+/* ---------- Online rooms ---------- */
+// One WebSocket per room on a Cloudflare Durable Object. The room holds the real game and checks every move;
+// each page applies moves as they arrive, playing its own moves at once so the board never waits on the network.
+const NET_URL = "wss://accrete.arvindcheenu.workers.dev";
+const NET = (() => {
+  const N = { ws: null, code: null, pid: null, room: null, status: "off", tries: 0, timer: 0, ping: 0, applied: 0, queue: [], game: -1, autoT: 0, pendingSnap: null, create: false, cfg: null };
+  const cid = (() => {
+    let id = load("sf2-cid");
+    if (typeof id !== "string" || !/^[A-Za-z0-9_-]{8,40}$/.test(id)) {
+      id = Array.from(crypto.getRandomValues(new Uint8Array(14)), (b) => "abcdefghijklmnopqrstuvwxyz0123456789"[b % 36]).join("");
+      save("sf2-cid", id);
+    }
+    return id;
+  })();
+  const base = () => {
+    let u = NET_URL;
+    try { const q = new URLSearchParams(location.search).get("server"); if (q) u = q; } catch (e) {}
+    if (u.includes("%%")) { if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) u = "ws://127.0.0.1:8787"; else return ""; }
+    return u.replace(/^http/, "ws").replace(/\/$/, "");
+  };
+  N.available = () => !!base() && typeof WebSocket === "function";
+  N.inRoom = () => !!N.code;
+  // during a game the seats are the game's (in a tournament, the two stars of the current match)
+  N.seats = () => (N.room ? (N.room.phase === "play" && N.room.gseats ? N.room.gseats : N.room.seats) : []);
+  N.seat = (p) => N.seats()[p] || null;
+  N.seatKind = (p) => { const s = N.seat(p); return s ? s.kind : ""; };
+  N.mine = (p) => { const s = N.seat(p); return !!s && s.kind === "human" && !!N.pid && s.pid === N.pid; };
+  N.mySeat = () => N.seats().findIndex((s) => s.kind === "human" && s.pid === N.pid);
+  N.isHost = () => !!N.room && !!N.pid && N.room.host === N.pid;
+  N.member = (pid) => (N.room ? N.room.members.find((m) => m.pid === pid) : null);
+  N.online = (p) => { const s = N.seat(p); if (!s || s.kind !== "human") return true; const m = N.member(s.pid); return !!m && m.online; };
+  N.send = (o) => { if (N.ws && N.ws.readyState === 1) { N.ws.send(JSON.stringify(o)); return true; } return false; };
+  N.link = () => {
+    const here = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || location.hostname.endsWith("arvindchee.nu");
+    return `${here ? location.origin + location.pathname : "https://arvindchee.nu/accrete/"}?room=${N.code}`;
+  };
+  N.connect = (code, create, cfg) => {
+    N.close(true);
+    N.code = code; N.create = !!create; N.cfg = cfg || null; N.tries = 0;
+    save("sf2-online", { code });
+    open();
+  };
+  function open() {
+    clearTimeout(N.timer);
+    const u = base();
+    if (!u) { N.status = "error"; N.onStatus("Online play isn't available in this copy. Open arvindchee.nu/accrete"); return; }
+    let ws;
+    try { ws = new WebSocket(`${u}/room/${N.code}`); } catch (e) { retry(); return; }
+    N.ws = ws; N.status = "connecting"; N.onStatus();
+    ws.onopen = () => {
+      N.tries = 0; N.status = "open";
+      ws.send(JSON.stringify({ t: "hello", id: cid, name: ROSTER[0].name, color: ROSTER[0].color, create: N.create, cfg: N.cfg }));
+      clearInterval(N.ping); N.ping = setInterval(() => N.send({ t: "ping" }), 40000);
+      N.onStatus();
+    };
+    ws.onmessage = (e) => { let m; try { m = JSON.parse(e.data); } catch (err) { return; } handle(m); };
+    ws.onclose = (e) => {
+      if (N.ws !== ws) return;
+      clearInterval(N.ping); N.ws = null;
+      if (!N.code || e.code === 4000 || e.code === 4004 || e.code === 4009) return;
+      retry();
+    };
+    ws.onerror = () => {};
+  }
+  function retry() {
+    N.status = "retry"; N.onStatus();
+    const d = Math.min(15000, 700 * 2 ** N.tries++);
+    N.timer = setTimeout(() => { if (N.code) open(); }, d);
+  }
+  N.close = (silent) => {
+    clearTimeout(N.timer); clearInterval(N.ping); clearTimeout(N.autoT);
+    const ws = N.ws; N.ws = null;
+    if (ws) { try { if (!silent) ws.send(JSON.stringify({ t: "leave" })); ws.close(1000); } catch (e) {} }
+    N.code = null; N.room = null; N.pid = null; N.status = "off"; N.queue = []; N.pendingSnap = null; N.game = -1;
+    save("sf2-online", null);
+  };
+  function handle(m) {
+    if (m.t === "welcome") { N.pid = m.pid; N.create = false; return; }
+    if (m.t === "error") { N.onError(m); return; }
+    if (m.t === "room") { const prev = N.room; N.room = m; N.onRoom(prev); return; }
+    if (m.t === "move") { N.queue.push(m); N.drain(); return; }
+    if (m.t === "reject") { flash("That move didn't reach the room", 1600); }
+    if (m.t === "closed") N.onClosed();
+  }
+  return N;
+})();
 
 /* ---------- Stage icons: each star shown as what it currently is ---------- */
 const ICON_STAGE = { Dust: 0, Rock: 1, Protostar: 2, Star: 3, Giant: 4, Supergiant: 5, "Neutron star": 8, "Black hole": 9, Swallowed: -1 };
@@ -2264,9 +2510,9 @@ function computeThreats() {
   const key = `${S.moves}|${S.turn}|${S.winner}|${threatsOn()}|${busy}|${CFG.mode}|${TU ? TU.k : ""}`;
   if (key === thKey) return;
   thKey = key;
-  const me = isAI(S.turn) ? 0 : S.turn;
+  const me = CFG.mode === "online" ? (NET.mine(S.turn) ? S.turn : Math.max(0, NET.mySeat())) : isAI(S.turn) ? 0 : S.turn;
   THR = !over(S) && S.played[me] ? SF.threats(B, S, me) : null;
-  TH = threatsOn() && !animating && !isAI(S.turn) ? THR : null;
+  TH = threatsOn() && !animating && !isAI(S.turn) && (CFG.mode !== "online" || NET.mine(S.turn)) ? THR : null;
 }
 
 function updateMood() {
@@ -2289,6 +2535,7 @@ const tM = (n) => `T+${n}M`, tMY = (n) => `T+${n}M years`;
 const hexOf = (p) => "#" + HEX[p].toString(16).padStart(6, "0");
 /* ---------- Roster: each seat's star name and color ---------- */
 const PALETTE = [0x5e9cff, 0xf6c544, 0xff6b5a, 0x3fd0b0, 0xa98bff, 0xff7eb6, 0x52d9ff, 0xa6e05a, 0xff9a3c, 0xdfe6f0];
+const hex6 = (c) => "#" + PALETTE[c].toString(16).padStart(6, "0");
 [NAMES[0][0], NAMES[1][0]] = ["Sol", "Rigel"];
 const DEF_NAMES = NAMES.map((n) => n[0]);
 const DEF_COLORS = [1, 0, 2, 3, 4, 5];
@@ -2320,23 +2567,44 @@ function saveRoster() {
   if (typeof buildLegend === "function" && $("#legend")) try { buildLegend(); } catch (e) {}
 }
 let curKey = "";
-function cursorUrl(kind, c) {
-  const halo = "stroke='%23000' stroke-opacity='.6' stroke-width='3.6' fill='none'";
-  const ink = `stroke='${encodeURIComponent(c)}' stroke-width='1.6' fill='none'`;
-  const ticks = "M16 3v6M16 23v6M3 16h6M23 16h6";
-  let body;
-  if (kind === "ok") body = `<circle cx='16' cy='16' r='7' ${halo}/><path d='${ticks}' ${halo}/><circle cx='16' cy='16' r='7' ${ink}/><path d='${ticks}' ${ink}/><circle cx='16' cy='16' r='1.7' fill='${encodeURIComponent(c)}'/>`;
-  else if (kind === "no") body = `<circle cx='16' cy='16' r='7' ${halo}/><path d='M11 21 21 11' ${halo}/><circle cx='16' cy='16' r='7' stroke='%238a97ab' stroke-width='1.6' fill='none'/><path d='M11 21 21 11' stroke='%238a97ab' stroke-width='1.6'/>`;
-  else body = `<circle cx='16' cy='16' r='7' ${halo}/><circle cx='16' cy='16' r='7' stroke='${encodeURIComponent(c)}' stroke-width='1.6' stroke-dasharray='3 3' fill='none'/>`;
-  return `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'>${body}</svg>") 16 16`;
-}
+// Sci-fi cursor set: drawn as small SVGs so they stay crisp and can take the active player's colour
+const CUR = (() => {
+  const E = encodeURIComponent;
+  const HALO = "#03050a";
+  const svg = (body, hx, hy, fb) => `url("data:image/svg+xml,${E(`<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'>${body}</svg>`)}") ${hx} ${hy}, ${fb}`;
+  const both = (d, c, w, extra = "") => `<path d='${d}' fill='none' stroke='${HALO}' stroke-opacity='.75' stroke-width='${w + 2.2}' stroke-linecap='square' stroke-linejoin='miter'/><path d='${d}' fill='none' stroke='${c}' stroke-width='${w}' stroke-linecap='square' stroke-linejoin='miter' ${extra}/>`;
+  // pointy-top hexagon of radius r around (16,16)
+  const hexPts = (r) => [0, 1, 2, 3, 4, 5].map((k) => { const a = Math.PI / 180 * (60 * k - 90); return [16 + r * Math.cos(a), 16 + r * Math.sin(a)]; });
+  const f = (n) => n.toFixed(2);
+  const hexCorners = (r, t) => hexPts(r).map(([x, y], k, P) => {
+    const [px, py] = P[(k + 5) % 6], [nx, ny] = P[(k + 1) % 6];
+    return `M${f(x + (px - x) * t)} ${f(y + (py - y) * t)}L${f(x)} ${f(y)}L${f(x + (nx - x) * t)} ${f(y + (ny - y) * t)}`;
+  }).join("");
+  const hexFull = (r) => "M" + hexPts(r).map(([x, y]) => `${f(x)} ${f(y)}`).join("L") + "Z";
+  const DART = "M5 3.5L26 13.2L16.4 16.4L13.2 26Z";
+  return {
+    arrow: (c) => svg(`<path d='${DART}' fill='${HALO}' fill-opacity='.82' stroke='${HALO}' stroke-opacity='.7' stroke-width='3.4' stroke-linejoin='miter'/><path d='${DART}' fill='${HALO}' fill-opacity='.55' stroke='${c}' stroke-width='1.3' stroke-linejoin='miter'/><path d='M8.6 7.2L16.4 16.4' stroke='${c}' stroke-opacity='.55' stroke-width='1'/>`, 5, 4, "default"),
+    pointer: (c) => svg(`<path d='${DART}' fill='${c}' stroke='${HALO}' stroke-opacity='.85' stroke-width='2.2' stroke-linejoin='miter'/><path d='M8.6 7.2L16.4 16.4' stroke='${HALO}' stroke-opacity='.45' stroke-width='1.1'/><path d='M22 22h5M24.5 19.5v5' stroke='${HALO}' stroke-opacity='.7' stroke-width='3.2'/><path d='M22 22h5M24.5 19.5v5' stroke='${c}' stroke-width='1.2'/>`, 5, 4, "pointer"),
+    off: (c) => svg(`<path d='${DART}' fill='${HALO}' fill-opacity='.7' stroke='#8a97ab' stroke-opacity='.8' stroke-width='1.2' stroke-dasharray='2.4 1.8'/><path d='M21 21l6 6M27 21l-6 6' stroke='${HALO}' stroke-opacity='.7' stroke-width='3.2'/><path d='M21 21l6 6M27 21l-6 6' stroke='#8a97ab' stroke-width='1.3'/>`, 5, 4, "not-allowed"),
+    target: (c) => svg(both(hexCorners(11, 0.3), c, 1.5) + both("M16 1.5v4M16 26.5v4M2.5 16h4M25.5 16h4", c, 1.1, "stroke-opacity='.8'") + `<circle cx='16' cy='16' r='2.6' fill='${HALO}' fill-opacity='.7'/><circle cx='16' cy='16' r='1.5' fill='${c}'/>`, 16, 16, "crosshair"),
+    blocked: () => svg(both(hexFull(10), "#8a97ab", 1.2, "stroke-dasharray='2.2 2.4'") + both("M11 21L21 11", "#8a97ab", 1.4), 16, 16, "not-allowed"),
+    wait: (c) => svg(both(hexCorners(10, 0.22), c, 1.4, "stroke-opacity='.85'") + [0, 1, 2].map((k) => `<circle cx='${12 + k * 4}' cy='16' r='1.9' fill='${HALO}' fill-opacity='.7'/><circle cx='${12 + k * 4}' cy='16' r='1.1' fill='${c}' fill-opacity='${0.45 + k * 0.25}'/>`).join(""), 16, 16, "progress"),
+    grab: (c) => svg(both("M16 3l-3 3M16 3l3 3M16 29l-3-3M16 29l3-3M3 16l3-3M3 16l3 3M29 16l-3-3M29 16l-3 3", c, 1.3) + both(hexCorners(6.5, 0.35), c, 1.2), 16, 16, "grab"),
+    grabbing: (c) => svg(both("M16 8l-3-3M16 8l3-3M16 24l-3 3M16 24l3 3M8 16l-3-3M8 16l-3 3M24 16l3-3M24 16l3 3", c, 1.3) + `<circle cx='16' cy='16' r='2.2' fill='${HALO}' fill-opacity='.7'/><circle cx='16' cy='16' r='1.3' fill='${c}'/>`, 16, 16, "grabbing"),
+  };
+})();
+(function uiCursors() {
+  const r = document.documentElement.style, hud = "#6fd8ff";
+  r.setProperty("--cur-arrow", CUR.arrow(hud)); r.setProperty("--cur-pointer", CUR.pointer(hud)); r.setProperty("--cur-off", CUR.off(hud));
+  r.setProperty("--cur-grab", CUR.grab(hud)); r.setProperty("--cur-grabbing", CUR.grabbing(hud));
+})();
 function paintCursors(p) {
   const c = hexOf(p), key = c;
   if (key === curKey) return;
   curKey = key;
-  wrap.style.setProperty("--cur-ok", `${cursorUrl("ok", c)}, crosshair`);
-  wrap.style.setProperty("--cur-no", `${cursorUrl("no", c)}, not-allowed`);
-  wrap.style.setProperty("--cur-wait", `${cursorUrl("wait", c)}, progress`);
+  wrap.style.setProperty("--cur-ok", CUR.target(c));
+  wrap.style.setProperty("--cur-no", CUR.blocked(c));
+  wrap.style.setProperty("--cur-wait", CUR.wait(c));
 }
 function renderSide() {
   const p = S.winner >= 0 ? S.winner : S.turn;
@@ -2346,7 +2614,7 @@ function renderSide() {
   const vtag = CFG.variant && CFG.variant !== "classic" && CFG.mode !== "tutorial" ? `${CFG.variant[0].toUpperCase() + CFG.variant.slice(1)} · ` : "";
   const when = S.limit ? `Round ${Math.min(Math.floor(S.moves / S.n) + 1, S.limit / S.n)} of ${S.limit / S.n}` : tMY(S.moves);
   $("#sideEyebrow").textContent = CFG.mode === "tutorial" ? "Tutorial" : S.winner >= 0 ? `${vtag}Collapse · ${when}` : S.draw ? `${vtag}Covered · ${when}` : `${vtag}${when}`;
-  $("#sideWho").textContent = S.winner >= 0 ? `${NAMES[p][0]} wins` : S.draw ? "Draw" : `${NAMES[p][0]}${CFG.mode === "solo" && p === 0 ? " · you" : ""}`;
+  $("#sideWho").textContent = winLabel(p);
   $("#sideWhat").textContent = (CFG.mode === "tutorial" ? "Follow the lesson below" : statusText()).replace(/\.$/, "");
   const st = stageOf(p);
   const ik = `${st}|${hexOf(p)}`;
@@ -2355,15 +2623,20 @@ function renderSide() {
   $("#sideStats").innerHTML = `<div><span>Stage</span><b>${st}</b></div><div><span>Mass</span><b>${m}</b></div><div><span>Share</span><b>${tot ? Math.round((m / tot) * 100) : 0}%</b></div>`;
 }
 let sideIconKey = "", sideIconP = -1, fsIconKey = "";
+function winLabel(p) {
+  if (S.winner >= 0) return S.team ? `Team ${TEAM_NAMES[teamOf(p)]} wins` : `${NAMES[p][0]} wins`;
+  if (S.draw) return "Draw";
+  return `${NAMES[p][0]}${isMe(p) ? " · you" : ""}`;
+}
 function renderFs() {
   if (!app.classList.contains("focus")) return;
   const p = S.winner >= 0 ? S.winner : S.turn, st = stageOf(p);
-  $("#fsName").textContent = S.winner >= 0 ? `${NAMES[p][0]} wins` : S.draw ? "Draw" : `${NAMES[p][0]}${CFG.mode === "solo" && p === 0 ? " · you" : ""}`;
+  $("#fsName").textContent = winLabel(p);
   $("#fsWhat").textContent = CFG.mode === "tutorial" ? "Tutorial" : `${st} · ${tM(S.moves)} · ${statusText().replace(/\.$/, "")}`;
   if (fsIconKey !== `${p}|${st}|${hexOf(p)}`) { fsIconKey = `${p}|${st}|${hexOf(p)}`; drawIcon($("#fsIcon"), p, st); }
   const fm = [...Array(S.n).keys()].map((q) => SF.mass(S, q)), ft = fm.reduce((a, b) => a + b, 0) || 1;
   $("#fsBar").innerHTML = fm.map((m, q) => `<span class="pbar" style="--c:var(--p${q})${S.out[q] ? ";opacity:.35" : ""}"><i style="--w:${Math.round((m / ft) * 100)}%"></i></span>`).join("");
-  $("#fsUndo").hidden = !SET.undo || CFG.mode === "tutorial";
+  $("#fsUndo").hidden = !SET.undo || CFG.mode === "tutorial" || CFG.mode === "online" || KO();
   $("#fsUndo").disabled = busy || !canUndo();
 }
 
@@ -2412,7 +2685,7 @@ function stopClock() { cancelAnimationFrame(clock.raf); clock.raf = 0; clock.key
 function armClock() {
   const on = CFG.variant === "blitz" && CFG.mode !== "tutorial";
   app.classList.toggle("blitz", on);
-  if (!on || over(S) || isAI(S.turn) || busy) { stopClock(); $("#clock").style.setProperty("--w", "100%"); $("#clock").classList.remove("low"); return; }
+  if (!on || over(S) || isAI(S.turn) || busy || (CFG.mode === "online" && !NET.mine(S.turn))) { stopClock(); $("#clock").style.setProperty("--w", "100%"); $("#clock").classList.remove("low"); return; }
   const key = `${gameGen}|${S.moves}`;
   if (clock.key === key && clock.raf) return;
   stopClock(); clock.key = key; clock.end = performance.now() + blitzMs(); clock.last = performance.now();
@@ -2452,19 +2725,25 @@ function render() {
     el.setAttribute("aria-label", `${what}. ${ringName(i)}.`);
   }
   drawField();
-  renderMass(); renderBar(); renderSide(); renderFs(); refreshSky(); armClock();
+  renderMass(); renderBar(); renderSide(); renderFs(); refreshSky(); armClock(); renderTour();
   ensurePulse();
   updateMood();
 }
 
 function tagFor(q) {
-  if (CFG.mode === "pass") return "";
-  if (q === 0) return '<span class="tag you">You</span>';
-  return CFG.mode === "solo" ? '<span class="tag">AI</span>' : "";
+  const team = S && S.team ? `<span class="tag team" title="Team ${TEAM_NAMES[S.team[q]]}">${TEAM_NAMES[S.team[q]][0]}</span>` : "";
+  if (CFG.mode === "online") {
+    if (NET.mine(q)) return '<span class="tag you">You</span>' + team;
+    const k = NET.seatKind(q);
+    return (k === "ai" ? '<span class="tag">AI</span>' : NET.online(q) ? "" : '<span class="tag away">Away</span>') + team;
+  }
+  if (CFG.mode === "pass") return team;
+  if (q === 0) return '<span class="tag you">You</span>' + team;
+  return (CFG.mode === "solo" ? '<span class="tag">AI</span>' : "") + team;
 }
 
 /* ---------- Score ---------- */
-const lineupKey = () => `${CFG.mode}|${CFG.n}|${CFG.size}|${CFG.variant || "classic"}|${CFG.mode === "solo" ? CFG.level : ""}`;
+const lineupKey = () => `${CFG.mode}|${CFG.n}|${CFG.size}|${CFG.variant || "classic"}|${CFG.mode === "solo" ? CFG.level : ""}|${CFG.teams || 0}`;
 function matchWins() {
   const m = load("sf2-match");
   return m && m.key === lineupKey() && Array.isArray(m.wins) && m.wins.length === S.n ? m.wins : Array(S.n).fill(0);
@@ -2478,15 +2757,16 @@ function loadRecord() {
 let GAME = { chain: [] };
 function scoreGame() {
   const w = S.winner, out = { lines: [], best: [] };
-  if (CFG.mode !== "solo" && CFG.mode !== "pass") return out;
+  if ((CFG.mode !== "solo" && CFG.mode !== "pass") || KO()) return out;
   const key = lineupKey(), wins = matchWins().slice();
-  wins[w]++; save("sf2-match", { key, wins });
+  for (let q = 0; q < S.n; q++) if (SF.mate(S, q, w)) wins[q]++;
+  save("sf2-match", { key, wins });
   out.lines.push(`Match <b>${wins.map((x, q) => `${NAMES[q][0]} ${x}`).join(" · ")}</b>`);
   if (CFG.mode === "solo") {
     const rec = loadRecord(), r = rec[CFG.level];
     const chain = GAME.chain[0] || 0;
     if (chain > r.chain) { if (r.chain) out.best.push(`Biggest chain ${chain}`); r.chain = chain; }
-    if (w === 0) {
+    if (SF.mate(S, w, 0)) {
       r.w++; r.streak++; r.bestStreak = Math.max(r.bestStreak, r.streak);
       if (!S.limit && (!r.fastest || S.moves < r.fastest)) { if (r.fastest) out.best.push(`Fastest win ${tMY(S.moves)}`); r.fastest = S.moves; }
     } else { r.l++; r.streak = 0; }
@@ -2538,6 +2818,10 @@ function statusText() {
   if (!S.played[p]) return "Place anywhere.";
   if (SF.enclosed(B, S, p)) return "Enclosed.";
   if (TH && TH.endangered.size && hintsOn()) return `${TH.endangered.size} under threat.`;
+  if (CFG.mode === "online" && !NET.mine(p)) {
+    if (NET.status !== "open") return "Reconnecting…";
+    return NET.seatKind(p) === "ai" ? "…" : NET.online(p) ? `${NAMES[p][0]}'s move.` : `${NAMES[p][0]} is away.`;
+  }
   return isAI(p) ? "…" : "Your move.";
 }
 
@@ -2555,7 +2839,7 @@ function renderBar() {
   const bar = $("#bar"), top = $("#barTop"), msg = $("#msg"), act = $("#barActions");
   app.classList.toggle("tut", CFG.mode === "tutorial");
   const ub = $("#undoBtn");
-  ub.hidden = !SET.undo || CFG.mode === "tutorial";
+  ub.hidden = !SET.undo || CFG.mode === "tutorial" || CFG.mode === "online" || KO();
   ub.disabled = busy || !canUndo();
   msg.className = "msg";
   if (CFG.mode === "tutorial" && TU) {
@@ -2677,7 +2961,7 @@ function afterLessonMove(res, prevOwner) {
 /* ---------- Moves ---------- */
 function deny(i) {
   const p = S.turn, o = S.owner[i];
-  note = o >= 0 && o !== p ? `Belongs to ${NAMES[o][0]}.` : "Out of reach.";
+  note = o >= 0 && o !== p ? `Belongs to ${SF.mate(S, o, p) ? "your ally " : ""}${NAMES[o][0]}.` : "Out of reach.";
   if (CFG.mode !== "tutorial") { flash(note.replace(/\.$/, "")); note = null; }
   preview = null; denyI = i; drawField(); renderBar();
   setTimeout(() => { if (denyI === i) { denyI = -1; drawField(); } }, 380);
@@ -2735,10 +3019,14 @@ async function playMove(s0, i, res, slow, label) {
   animating = false; animMsg = null;
 }
 
-async function commit(i) {
+async function commit(i, remote) {
   if (busy || over(S)) return;
   const p = S.turn;
   if (!SF.legal(B, S, i, p)) { deny(i); return; }
+  if (CFG.mode === "online") {
+    if (!remote && !NET.send({ t: "move", i, n: S.moves, g: NET.game })) { flash("Offline · reconnecting", 1500); return; }
+    NET.applied = S.moves + 1;
+  }
   const pre = JSON.stringify(S);
   history.push(pre); if (history.length > 120) history.shift();
   busy = true; preview = null; note = null; lastMove = null;
@@ -2759,6 +3047,10 @@ async function commit(i) {
 }
 
 function maybeAI() {
+  if (CFG.mode === "online") { NET.after(); return; }
+  runAI();
+}
+function runAI() {
   if (over(S) || !isAI(S.turn)) return;
   busy = true; thinking = true; render();
   const p = S.turn, gen = gameGen;
@@ -2777,7 +3069,7 @@ function maybeAI() {
 }
 
 function canUndo() {
-  if (!history.length) return false;
+  if (!history.length || CFG.mode === "online" || KO()) return false;
   if (CFG.mode !== "solo") return true;
   return history.some((h) => JSON.parse(h).turn === 0);
 }
@@ -2793,8 +3085,9 @@ function undo() {
 }
 
 function persist() {
+  if (CFG.mode === "online") return;
   save("sf2-game", { S, CFG, lastMove, TU: TU ? { k: TU.k, done: TU.done } : null });
-  if (CFG.mode === "solo" || CFG.mode === "pass") save("sf2-prefs", CFG);
+  if ((CFG.mode === "solo" || CFG.mode === "pass") && !KO()) save("sf2-prefs", CFG);
 }
 
 let gameGen = 0;
@@ -2819,8 +3112,13 @@ new ResizeObserver(() => {
 
 function newGame(cfg) {
   const variant = VARIANTS.includes(cfg.variant) ? cfg.variant : "classic", R = radiusOf(cfg.size);
-  enterMode({ mode: cfg.mode, n: cfg.n, level: cfg.level, size: cfg.size, variant, voids: variant === "belt" ? SF.makeVoids(R) : undefined });
-  S = SF.newState(B, CFG.n, variant === "epoch" ? epochRounds(B.N) * CFG.n : 0, variant === "race"); view = snapOf(S); TU = null;
+  if (NET.inRoom()) leaveOnline();
+  if (cfg.format === "knockout" && cfg.mode === "solo") { startTournament(cfg); return; }
+  if (TOUR) { TOUR = null; saveTour(); }
+  if (seatKey) { seatKey = ""; applyRoster(); }
+  const teams = teamsOk(cfg.n, cfg.teams) ? cfg.teams : 0;
+  enterMode({ mode: cfg.mode, format: "single", n: cfg.n, level: cfg.level, size: cfg.size, variant, teams, voids: variant === "belt" ? SF.makeVoids(R) : undefined });
+  S = SF.newState(B, CFG.n, variant === "epoch" ? epochRounds(B.N) * CFG.n : 0, variant === "race", teams); view = snapOf(S); TU = null;
   render(); persist();
   maybeAI();
 }
@@ -2878,6 +3176,8 @@ wrap.addEventListener("pointermove", (e) => {
 });
 wrap.addEventListener("pointerleave", () => { if (glHole()) GL.holeHover(false); });
 function beginLens(w) {
+  // the board is now drawn by the lens, so drop the focus ring a keyboard press left on the last cell
+  if (document.activeElement && document.activeElement.classList && document.activeElement.classList.contains("hit")) document.activeElement.blur();
   hiRes = true; sizeField();
   field.style.transition = "none";
   GL.startEnding(w, field);
@@ -2902,11 +3202,12 @@ function endDraw() {
   const vsAI = CFG.mode === "solo";
   if (vsAI) { const rec = loadRecord(), r = rec[CFG.level]; r.streak = 0; save("sf2-record", rec); }
   const chains = GAME.chain.filter((x) => x != null);
-  $("#winEyebrow").textContent = "Draw";
+  $("#winEyebrow").textContent = KO() ? "Knockout · Draw" : "Draw";
   $("#winTitle").textContent = "The field is covered";
-  $("#winLog").innerHTML = [`T+<b>${S.moves}M</b> years`, `Biggest chain <b>${chains.length ? Math.max(...chains) : 0}</b>`, "No star collapsed"].map((r) => `<span>${r}</span>`).join("");
+  $("#winLog").innerHTML = [`T+<b>${S.moves}M</b> years`, `Biggest chain <b>${chains.length ? Math.max(...chains) : 0}</b>`, KO() ? "A knockout needs a winner: play it again" : "No star collapsed"].map((r) => `<span>${r}</span>`).join("");
   $("#win").style.setProperty("--c", "var(--muted)");
   $("#winReplay").hidden = !finalMove;
+  paintAgain();
   setAccent(null);
   renderMass();
   Sound.deny();
@@ -2919,10 +3220,20 @@ function endGame() {
   const w = S.winner;
   Sound.win();
   const vsAI = CFG.mode === "solo";
-  const title = vsAI && w === 0 ? "You collapse into a black hole" : `${NAMES[w][0]} collapses into a black hole`;
+  const meWon = (vsAI && w === 0) || (CFG.mode === "online" && NET.mine(w));
+  const myTeam = S.team && [...Array(S.n).keys()].some((q) => isMe(q) && SF.mate(S, q, w));
+  let title = S.team ? (myTeam ? "Your team collapses into a black hole" : `Team ${TEAM_NAMES[teamOf(w)]} collapses into a black hole`)
+    : meWon ? "You collapse into a black hole" : `${NAMES[w][0]} collapses into a black hole`;
+  const koRows = [];
+  if (KO()) {
+    const k = koResult(w, meWon);
+    if (k) { title = k.title; $("#winEyebrow").textContent = `Knockout · ${k.round}`; koRows.push(...k.rows); }
+  }
   const sc = scoreGame();
   const chains = GAME.chain.filter((x) => x != null);
   const rows = [
+    ...koRows,
+    ...(S.team ? [`<b>${andList(membersOf(teamOf(w)).map((q) => NAMES[q][0]))}</b>`] : []),
     ...(S.limit ? [`Epoch <b>${S.limit / S.n} rounds</b>`] : []),
     `T+<b>${S.moves}M</b> years`,
     `Biggest chain <b>${chains.length ? Math.max(...chains) : 0}</b>`,
@@ -2933,6 +3244,7 @@ function endGame() {
   $("#winLog").innerHTML = rows.map((r) => `<span>${r}</span>`).join("");
   $("#win").style.setProperty("--c", `var(--p${w})`);
   $("#winReplay").hidden = !finalMove;
+  paintAgain();
   setAccent(w);
   renderMass();
   const gen = gameGen;
@@ -3098,16 +3410,28 @@ paintSound();
 
 const menuDlg = $("#menuDlg"), rulesDlg = $("#rulesDlg"), form = $("#setupForm");
 function paintRoster() {
-  const n = +(form.elements.players.value || CFG.n), solo = form.elements.mode.value === "solo";
-  $("#levelField").hidden = !solo;
+  const mode = form.elements.mode.value, solo = mode === "solo", online = mode === "online";
+  const ko = (solo || online) && form.elements.format.value === "knockout";
+  const n = ko ? +(form.elements.entrants.value || 4) : +(form.elements.players.value || CFG.n);
+  $("#formatField").hidden = !(solo || online);
+  $("#entrantField").hidden = !ko; $("#starsField").hidden = ko; $("#teamField").hidden = ko;
+  $("#formatNote").textContent = ko ? `${n} stars, one-on-one matches, winners go through. ${solo ? "Your rivals are AI stars. " : "Empty slots are AI stars. "}No hints, no undo, every tap places.` : "";
+  $("#levelField").hidden = !(solo || online);
+  // teams need four or six stars
+  const tsel = +(form.elements.teams.value || 0);
+  form.querySelector("#tm2").disabled = !teamsOk(n, 2); form.querySelector("#tm3").disabled = !teamsOk(n, 3);
+  if (tsel && !teamsOk(n, tsel)) form.elements.teams.value = "0";
+  const teams = ko ? 0 : +(form.elements.teams.value || 0);
+  $("#teamNote").textContent = teams ? `${teams === 2 ? "Two" : "Three"} teams of ${n / teams}. Allies share reach, and a blast that lands on an ally feeds it. Swallow every rival team to win.` : n === 4 || n === 6 ? "Every star for itself." : "Four or six stars can split into teams.";
   const range = $("#sizeRange");
   range.min = 2;
   const variant = form.elements.variant.value || "classic";
-  const minR = Math.max(n <= 3 ? 2 : n === 4 ? 3 : 4, variant === "belt" ? 3 : 2);
+  const seatsOnField = ko ? 2 : n;
+  const minR = Math.max(seatsOnField <= 3 ? 2 : seatsOnField === 4 ? 3 : 4, variant === "belt" ? 3 : 2);
   if (+range.value < minR) range.value = minR;
   range.dataset.min = minR;
   if (+range.value < +range.min) range.value = range.min;
-  const R = +range.value, f = (R - +range.min) / Math.max(1, +range.max - +range.min);
+  const R = +range.value;
   const f2 = (R - 2) / 8;
   range.style.setProperty("--p", `${f2 * 100}%`);
   $("#rangeWrap").style.setProperty("--f", f2);
@@ -3116,16 +3440,22 @@ function paintRoster() {
   if (!tk.children.length) tk.innerHTML = [2, 3, 4, 5, 6, 7, 8, 9, 10].map((r) => `<button type="button" data-r="${r}" style="--i:${r - 2}" aria-label="Radius ${r}">${r}</button>`).join("");
   tk.querySelectorAll("button").forEach((b) => { const r = +b.dataset.r; b.disabled = r < minR; b.classList.toggle("on", r === R); });
   $("#sizeRead").innerHTML = `<b>${cellsOf(R)}</b> cells`;
-  $("#sizeStars").textContent = `up to ${maxStars(R)} stars`;
+  $("#sizeStars").textContent = ko ? "two stars a match" : `up to ${maxStars(R)} stars`;
   $("#sizeNote").textContent = minR > 2 ? `· radius ${minR}+` : "";
   $("#variantNote").textContent = VNOTE[variant](R);
+  paintOnline();
   const ro = $("#roster");
-  if (ro.dataset.n !== String(n) || ro.dataset.solo !== String(solo)) {
-    ro.dataset.n = String(n); ro.dataset.solo = String(solo);
-    ro.innerHTML = ROSTER.slice(0, n).map((s, q) => `<div class="seat" style="--c:var(--p${q})" data-q="${q}">
+  // online and in a knockout against the AI, the roster is just your own star
+  if (online || (solo && ko)) { paintSeats(); return; }
+  ro.classList.remove("net");
+  const tl = (q) => (teams ? ` · ${TEAM_NAMES[q % teams][0]}` : "");
+  const key = `${n}|${solo}|${teams}|${ROSTER.slice(0, n).map((s) => s.color).join(",")}`;
+  if (ro.dataset.key !== key) {
+    ro.dataset.key = key;
+    ro.innerHTML = ROSTER.slice(0, n).map((s, q) => `<div class="seat" style="--c:${hex6(s.color)}" data-q="${q}">
       <button class="swatch" type="button" aria-label="Color of star ${q + 1}" aria-haspopup="true" aria-expanded="false"></button>
       ${solo && q > 0 ? `<span class="seat-name">${s.name}</span>` : `<input type="text" value="${s.name}" placeholder="${DEF_NAMES[q]}" maxlength="14" aria-label="Name of star ${q + 1}" autocomplete="off" spellcheck="false">`}
-      <em>${solo ? (q === 0 ? "you" : "AI") : "P" + (q + 1)}</em></div>`).join("");
+      <em>${solo ? (q === 0 ? "you" : "AI") : "P" + (q + 1)}${tl(q)}</em></div>`).join("");
   }
 }
 function closePalette() { const p = $("#roster .palette"); if (p) { p.parentNode.querySelector(".swatch").setAttribute("aria-expanded", "false"); p.remove(); } }
@@ -3135,6 +3465,7 @@ $("#roster").addEventListener("click", (e) => {
     const q = +pick.closest(".seat").dataset.q, c = +pick.dataset.c, other = ROSTER.findIndex((s, k) => k !== q && s.color === c);
     if (other >= 0) ROSTER[other].color = ROSTER[q].color;
     ROSTER[q].color = c; closePalette(); saveRoster(); Sound.ui("on");
+    if (form.elements.mode.value === "online") NET.send({ t: "profile", name: ROSTER[0].name, color: ROSTER[0].color });
     return;
   }
   if (!sw) return;
@@ -3142,6 +3473,7 @@ $("#roster").addEventListener("click", (e) => {
   closePalette();
   if (open) return;
   const q = +seat.dataset.q;
+  if (seat.dataset.mine === "0") return;
   const pal = document.createElement("div"); pal.className = "palette"; pal.setAttribute("role", "group"); pal.setAttribute("aria-label", "Star color");
   pal.innerHTML = PALETTE.map((h, c) => { const k = ROSTER.findIndex((s) => s.color === c); return `<button type="button" data-c="${c}" style="--sw:#${h.toString(16).padStart(6, "0")}" aria-pressed="${k === q}" class="${k >= 0 && k !== q && k < +$("#roster").dataset.n ? "taken" : ""}" aria-label="Color ${c + 1}${k >= 0 && k !== q ? ", used by " + ROSTER[k].name + " (swaps)" : ""}"></button>`; }).join("");
   seat.appendChild(pal); sw.setAttribute("aria-expanded", "true");
@@ -3152,12 +3484,20 @@ $("#roster").addEventListener("input", (e) => {
   const q = +e.target.closest(".seat").dataset.q;
   ROSTER[q].name = cleanName(e.target.value) || DEF_NAMES[q];
   saveRoster();
+  if (form.elements.mode.value === "online") { clearTimeout(profileT); profileT = setTimeout(() => NET.send({ t: "profile", name: ROSTER[0].name, color: ROSTER[0].color }), 400); }
 });
 $("#roster").addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#roster .palette")) { e.preventDefault(); e.stopPropagation(); closePalette(); } });
 document.addEventListener("pointerdown", (e) => { if (!e.target.closest(".seat")) closePalette(); });
 function openMenu() {
-  const base = CFG.mode === "solo" || CFG.mode === "pass" ? CFG : { ...DEFAULT_CFG, ...(load("sf2-prefs") || {}) };
-  form.elements.mode.value = base.mode; form.elements.players.value = String(base.n);
+  const base = { ...(CFG.mode === "solo" || CFG.mode === "pass" ? CFG : { ...DEFAULT_CFG, ...(load("sf2-prefs") || {}) }) };
+  const room = NET.inRoom() && NET.room ? NET.room.cfg : null;
+  form.elements.mode.value = NET.inRoom() ? "online" : base.mode;
+  if (room) Object.assign(base, room, { mode: "online" });
+  form.elements.teams.value = String(teamsOk(base.n, base.teams) ? base.teams : 0);
+  const koBase = base.format === "knockout";
+  form.elements.format.value = koBase ? "knockout" : "single";
+  form.elements.entrants.value = String(room && room.format === "knockout" ? room.n : TOUR ? TOUR.t.size : 4);
+  form.elements.players.value = String(koBase ? ((load("sf2-prefs") || {}).n || 2) : base.n);
   form.elements.level.value = base.level; $("#sizeRange").value = String(radiusOf(base.size));
   form.elements.variant.value = VARIANTS.includes(base.variant) ? base.variant : "classic";
   $("#setMusic").checked = Sound.music; $("#setSfx").checked = Sound.sfx; paintVol();
@@ -3222,19 +3562,77 @@ tabsEl.addEventListener("keydown", (e) => {
   n.focus(); selectTab(n.dataset.tab); Sound.ui("tab");
 });
 $("#winMenu").addEventListener("click", openMenu);
-$("#winAgain").addEventListener("click", () => newGame({ ...CFG }));
+$("#winAgain").addEventListener("click", () => {
+  if (KO()) {
+    if (CFG.mode === "online") { if (!NET.isHost()) return; const t = NET.room && NET.room.tour; NET.send(t && t.champion >= 0 ? { t: "start" } : { t: "next" }); return; }
+    if (!TOUR) return;
+    if (TOUR.t.champion >= 0) { startTournament({ n: TOUR.t.size, ...TOUR.cfg }); return; }
+    if (S.draw) { playTourMatch(SF.bracketMatch(TOUR.t)); return; }
+    tourNext();
+    return;
+  }
+  if (CFG.mode === "online") { if (NET.isHost()) NET.send({ t: "start" }); return; }
+  newGame({ ...CFG });
+});
+// what a finished tournament match means: a round won, a knockout, or the title
+function koResult(w, meWon) {
+  if (CFG.mode === "solo") {
+    const k = GAME.ko || (GAME.ko = tourAfterGame());
+    if (!k) return null;
+    const title = k.won ? (k.champion ? "You win the tournament" : `You win the ${k.round.toLowerCase()}`) : `${k.opp} knocks you out`;
+    return { round: k.round, title, rows: k.won ? [] : [`Out in the <b>${k.round.toLowerCase()}</b>`] };
+  }
+  const r = NET.room, t = r && r.tour, gs = r && r.gseats;
+  if (!t || !gs) return null;
+  // find this match in the bracket; the room may already have moved the bracket on
+  let ri = t.r;
+  t.rounds.forEach((rd, i) => rd.forEach((M) => { if ((M.a === gs[0].e && M.b === gs[1].e) || (M.a === gs[1].e && M.b === gs[0].e)) ri = i; }));
+  const round = SF.roundName(t, ri), final = ri === t.rounds.length - 1;
+  const who = meWon ? "You" : NAMES[w][0], verb = meWon ? "win" : "wins";
+  if (NET.isHost() && gs.every((s) => s.kind === "ai") && !final) {
+    const g = r.gameNo;
+    setTimeout(() => { if (NET.room && NET.room.gameNo === g && NET.isHost()) NET.send({ t: "next" }); }, 5000);
+  }
+  return { round, title: final ? `${who} ${verb} the tournament` : `${who} ${verb} the ${round.toLowerCase()}`, rows: [] };
+}
+// online, only the host starts the next game
+function paintAgain() {
+  const b = $("#winAgain"), on = CFG.mode === "online";
+  let label = "Rematch";
+  if (KO()) {
+    const t = on ? NET.room && NET.room.tour : TOUR && TOUR.t;
+    if (S && S.draw) label = "Replay match";
+    else if (t && t.champion >= 0) label = "New tournament";
+    else if (!on && TOUR && !tourAlive()) label = "Finish tournament";
+    else label = "Next match";
+  }
+  const wait = on && !NET.isHost();
+  b.textContent = wait ? "Host starts next" : label;
+  b.disabled = wait;
+}
 $("#winReplay").addEventListener("click", replayFinal);
-form.addEventListener("change", (e) => { if (e.target.name) paintRoster(); });
+form.addEventListener("change", (e) => {
+  if (!e.target.name) return;
+  if (e.target.name === "mode") { closePalette(); $("#roster").dataset.key = ""; }
+  paintRoster();
+  if (e.target.name !== "mode") pushCfg();
+});
 $("#sizeRange").addEventListener("input", (e) => {
   const r = e.target, minR = +(r.dataset.min || 2);
   if (+r.value < minR) r.value = minR;
-  paintRoster();
+  paintRoster(); pushCfg();
 });
-$("#rticks").addEventListener("click", (e) => { const b = e.target.closest("button[data-r]"); if (!b || b.disabled) return; $("#sizeRange").value = b.dataset.r; paintRoster(); Sound.ui("tab"); });
+$("#rticks").addEventListener("click", (e) => { const b = e.target.closest("button[data-r]"); if (!b || b.disabled) return; $("#sizeRange").value = b.dataset.r; paintRoster(); pushCfg(); Sound.ui("tab"); });
+const formCfg = () => {
+  const mode = form.elements.mode.value, ko = mode !== "pass" && form.elements.format.value === "knockout";
+  return { mode, format: ko ? "knockout" : "single", n: ko ? +(form.elements.entrants.value || 4) : +form.elements.players.value, level: form.elements.level.value, size: +$("#sizeRange").value, variant: form.elements.variant.value, teams: ko ? 0 : +(form.elements.teams.value || 0) };
+};
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+  const c = formCfg();
+  if (c.mode === "online") { onlineSubmit(c); return; }
   menuDlg.close();
-  newGame({ mode: form.elements.mode.value, n: +form.elements.players.value, level: form.elements.level.value, size: +$("#sizeRange").value, variant: form.elements.variant.value });
+  newGame(c);
 });
 $("#rulesBtn").addEventListener("click", () => { menuDlg.close(); buildLegend(); rulesDlg.showModal(); rulesDlg.querySelector(".sheet").scrollTop = 0; });
 $("#rulesClose").addEventListener("click", () => rulesDlg.close());
@@ -3463,6 +3861,13 @@ function restore(saved, hist) {
   if (cfg.mode === "tutorial") { if (!saved.TU || !LESSONS[saved.TU.k]) return false; startLesson(saved.TU.k); return true; }
   const testB = SF.makeBoard(radiusOf(cfg.size), cfg.voids);
   if (!saved.S || !Array.isArray(saved.S.units) || saved.S.units.length !== testB.N || !Array.isArray(saved.S.rem)) return false;
+  if (cfg.format === "knockout") {
+    const M = TOUR && SF.bracketMatch(TOUR.t);
+    if (!M) return false;
+    // a match that had finished was already counted: carry on with the bracket
+    if (saved.S.winner >= 0 || saved.S.draw) { setTimeout(tourNext, 0); return true; }
+    applySeats([TOUR.entrants[0], TOUR.entrants[M.a === 0 ? M.b : M.a]]);
+  }
   enterMode(cfg);
   S = saved.S; view = snapOf(S); TU = null;
   lastMove = saved.lastMove || null;
@@ -3501,7 +3906,409 @@ function restore(saved, hist) {
   addEventListener("keydown", function k(e) { if (gone) return removeEventListener("keydown", k, true); e.preventDefault(); e.stopPropagation(); Sound.unlock(); go(); }, true);
   setTimeout(go, RM.matches ? 900 : 4200);
 })();
+/* ---------- Knockout tournament ---------- */
+// A bracket of one-on-one matches. Against the AI it runs here: your matches are played on the field,
+// matches between two AI stars are played out off screen. Online the room runs the same bracket.
+let TOUR = load("sf2-tour");
+if (!TOUR || !TOUR.t || !Array.isArray(TOUR.entrants)) TOUR = null;
+const TOUR_NAMES = ["Rigel", "Antares", "Sirius", "Vega", "Deneb", "Altair", "Polaris", "Capella", "Mira", "Sol"];
+const saveTour = () => save("sf2-tour", TOUR);
+function tourEntrants(n, level) {
+  const me = { name: ROSTER[0].name, color: ROSTER[0].color, you: true };
+  const names = TOUR_NAMES.filter((x) => x.toLowerCase() !== me.name.toLowerCase());
+  const colors = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9].filter((c) => c !== me.color);
+  return [me, ...Array.from({ length: n - 1 }, (_, k) => ({ name: names[k], color: colors[k], level }))];
+}
+// still in the running: no finished match of yours went the other way
+const tourAlive = () => !!TOUR && !TOUR.t.rounds.some((rd) => rd.some((M) => M.w >= 0 && (M.a === 0 || M.b === 0) && M.w !== 0));
+function startTournament(c) {
+  if (NET.inRoom()) leaveOnline();
+  TOUR = { t: SF.bracket(c.n), entrants: tourEntrants(c.n, c.level), cfg: { size: c.size, variant: c.variant, level: c.level } };
+  saveTour();
+  tourNext();
+}
+let tourBusy = false;
+async function tourNext() {
+  if (!TOUR || tourBusy) return;
+  tourBusy = true;
+  try {
+    for (;;) {
+      const M = SF.bracketMatch(TOUR.t);
+      if (!M) { tourFinished(); return; }
+      if (M.a === 0 || M.b === 0) { playTourMatch(M); return; }
+      renderTour();
+      const w = await simMatch(M);
+      if (!TOUR) return;
+      SF.bracketReport(TOUR.t, w); saveTour(); renderTour();
+      flash(`${TOUR.entrants[w].name} beat ${TOUR.entrants[w === M.a ? M.b : M.a].name}`, 1300);
+      await sleep(RM.matches ? 250 : 1000);
+    }
+  } finally { tourBusy = false; }
+}
+// two AI stars play a quick game; it runs in slices so the page stays responsive
+function simMatch(M) {
+  const c = TOUR.cfg, R = radiusOf(c.size);
+  return new Promise((done) => {
+    const b = SF.makeBoard(R, c.variant === "belt" ? SF.makeVoids(R) : undefined);
+    let s = SF.newState(b, 2, c.variant === "epoch" ? epochRounds(b.N) * 2 : 0, c.variant === "race");
+    const step = () => {
+      for (let k = 0; k < 24; k++) {
+        if (s.winner >= 0 || s.draw || s.moves > 4000) {
+          if (s.draw || s.winner < 0) { s = SF.newState(b, 2, s.limit, s.race); break; }
+          done(s.winner === 0 ? M.a : M.b); return;
+        }
+        s = SF.apply(b, s, SF.choose(b, s, "medium"), false).state;
+      }
+      setTimeout(step, 0);
+    };
+    step();
+  });
+}
+function playTourMatch(M) {
+  const opp = M.a === 0 ? M.b : M.a, e = TOUR.entrants[opp], c = TOUR.cfg, R = radiusOf(c.size);
+  applySeats([TOUR.entrants[0], e]);
+  enterMode({ mode: "solo", format: "knockout", n: 2, level: e.level || c.level, size: c.size, variant: c.variant, teams: 0, voids: c.variant === "belt" ? SF.makeVoids(R) : undefined });
+  S = SF.newState(B, 2, c.variant === "epoch" ? epochRounds(B.N) * 2 : 0, c.variant === "race"); view = snapOf(S); TU = null;
+  if (menuDlg.open) menuDlg.close();
+  render(); persist();
+  flash(`${SF.roundName(TOUR.t, TOUR.t.r)} · you vs ${e.name}`, 1800);
+  maybeAI();
+}
+function tourFinished() {
+  renderTour();
+  const ch = TOUR.entrants[TOUR.t.champion];
+  if (!ch) return;
+  const rec = load("sf2-tour-record") || { played: 0, won: 0 };
+  if (!TOUR.counted) { rec.played++; if (ch.you) rec.won++; save("sf2-tour-record", rec); TOUR.counted = true; saveTour(); }
+  if (!winEl.hidden) {
+    $("#winEyebrow").textContent = "Knockout · Champion";
+    $("#winTitle").textContent = ch.you ? "You win the tournament" : `${ch.name} wins the tournament`;
+    $("#winLog").innerHTML = `<span>Tournaments won <b>${rec.won} of ${rec.played}</b></span>`;
+    paintAgain();
+  } else flash(`${ch.name} wins the tournament`, 2600);
+}
+// a finished match of yours: record it, then the result card says how far you got
+function tourAfterGame() {
+  if (!TOUR || S.draw) return null;
+  const M = SF.bracketMatch(TOUR.t);
+  if (!M) return null;
+  const round = SF.roundName(TOUR.t, TOUR.t.r), oppSlot = M.a === 0 ? M.b : M.a;
+  const won = S.winner === 0;
+  SF.bracketReport(TOUR.t, won ? 0 : oppSlot); saveTour(); renderTour();
+  return { round, won, champion: TOUR.t.champion === 0, opp: TOUR.entrants[oppSlot].name };
+}
+function tourSource() {
+  if (!KO()) return null;
+  if (CFG.mode === "online") { const r = NET.room; return r && r.tour ? { t: r.tour, ents: r.seats.map((s) => ({ name: s.name, color: s.color, you: s.kind === "human" && s.pid === NET.pid })) } : null; }
+  return TOUR ? { t: TOUR.t, ents: TOUR.entrants } : null;
+}
+let tourKey = "";
+function renderTour() {
+  const el = $("#tour"), src = tourSource();
+  if (!src) { if (!el.hidden) { el.hidden = true; el.innerHTML = ""; tourKey = ""; } return; }
+  const { t, ents } = src, cur = SF.bracketMatch(t);
+  const key = JSON.stringify([t, ents]);
+  if (key === tourKey) return;
+  tourKey = key;
+  const line = (slot, M) => {
+    if (slot < 0) return `<span class="tbd"><i></i>To be decided</span>`;
+    const e = ents[slot], cls = M.w < 0 ? "" : M.w === slot ? "won" : "lost";
+    return `<span class="${cls}" style="--c:${hex6(e.color)}"><i></i>${e.name}${e.you ? " · you" : ""}</span>`;
+  };
+  const nowR = t.champion >= 0 ? t.rounds.length - 1 : t.r;
+  el.innerHTML = `<div class="tour-h"><span>Knockout</span><b>${t.champion >= 0 ? `Champion · ${ents[t.champion].name}` : `${SF.roundName(t, t.r)} · match ${t.m + 1} of ${t.rounds[t.r].length}`}</b></div>
+    <div class="rounds">${t.rounds.map((rd, r) => `<div class="round${r === nowR ? " now" : ""}">${rd.map((M) => `<div class="match${M === cur ? " now" : ""}">${line(M.a, M)}${line(M.b, M)}</div>`).join("")}</div>`).join("")}</div>`;
+  el.hidden = false;
+}
+
+/* ---------- Online lobby: who's in the room ---------- */
+function paintPlayers() {
+  const el = $("#players"), r = NET.room;
+  if (!r) { el.innerHTML = ""; return; }
+  const host = NET.isHost(), lobby = r.phase === "lobby", ko = r.cfg.format === "knockout", teams = ko ? 0 : r.cfg.teams;
+  const mineK = r.seats.findIndex((s) => s.kind === "human" && s.pid === NET.pid), seated = mineK >= 0;
+  const key = JSON.stringify([r.seats, r.members, NET.pid, host, lobby, teams, r.cfg.level]);
+  if (el.dataset.key === key) return;
+  el.dataset.key = key;
+  const row = (s, q) => {
+    const me = q === mineK, m = s.kind === "human" ? NET.member(s.pid) : null;
+    const name = s.kind === "open" ? "Waiting for a player…" : s.name;
+    const pill = me ? (s.pid === r.host ? "You · host" : "You") : s.kind === "ai" ? `AI · ${r.cfg.level}` : s.kind === "open" ? "" : m && !m.online ? "Away" : s.pid === r.host ? "Host" : "";
+    // one action per row, for whoever is looking
+    let act = "";
+    if (lobby) {
+      if (s.kind !== "human" && !seated) act = `<button class="btn" type="button" data-sit="${q}">Take seat</button>`;
+      else if (host && s.kind === "open") act = `<button class="btn ghost" type="button" data-kind="${q}" data-to="ai">Add AI</button>`;
+      else if (host && s.kind === "ai") act = `<button class="btn ghost" type="button" data-kind="${q}" data-to="open">Remove AI</button>`;
+      else if (host && s.kind === "human" && !me) act = `<button class="btn ghost" type="button" data-kind="${q}" data-to="open">Unseat</button>`;
+    }
+    return `<div class="prow${s.kind === "open" ? " open" : ""}" style="--c:${hex6(s.color)}"><i></i><span class="pn">${name}</span><span class="pill${me ? " you" : ""}${pill === "Away" ? " away" : ""}">${pill}</span>${act || '<span class="act-none"></span>'}</div>`;
+  };
+  // switching sides is one button on the other team's header: it takes that team's first free seat
+  const joinBtn = (tm) => {
+    if (!lobby || !seated || mineK % teams === tm) return "";
+    const free = r.seats.map((s, q) => [s, q]).filter(([s, q]) => q % teams === tm && s.kind !== "human").sort((x, y) => (x[0].kind === "open" ? 0 : 1) - (y[0].kind === "open" ? 0 : 1))[0];
+    return free ? `<button class="btn ghost" type="button" data-sit="${free[1]}">Join</button>` : "";
+  };
+  if (teams) el.innerHTML = [...Array(teams).keys()].map((tm) => `<div class="team-h"><span>Team ${TEAM_NAMES[tm]}</span>${joinBtn(tm)}</div>` + r.seats.map((s, q) => (q % teams === tm ? row(s, q) : "")).join("")).join("");
+  else el.innerHTML = r.seats.map(row).join("");
+}
+
+/* ---------- Online play ---------- */
+let profileT = 0, cfgT = 0, seatKey = "";
+const CODE_OK = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/;
+// online, seat names and colors come from the room, not from this device's roster
+function applySeats(seats) {
+  const key = seats.map((s) => `${s.name}|${s.color}`).join(",");
+  if (key === seatKey) return false;
+  seatKey = key;
+  const root = document.documentElement;
+  seats.forEach((s, q) => {
+    NAMES[q][0] = s.name; HEX[q] = PALETTE[s.color];
+    RGB[q] = [(HEX[q] >> 16) & 255, (HEX[q] >> 8) & 255, HEX[q] & 255];
+    root.style.setProperty(`--p${q}`, hexOf(q));
+  });
+  curKey = ""; skyColors = ""; thKey = ""; wellCache = null; sideIconKey = ""; fsIconKey = "";
+  return true;
+}
+function leaveOnline() {
+  NET.close(false);
+  seatKey = ""; applyRoster();
+  renderTour();
+  if (menuDlg.open) paintRoster();
+}
+function newCode() {
+  const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => A[b % A.length]).join("");
+}
+function onlineSubmit(c) {
+  if (!NET.available()) { flash("Online play works in the app at arvindchee.nu/accrete", 2600); return; }
+  if (!NET.inRoom()) { NET.connect(newCode(), true, c); Sound.ui("open"); paintRoster(); return; }
+  const r = NET.room;
+  if (!r) return;
+  if (gameLive() || (r.phase === "play" && r.tour && r.tour.champion < 0)) { menuDlg.close(); return; }
+  if (!NET.isHost()) return;
+  if (r.phase === "play") NET.send({ t: "lobby" });
+  NET.send({ t: "cfg", cfg: c }); NET.send({ t: "start" });
+  Sound.ui("open");
+}
+function pushCfg() {
+  if (form.elements.mode.value !== "online" || !NET.inRoom() || !NET.isHost() || !NET.room) return;
+  clearTimeout(cfgT);
+  cfgT = setTimeout(() => {
+    const r = NET.room;
+    if (!r || gameLive() || (r.phase === "play" && r.tour && r.tour.champion < 0)) return;
+    if (r.phase === "play") NET.send({ t: "lobby" });
+    NET.send({ t: "cfg", cfg: formCfg() });
+  }, 150);
+}
+function setFormCfg(c) {
+  form.elements.format.value = c.format || "single";
+  if (c.format === "knockout") form.elements.entrants.value = String(c.n); else form.elements.players.value = String(c.n);
+  form.elements.variant.value = c.variant; form.elements.level.value = c.level;
+  form.elements.teams.value = String(c.teams || 0); $("#sizeRange").value = String(c.size);
+}
+const gameLive = () => CFG.mode === "online" && !!S && !over(S) && !!NET.room && NET.room.phase === "play";
+function paintOnline() {
+  const online = form.elements.mode.value === "online", inRoom = NET.inRoom(), r = NET.room, host = NET.isHost();
+  $("#onlineBox").hidden = !online;
+  $("#onlineJoin").hidden = inRoom; $("#onlineRoom").hidden = !inRoom;
+  const avail = NET.available();
+  $("#joinRow").hidden = !avail;
+  $("#joinNote").textContent = avail ? "Play friends on their own devices. Create a room and invite them with its code or link, or join one." : "Online play works in the app at arvindchee.nu/accrete.";
+  // only the host changes the rules, and not while a game is running
+  const lock = online && inRoom && (!host || !r || gameLive());
+  const n = +(form.elements.players.value || 2);
+  ["format", "entrants", "variant", "players", "level", "teams"].forEach((name) => form.querySelectorAll(`input[name="${name}"]`).forEach((el) => {
+    el.disabled = lock || (name === "teams" && +el.value > 0 && !teamsOk(n, +el.value));
+  }));
+  $("#sizeRange").disabled = lock;
+  if (lock) $("#rticks").querySelectorAll("button").forEach((b) => { b.disabled = true; });
+  const ko = form.elements.format.value === "knockout" && form.elements.mode.value !== "pass";
+  const btn = form.querySelector(".start-bar .btn");
+  let label = ko ? "Start tournament" : "Start game", off = false;
+  if (online) {
+    if (!inRoom) { label = "Create room"; off = !avail; }
+    else if (gameLive()) label = "Back to game";
+    else if (!r) { label = "Joining…"; off = true; }
+    else if (!host) { label = "Waiting for host"; off = true; }
+    else if (r.phase === "play" && r.tour && r.tour.champion < 0) label = "Back to game";
+  }
+  btn.textContent = label; btn.disabled = off;
+  if (!inRoom) return;
+  $("#roomCode").textContent = NET.code;
+  $("#roomDot").className = "dot" + (NET.status === "open" && r ? " on" : NET.status === "retry" ? " retry" : "");
+  const hostM = r && NET.member(r.host);
+  const taken = r ? r.seats.filter((s) => s.kind !== "open").length : 0;
+  $("#roomNote").textContent = NET.status === "retry" ? "Connection lost. Reconnecting…" : NET.status === "error" ? "Online play isn't reachable from here." : !r ? "Connecting…"
+    : gameLive() ? (r.tour ? `Tournament in progress · ${SF.roundName(r.tour, r.tour.r)}` : "Game in progress.")
+    : host ? `${taken} of ${r.seats.length} ${r.cfg.format === "knockout" ? "slots" : "seats"} filled. Empty ones go to the AI when you start.`
+    : `Waiting for ${hostM ? hostM.name : "the host"} to start.`;
+  $("#closeRoom").hidden = !host;
+  const seated = new Set(r ? r.seats.filter((s) => s.kind === "human").map((s) => s.pid) : []);
+  const watch = r ? r.members.filter((m) => m.online && !seated.has(m.pid)).map((m) => m.name + (m.pid === NET.pid ? " (you)" : "")) : [];
+  const w = $("#watchers");
+  w.hidden = !watch.length;
+  w.textContent = watch.length ? `Watching: ${watch.join(", ")}` : "";
+  paintPlayers();
+}
+function paintSeats() {
+  const ro = $("#roster");
+  ro.classList.add("net");
+  // your own star: the color the room gave you, which differs from your pick when someone seated earlier has it
+  const mine = NET.inRoom() && NET.room ? NET.room.seats.find((s) => s.kind === "human" && s.pid === NET.pid) : null;
+  const c = mine ? mine.color : ROSTER[0].color;
+  const key = `me|${c}|${!!mine}`;
+  if (ro.dataset.key === key) return;
+  if (ro.contains(document.activeElement) && document.activeElement.tagName === "INPUT") return;
+  ro.dataset.key = key;
+  ro.innerHTML = `<div class="seat" style="--c:${hex6(c)}" data-q="0" data-mine="1">
+      <button class="swatch" type="button" aria-label="Your color" aria-haspopup="true" aria-expanded="false"></button>
+      <input type="text" value="${ROSTER[0].name}" placeholder="${DEF_NAMES[0]}" maxlength="14" aria-label="Your star's name" autocomplete="off" spellcheck="false">
+      <em>your star</em></div>`;
+}
+$("#players").addEventListener("click", (e) => {
+  const sit = e.target.closest("[data-sit]"), kind = e.target.closest("[data-kind]");
+  if (sit) { NET.send({ t: "sit", k: +sit.dataset.sit }); Sound.ui("click"); return; }
+  if (kind) { NET.send({ t: "seat", k: +kind.dataset.kind, kind: kind.dataset.to }); Sound.ui("click"); }
+});
+// closing asks twice, so a stray tap doesn't end the room for everyone
+let closeArm = 0;
+$("#closeRoom").addEventListener("click", (e) => {
+  const b = e.currentTarget;
+  if (!closeArm) { b.textContent = "Tap again to close"; closeArm = setTimeout(() => { closeArm = 0; b.textContent = "Close room"; }, 3000); return; }
+  clearTimeout(closeArm); closeArm = 0; b.textContent = "Close room";
+  NET.send({ t: "close" }); Sound.ui("close");
+});
+NET.onClosed = () => {
+  flash("The host closed the room", 2200);
+  const wasGame = CFG.mode === "online";
+  NET.close(true); seatKey = ""; applyRoster(); renderTour();
+  if (wasGame) newGame({ ...DEFAULT_CFG, ...(load("sf2-prefs") || {}), mode: "solo", format: "single" });
+  if (menuDlg.open) { form.elements.mode.value = "solo"; paintRoster(); }
+};
+function joinFromField() {
+  const c = $("#joinCode").value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (!CODE_OK.test(c)) { flash("Room codes are 5 letters and digits", 1800); Sound.deny(); return; }
+  NET.connect(c, false); Sound.ui("open"); paintRoster();
+}
+$("#joinBtn").addEventListener("click", joinFromField);
+$("#joinCode").addEventListener("input", (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5); });
+$("#joinCode").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); joinFromField(); } });
+$("#copyLink").addEventListener("click", async () => {
+  const url = NET.link();
+  try {
+    if (pointerKind === "touch" && navigator.share) { await navigator.share({ title: "Accrete", text: `Join my Accrete room ${NET.code}`, url }); return; }
+    await navigator.clipboard.writeText(url); flash("Link copied", 1300);
+  } catch (e) { flash(`Room ${NET.code}`, 2000); }
+  Sound.ui("click");
+});
+$("#leaveRoom").addEventListener("click", () => {
+  const wasGame = CFG.mode === "online";
+  leaveOnline(); Sound.ui("close");
+  if (wasGame) newGame({ ...DEFAULT_CFG, ...(load("sf2-prefs") || {}), mode: "solo" });
+  form.elements.mode.value = "solo"; $("#roster").dataset.key = ""; paintRoster();
+});
+
+// the room told us something changed
+NET.onRoom = (prev) => {
+  const r = NET.room;
+  if (prev) for (const m of r.members) {
+    const o = prev.members.find((x) => x.pid === m.pid);
+    if (m.pid !== NET.pid && (!o ? m.online : o.online !== m.online)) flash(`${m.name} ${m.online ? "joined" : "left"}`, 1600);
+  }
+  if (menuDlg.open && form.elements.mode.value === "online" && !NET.isHost()) setFormCfg(r.cfg);
+  if (r.phase === "play") syncGame();
+  else if (!menuDlg.open) openMenu();
+  if (menuDlg.open) paintRoster();
+  if (!winEl.hidden) paintAgain();
+  if (CFG.mode === "online" && S && !busy) { renderMass(); renderSide(); }
+};
+function syncGame() {
+  const r = NET.room, seats = r.gseats || r.seats;
+  if (CFG.mode !== "online" || NET.game !== r.gameNo || !S) {
+    NET.game = r.gameNo;
+    applySeats(seats);
+    const ko = r.cfg.format === "knockout";
+    enterMode({ mode: "online", format: ko ? "knockout" : "single", n: seats.length, level: r.cfg.level, size: r.cfg.size, variant: r.cfg.variant, teams: ko ? 0 : r.cfg.teams, voids: r.voids || undefined });
+    TU = null;
+    if (menuDlg.open) menuDlg.close();
+    loadSnap(r);
+    return;
+  }
+  applySeats(seats);
+  renderTour();
+  const expect = NET.applied + NET.queue.filter((m) => m.g === r.gameNo && m.n >= NET.applied).length;
+  if (r.S.moves !== expect) { if (busy) NET.pendingSnap = r; else loadSnap(r); return; }
+  if (!busy) { render(); NET.autoplay(); }
+  if (!winEl.hidden) paintAgain();
+}
+function loadSnap(r) {
+  NET.pendingSnap = null;
+  S = JSON.parse(JSON.stringify(r.S)); view = snapOf(S); NET.applied = S.moves;
+  NET.queue = NET.queue.filter((m) => m.g === r.gameNo && m.n >= S.moves);
+  lastMove = r.last ? { i: r.last.i, p: r.last.p, flips: [] } : null;
+  preview = null; history = []; finalMove = null;
+  render();
+  if (over(S)) endGame();
+  else { NET.drain(); NET.autoplay(); }
+}
+// moves arrive in order; ours were already played, the rest play one after another
+NET.drain = () => {
+  if (CFG.mode !== "online" || busy || !S || !B) return;
+  while (NET.queue.length) {
+    const m = NET.queue[0];
+    if (m.g !== NET.game || m.n < NET.applied) { NET.queue.shift(); continue; }
+    if (m.n > NET.applied || over(S) || S.turn !== m.p || !SF.legal(B, S, m.i, m.p)) { NET.queue = []; NET.send({ t: "sync" }); return; }
+    NET.queue.shift();
+    commit(m.i, true);
+    return;
+  }
+};
+NET.after = () => {
+  const r = NET.pendingSnap;
+  if (r && r.gameNo === NET.game) { loadSnap(r); return; }
+  NET.pendingSnap = null;
+  NET.drain();
+  if (!busy) NET.autoplay();
+};
+// the host's page plays the AI seats and stands in for anyone who has dropped out
+NET.autoplay = () => {
+  clearTimeout(NET.autoT);
+  if (CFG.mode !== "online" || !NET.isHost() || !S || over(S) || busy || NET.queue.length || NET.status !== "open") return;
+  const p = S.turn, s = NET.seat(p);
+  if (!s) return;
+  if (s.kind === "ai") { runAI(); return; }
+  if (s.kind === "human" && !NET.online(p)) {
+    const gen = gameGen, n = S.moves;
+    NET.autoT = setTimeout(() => {
+      if (gen !== gameGen || S.moves !== n || busy || over(S) || !NET.isHost() || NET.online(p)) return;
+      flash(`Autopilot for ${NAMES[p][0]}`, 1400);
+      const m = SF.choose(B, S, "medium");
+      if (m >= 0) commit(m);
+    }, CFG.variant === "blitz" ? blitzMs() : 12000);
+  }
+};
+NET.onError = (m) => {
+  if (m.code === "noroom" || m.code === "full") {
+    flash(m.code === "full" ? "That room is full" : "Room not found", 2000);
+    NET.close(true);
+    if (CFG.mode === "online") newGame({ ...DEFAULT_CFG, ...(load("sf2-prefs") || {}), mode: "solo" });
+    if (menuDlg.open) paintRoster();
+  }
+};
+NET.onStatus = (msg) => {
+  if (msg) flash(msg, 2600);
+  if (menuDlg.open) paintOnline();
+  if (CFG.mode === "online" && S) { renderSide(); renderBar(); if (NET.status !== "open") clearTimeout(NET.autoT); }
+};
+
 function start(data) {
+  let link = null;
+  try { link = (new URLSearchParams(location.search).get("room") || "").toUpperCase(); } catch (e) {}
+  const saved0 = load("sf2-online");
+  const code = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/.test(link || "") ? link : saved0 && saved0.code;
+  if (code && NET.available()) { save("sf2-tutorial-seen", true); setTimeout(() => NET.connect(code, false), 0); }
   if (data && data.S && restore(data, data.history)) return;
   const saved = load("sf2-game");
   if (saved && restore(saved, null)) return;
