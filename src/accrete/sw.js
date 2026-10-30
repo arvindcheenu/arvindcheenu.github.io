@@ -1,5 +1,5 @@
 // Accrete service worker: everything the game needs is cached on first visit, so it plays offline.
-const CACHE = "accrete-3e9fd14bab";
+const CACHE = "accrete-192cccd805";
 const CORE = ["./", "index.html", "three.min.js", "manifest.webmanifest", "fonts/orbitron-latin-600-normal.woff2", "fonts/orbitron-latin-700-normal.woff2", "fonts/exo-2-latin-400-normal.woff2", "fonts/exo-2-latin-500-normal.woff2", "fonts/exo-2-latin-600-normal.woff2", "fonts/exo-2-latin-700-normal.woff2", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon.svg", "icons/maskable-512.png", "sounds/rock-0.mp3", "sounds/rock-1.mp3", "sounds/rock-2.mp3", "sounds/rock-3.mp3", "sounds/rock-4.mp3", "sounds/ignite-0.mp3", "sounds/ignite-1.mp3", "sounds/ignite-2.mp3", "sounds/rumble-0.mp3", "sounds/rumble-1.mp3", "sounds/hum-0.mp3", "sounds/hum-1.mp3", "sounds/implode.mp3", "sounds/deny.mp3"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));

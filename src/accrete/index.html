@@ -5356,8 +5356,16 @@ $("#winFull").addEventListener("click", () => startReplay(replayRecord(), false)
 
 /* ---------- Files: a whole save, a single replay, a room ---------- */
 // download a file (on iPhone and iPad, the share sheet, which can save it to Files)
+// inside claude.ai the page can't download on its own: the viewer's downloads capability saves the file, after they confirm
+let dlCap;
+const downloadsCap = () => (dlCap !== undefined ? dlCap : (dlCap = window.claude && typeof window.claude.use === "function" ? Promise.resolve(window.claude.use("downloads")).catch(() => null) : Promise.resolve(null)));
 async function giveFile(name, obj) {
   const text = JSON.stringify(obj), file = typeof File === "function" ? new File([text], name, { type: "application/json" }) : null;
+  const dl = await downloadsCap();
+  if (dl) {
+    try { await dl.save({ filename: name, data: text }); return true; }
+    catch (e) { if (!e || e.code !== "declined") flash(e && e.code === "rate_limited" ? "One moment, a save is already open" : "Files can't be saved from this view", 2000); return false; }
+  }
   try {
     if (file && /iPhone|iPad|iPod/.test(navigator.userAgent) && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); return true; }
   } catch (e) { if (e && e.name === "AbortError") return false; }
