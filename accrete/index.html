@@ -491,6 +491,9 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 .tier-chip { display: inline-flex; align-items: center; gap: 6px; }
 .tier-chip i { width: 9px; height: 10px; background: var(--tc); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); box-shadow: 0 0 6px var(--tc); }
 .tier-chip b { color: var(--fg); font-weight: 600; }
+.ach-filter { display: flex; flex-wrap: wrap; gap: 6px; }
+.ach-filter .btn { height: 28px; padding: 0 10px; font-size: 12px; --cut: 5px; }
+.ach-filter .btn.on { color: var(--hud); background: color-mix(in oklab, var(--hud) 16%, var(--line)); }
 .achs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 8px; }
 .ach { --tc: #8a97ab; position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; min-width: 0; padding: 10px 12px 10px 10px; border: 1px solid var(--line); background: var(--bg); }
 .ach.on { border-color: color-mix(in oklab, var(--tc) 40%, var(--line)); background: linear-gradient(115deg, color-mix(in oklab, var(--tc) 12%, var(--bg)), var(--bg) 72%); }
@@ -542,6 +545,10 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 .medal .m-letter { font: 700 22px var(--logo, var(--hud-font)); fill: var(--tc); text-anchor: middle; }
 .medal .m-sub { font: 600 6.5px var(--hud-font); letter-spacing: .12em; fill: color-mix(in oklab, var(--tc) 50%, #fff); text-anchor: middle; text-transform: uppercase; }
 .medal3d:not(.on) .m-letter, .medal3d:not(.on) .m-sub { fill: var(--muted); }
+.medal .m-plate rect { fill: var(--face); stroke: var(--tc); stroke-width: 1.1; }
+.medal .m-plate text { font: 700 8px var(--hud-font); letter-spacing: .02em; fill: #fff; text-anchor: middle; }
+.medal3d:not(.on) .m-plate rect { stroke: var(--line-2); }
+.medal3d:not(.on) .m-plate text { fill: var(--muted); }
 .achv .medal3d { width: 52px; height: 52px; margin-bottom: 4px; cursor: inherit; }
 .achv.on .medal3d.pop { animation: medalIn 1.3s cubic-bezier(.2, .8, .3, 1) both; }
 @keyframes medalIn { from { transform: perspective(260px) rotateY(-720deg) scale(.4); } to { transform: perspective(260px) rotateY(0deg) scale(1); } }
@@ -556,7 +563,25 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 .ask-check { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--fg); cursor: var(--cur-pointer, pointer); }
 .ask-check[hidden] { display: none; }
 .ask-check input { width: 16px; height: 16px; accent-color: #ff6b6b; margin: 0; }
-.ask-card .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.ask-card .actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.ask-card #askExtra { margin-right: auto; }
+.data-field { display: grid; gap: 8px; }
+.data-field .seg label { font-size: 12.5px; }
+.data-field .links { display: flex; flex-wrap: wrap; gap: 8px; }
+.rp-acts { display: flex; gap: 4px; align-items: center; }
+.rp-row .btn.icon { width: 28px; padding: 0; }
+.rp-row .btn.icon svg { width: 14px; height: 14px; }
+.rp-row .btn.icon[aria-pressed="true"] { color: var(--hud); }
+.rp-row.imported i.k { background: var(--hud); }
+.rp-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.rp-head .btn { height: 28px; padding: 0 10px; font-size: 12px; --cut: 5px; }
+.rp-scrub { flex: 1 0 100%; order: 10; margin: 4px 2px 0; }
+.replay { width: min(400px, calc(100% - 24px)); box-sizing: border-box; }
+@media (max-width: 479px) {
+  .rp-row { grid-template-columns: 10px minmax(0, 1fr); }
+  .rp-row .rp-acts { grid-column: 2; justify-content: flex-end; }
+}
+.room-foot { flex-wrap: wrap; }
 .btn.danger { background: #ff6b6b; color: #1a0404; }
 .btn.danger::before { background: var(--sheen), #ff6b6b; }
 .achv { --cut: 12px; position: fixed; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 60; display: grid; gap: 2px; justify-items: center; min-width: min(320px, calc(100vw - 32px)); max-width: calc(100vw - 32px); padding: 12px 18px; text-align: center;
@@ -790,6 +815,7 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 <div class="crt" aria-hidden="true"></div>
 <div class="rotate" aria-hidden="true"><div><svg viewBox="0 0 664 664" width="64" height="64"><path d="M93.9018 188.427C90.2499 190.537 88.0002 194.436 88.0002 198.655L88 466.345C88.0002 470.564 90.2498 474.464 93.9015 476.573L325.598 610.418C329.25 612.527 333.75 612.527 337.401 610.418L569.098 476.573C572.75 474.463 575 470.564 575 466.345L575 198.655C575 194.436 572.75 190.537 569.098 188.427L337.402 54.582C333.75 52.4725 329.251 52.4728 325.599 54.5821L93.9018 188.427ZM209.005 311.739C176.661 367.792 195.48 439.386 251.238 471.596C331.779 518.122 434.767 490.511 481.267 409.925C527.767 329.339 500.172 226.294 419.631 179.767C350.331 139.735 290.886 134.038 238.323 144.044C233.695 144.925 230.349 136.877 234.429 134.521L328.351 80.264C330.299 79.1388 332.699 79.1388 334.646 80.264L548.246 203.655C550.194 204.78 551.394 206.859 551.394 209.11L551.392 455.889C551.392 458.14 550.192 460.219 548.245 461.344L334.647 584.735C332.7 585.86 330.3 585.86 328.352 584.735L114.753 461.344C112.805 460.219 111.605 458.14 111.605 455.89L111.606 274.393C111.606 244.891 124.828 216.943 147.633 198.241C152.977 193.859 158.781 190.032 164.933 186.883C195.193 171.395 198.977 170.769 241.853 162.607C289.903 153.46 344.752 158.331 410.188 196.132C481.697 237.44 506.197 328.929 464.912 400.477C423.627 472.026 332.189 496.54 260.681 455.232C214.068 428.305 198.165 368.315 225.36 321.187C236.071 302.623 251.854 288.855 269.899 280.632C276.054 277.826 280.668 286.932 276.785 292.474C275.55 294.235 274.383 296.065 273.288 297.963L272.821 298.785C253.268 333.682 265.345 377.923 300.074 397.985C335.075 418.204 379.831 406.205 400.039 371.184L400.507 370.362C420.059 335.465 407.982 291.224 373.254 271.162C371.649 270.236 370.024 269.376 368.381 268.584L368.483 268.407C312.726 236.197 241.348 255.687 209.005 311.739Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></svg><p>Turn your phone upright</p></div></div>
 <div class="achv hud" id="achv" role="status" aria-live="polite"></div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
 <div class="splash" id="splash" role="presentation">
   <div class="splash-in">
     <div class="splash-logo"><svg viewBox="0 0 664 664" width="144" height="144" aria-hidden="true"><path d="M93.9018 188.427C90.2499 190.537 88.0002 194.436 88.0002 198.655L88 466.345C88.0002 470.564 90.2498 474.464 93.9015 476.573L325.598 610.418C329.25 612.527 333.75 612.527 337.401 610.418L569.098 476.573C572.75 474.463 575 470.564 575 466.345L575 198.655C575 194.436 572.75 190.537 569.098 188.427L337.402 54.582C333.75 52.4725 329.251 52.4728 325.599 54.5821L93.9018 188.427ZM209.005 311.739C176.661 367.792 195.48 439.386 251.238 471.596C331.779 518.122 434.767 490.511 481.267 409.925C527.767 329.339 500.172 226.294 419.631 179.767C350.331 139.735 290.886 134.038 238.323 144.044C233.695 144.925 230.349 136.877 234.429 134.521L328.351 80.264C330.299 79.1388 332.699 79.1388 334.646 80.264L548.246 203.655C550.194 204.78 551.394 206.859 551.394 209.11L551.392 455.889C551.392 458.14 550.192 460.219 548.245 461.344L334.647 584.735C332.7 585.86 330.3 585.86 328.352 584.735L114.753 461.344C112.805 460.219 111.605 458.14 111.605 455.89L111.606 274.393C111.606 244.891 124.828 216.943 147.633 198.241C152.977 193.859 158.781 190.032 164.933 186.883C195.193 171.395 198.977 170.769 241.853 162.607C289.903 153.46 344.752 158.331 410.188 196.132C481.697 237.44 506.197 328.929 464.912 400.477C423.627 472.026 332.189 496.54 260.681 455.232C214.068 428.305 198.165 368.315 225.36 321.187C236.071 302.623 251.854 288.855 269.899 280.632C276.054 277.826 280.668 286.932 276.785 292.474C275.55 294.235 274.383 296.065 273.288 297.963L272.821 298.785C253.268 333.682 265.345 377.923 300.074 397.985C335.075 418.204 379.831 406.205 400.039 371.184L400.507 370.362C420.059 335.465 407.982 291.224 373.254 271.162C371.649 270.236 370.024 269.376 368.381 268.584L368.483 268.407C312.726 236.197 241.348 255.687 209.005 311.739Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></svg></div>
@@ -863,6 +889,7 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
         <button class="btn" type="button" id="rpStep">Step</button>
         <button class="btn" type="button" id="rpSpeed" title="Replay speed">1×</button>
         <button class="btn ghost" type="button" id="rpExit">Exit</button>
+        <input class="range rp-scrub" type="range" id="rpScrub" min="0" max="0" value="0" step="1" aria-label="Replay position">
         <i class="rp-bar" aria-hidden="true"></i>
       </div>
       <div class="fs-hud" id="fsHud">
@@ -945,7 +972,7 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
           <div class="players" id="players"></div>
           <div class="lb" id="roomBoard" hidden></div>
           <p class="vnote watchers" id="watchers" hidden></p>
-          <div class="room-foot"><button class="btn ghost" type="button" id="leaveRoom">Leave room</button><button class="btn ghost danger" type="button" id="closeRoom" hidden>Close room</button></div>
+          <div class="room-foot"><button class="btn ghost" type="button" id="leaveRoom">Leave room</button><button class="btn ghost" type="button" id="exportRoom">Export room</button><button class="btn ghost" type="button" id="importRoom" hidden>Import room</button><button class="btn ghost danger" type="button" id="closeRoom" hidden>Close room</button></div>
         </div>
       </div>
       <div class="field" id="formatField">
@@ -1022,6 +1049,25 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
         <div class="switch audio-row"><span><label for="setMusic">Music</label><input class="range vol" type="range" id="volMusic" min="0" max="100" step="1" aria-label="Music volume"></span><input type="checkbox" id="setMusic" role="switch" aria-label="Music"></div>
         <div class="switch audio-row"><span><label for="setSfx">Sound effects</label><input class="range vol" type="range" id="volSfx" min="0" max="100" step="1" aria-label="Sound effects volume"></span><input type="checkbox" id="setSfx" role="switch" aria-label="Sound effects"></div>
         <label class="switch" for="setUi"><span>Interface sounds<small>Hover and click sounds on controls</small></span><input type="checkbox" id="setUi" role="switch"></label>
+        <div class="field data-field"><span>Keep replays</span>
+          <div class="seg" id="rpKeep">
+            <input type="radio" name="rpkeep" id="rk10" value="10"><label for="rk10">Last 10</label>
+            <input type="radio" name="rpkeep" id="rk25" value="25"><label for="rk25">25</label>
+            <input type="radio" name="rpkeep" id="rk50" value="50"><label for="rk50">50</label>
+            <input type="radio" name="rpkeep" id="rk100" value="100"><label for="rk100">100</label>
+          </div>
+          <div class="seg" id="rpDays">
+            <input type="radio" name="rpdays" id="rd1" value="1"><label for="rd1">1 day</label>
+            <input type="radio" name="rpdays" id="rd7" value="7"><label for="rd7">1 week</label>
+            <input type="radio" name="rpdays" id="rd30" value="30"><label for="rd30">1 month</label>
+            <input type="radio" name="rpdays" id="rd0" value="0"><label for="rd0">Never expire</label>
+          </div>
+          <p class="vnote" id="rpNote"></p>
+        </div>
+        <div class="field data-field"><span>Your save</span>
+          <div class="links"><button class="btn" type="button" id="exportSave">Export save</button><button class="btn" type="button" id="importFile">Import file</button></div>
+          <p class="vnote">One file with your record, badges, replays and settings, so clearing the browser doesn't lose them. Import a save to restore it, or a replay or room someone sent you.</p>
+        </div>
       </div>
     </section>
     <section class="tabpanel" role="tabpanel" id="panelRecord" data-panel="record" aria-labelledby="tabRecord" hidden>
@@ -1068,7 +1114,7 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
       <h2 id="askTitle"></h2>
       <p id="askBody"></p>
       <label class="ask-check" id="askCheck" hidden><input type="checkbox"><span></span></label>
-      <div class="actions"><button class="btn ghost" type="button" id="askNo">Cancel</button><button class="btn danger" type="button" id="askOk">Confirm</button></div>
+      <div class="actions"><button class="btn" type="button" id="askExtra" hidden></button><button class="btn ghost" type="button" id="askNo">Cancel</button><button class="btn danger" type="button" id="askOk">Confirm</button></div>
     </div>
   </div>
   </div>
@@ -1501,9 +1547,7 @@ const smooth = (v) => { v = clamp01(v); return v * v * (3 - 2 * v); };
 
 /* ---------- Sound: recorded effects joined by a shared room and a chain bed ---------- */
 const Sound = (() => {
-  const FILES = { rock: 5, ignite: 3, rumble: 2, hum: 2, supernova: 1, crunch: 3, implode: 1, deny: 1 };
-  // supernova.wav sits on F (+39 cents); this rate brings it to D. Chains climb the loop's own notes: D, F#, G, A.
-  const NOVA_D = Math.pow(2, -3.39 / 12), PENTA = [0, 4, 5, 7, 12, 16, 17, 19, 24, 28, 29];
+  const FILES = { rock: 5, ignite: 3, rumble: 2, hum: 2, implode: 1, deny: 1 };
   // The loop's core motif (bar 1, answered in bars 5-7), in semitones from D5. Each placement plays the next note.
   const MOTIF = [4, 0, -5, 5, 0, 7, 4, 5], D5 = 587.33;
   let motifAt = 0;
@@ -1564,14 +1608,23 @@ const Sound = (() => {
     const CH = {
       D: [2, [2, 6, 9]], Dsus4: [2, [2, 7, 9]], G: [7, [7, 11, 2]], Gsus4: [7, [7, 0, 2]], Em: [4, [4, 7, 11]], C: [0, [0, 4, 7]],
       Eb: [3, [3, 7, 10]], Cm: [0, [0, 3, 7]], Bbsus4: [10, [10, 3, 5]], Fm: [5, [5, 8, 0]], Absus4: [8, [8, 1, 3]],
-      Dm: [2, [2, 5, 9]], Bb: [10, [10, 2, 5]], Gm: [7, [7, 10, 2]],
+      Dm: [2, [2, 5, 9]], Bb: [10, [10, 2, 5]], Gm: [7, [7, 10, 2]], A: [9, [9, 1, 4]], Bm: [11, [11, 2, 6]], Asus4: [9, [9, 2, 4]],
     };
-    // chord moves taken from the loop's own bar-to-bar changes
-    const CALM = { D: ["Dsus4", "Gsus4", "G", "D"], Dsus4: ["D", "G", "Gsus4"], G: ["Dsus4", "D", "Gsus4"], Gsus4: ["D", "Gsus4", "Dsus4", "Em"], Em: ["C"], C: ["Gsus4"],
-      Eb: ["D"], Cm: ["D"], Bbsus4: ["D"], Fm: ["Cm"], Absus4: ["Eb"] };
-    const TENSE = { D: ["Eb", "Cm", "D", "Gsus4"], Dsus4: ["Eb", "D"], G: ["Cm", "D"], Gsus4: ["D", "C", "Eb"], Em: ["C"], C: ["Gsus4", "Cm"],
-      Eb: ["D", "Fm", "Eb", "Cm"], Cm: ["D", "Bbsus4", "Cm"], Bbsus4: ["Fm", "D"], Fm: ["Cm", "Eb", "Absus4"], Absus4: ["Eb"] };
-    const CALM_SCALE = [2, 4, 6, 7, 9, 11, 0], DARK_SCALE = [2, 3, 6, 7, 9, 10, 0];
+    // Whole phrases, four chords each, every one ending on A so it leads home to D. Calm phrases stay in D major
+    // (the loop's own D, Dsus4, G, Em, C); tense ones move to D minor; the climax leans on Bb and Eb before the dominant.
+    const PROGS = {
+      calm: [["D", "Dsus4", "G", "A"], ["D", "G", "Em", "A"], ["D", "Bm", "G", "Asus4"], ["G", "D", "Em", "A"], ["D", "C", "G", "A"], ["Em", "G", "D", "Asus4"]],
+      tense: [["Dm", "Bb", "Gm", "A"], ["Dm", "Bb", "C", "A"], ["Dm", "Gm", "Bb", "A"], ["Dm", "C", "Bb", "A"], ["Gm", "Dm", "Bb", "A"]],
+      climax: [["Dm", "Bb", "Eb", "A"], ["Dm", "Eb", "Bb", "A"], ["Bb", "Gm", "Eb", "A"]],
+    };
+    const MAJOR = [2, 4, 6, 7, 9, 11, 1], MINOR = [2, 4, 5, 7, 9, 10, 0];
+    // the key's notes that sit well over a chord: anything a semitone from a chord tone is dropped, the chord's own notes added
+    function scaleFor(chord, minor) {
+      const pcs = CH[chord][1], key = minor ? MINOR : MAJOR;
+      const out = key.filter((pc) => pcs.includes(pc) || !pcs.some((c) => (pc - c + 12) % 12 === 1 || (c - pc + 12) % 12 === 1));
+      pcs.forEach((pc) => { if (!out.includes(pc)) out.push(pc); });
+      return out;
+    }
     const MOTIF = [78, 74, 69, 79, 74, 81, 78, 79];   // F#5 D5 A4 G5 D5 A5 F#5 G5
     const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
     let bus = null, verb = null, dly = null, st = null;
@@ -1649,9 +1702,9 @@ const Sound = (() => {
       g.gain.setValueAtTime(lvl, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
       o.connect(g); out(g, 0.1); o.start(t); o.stop(t + 0.32);
     }
-    function rub(t, dur, lvl) {
+    function rub(t, dur, lvl, m) {
       const o = ac.createOscillator(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
-      o.type = "sine"; o.frequency.value = hz(51);   // Eb3
+      o.type = "sine"; o.frequency.value = hz(m || 51);   // Eb3 in the finale; in play, a note of the chord
       lfo.frequency.value = 5.2; lg.gain.value = lvl * 0.5; lfo.connect(lg); lg.connect(g.gain);
       g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + dur * 0.4); g.gain.linearRampToValueAtTime(0.0001, t + dur);
       o.connect(g); out(g, 0.5); o.start(t); lfo.start(t); o.stop(t + dur + 0.05); lfo.stop(t + dur + 0.05);
@@ -1678,7 +1731,7 @@ const Sound = (() => {
       ],
       lost: [
         (t) => { pad("Gm", t, BEAT * 2, 0.13, 0.55, 0.25); pad("Eb", t + BEAT * 2, BEAT * 2, 0.15, 0.6, 0.2); bass(31, t, BEAT * 2, 0.3); bass(39, t + BEAT * 2, BEAT * 2, 0.32); swoosh(t, BEAT * 4, 0.1); return "Eb"; },
-        (t) => { kick(t, 0.5); crash(t, 0.07); pad("Dm", t, BEAT * 8, 0.15, 0.5); bass(38, t, BEAT * 8, 0.34); bass(26, t, BEAT * 10, 0.24);
+        (t) => { thump(t, 0.34); bell(50, t, 0.11); bell(38, t + 0.02, 0.07); pad("Dm", t, BEAT * 8, 0.15, 0.45); bass(38, t, BEAT * 8, 0.34); bass(26, t, BEAT * 10, 0.24);
           [81, 77, 74, 69].forEach((m, k) => bell(m, t + k * BEAT * 0.75, 0.09 - k * 0.01)); rub(t, BEAT * 8, 0.06); return "Dm"; },
         null,
         (t) => { pad("Bb", t, BEAT * 4, 0.12, 0.35); bass(34, t, BEAT * 4, 0.26); bell(77, t + BEAT, 0.05); return "Bb"; },
@@ -1715,9 +1768,10 @@ const Sound = (() => {
       g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(1, t + 3.5); g.gain.setValueAtTime(1, t + D - 9); g.gain.linearRampToValueAtTime(0.0001, t + D);
       if (dest) g.connect(dest); else out(g, 0.7);
       const keep = (n) => { nodes.push(n); return n; };
+      // won: the voices climb, and the highest lifts an octave at the end; lost: they sink, and fall an octave as they fade
       const paths = won
-        ? [[45, 43, 47, 50, 54], [50, 52, 49, 54, 57], [38, 40, 43, 45, 45], [57, 59, 62, 61, 66]]
-        : [[50, 51, 48, 46, 45], [57, 55, 53, 51, 50], [43, 41, 39, 39, 38], [62, 63, 58, 58, 57]];
+        ? [[45, 43, 47, 50, 54, 54], [50, 52, 49, 54, 57, 57], [38, 40, 43, 45, 45, 50], [57, 59, 62, 61, 66, 78]]
+        : [[50, 51, 48, 46, 45, 33], [57, 55, 53, 51, 50, 38], [43, 41, 39, 39, 38, 26], [62, 63, 58, 58, 57, 45]];
       paths.forEach((path, v) => {
         const t0 = t + v * 2.4 + Math.random() * 0.6, end = t + D - 1;
         const vg = ac.createGain(), lp = ac.createBiquadFilter(), vow = ac.createBiquadFilter();
@@ -1772,7 +1826,7 @@ const Sound = (() => {
     function start() {
       if (!bus) build();
       bus.gain.cancelScheduledValues(ac.currentTime); bus.gain.setValueAtTime(0.9, ac.currentTime);
-      st = { next: ac.currentTime + 0.1, step: 0, bar: 0, chord: "D", hold: 0, int: 0.1, tension: 0, energy: 0, spike: 0, climax: 0, threat: 0, final: null, fill: false, arp: 0, timer: setInterval(tick, 50) };
+      st = { next: ac.currentTime + 0.1, step: 0, bar: 0, chord: "D", scale: MAJOR, prog: null, pi: 0, minor: false, hold: 0, int: 0.1, tension: 0, energy: 0, spike: 0, climax: 0, threat: 0, final: null, fill: false, arp: 0, timer: setInterval(tick, 50) };
       mus.t0 = st.next;
       tick();
     }
@@ -1789,7 +1843,7 @@ const Sound = (() => {
     function step(n, t) {
       const s = n % 16;
       if (s === 0) bar(t);
-      const I = st.int, [root, pcs] = CH[st.chord], scale = I > 0.55 ? DARK_SCALE : CALM_SCALE;
+      const I = st.int, [root, pcs] = CH[st.chord], scale = st.scale;
       if (st.final) { finaleStep(s, t); return; }
       // the lingering threat: a low heartbeat on the beat while bodies of yours can be taken
       if (st.threat > 0.05 && s % 4 === 0) { thump(t, 0.12 + 0.22 * st.threat); thump(t + STEP * 0.9, 0.07 + 0.14 * st.threat); }
@@ -1825,15 +1879,22 @@ const Sound = (() => {
       // follow the game: intensity eases toward the target; chains lift it; the climax pushes it to the top
       const target = Math.max(0, Math.min(1, 0.08 + 0.6 * st.tension + 0.25 * st.energy + st.spike + 0.5 * st.climax));
       st.int += (target - st.int) * 0.45; st.spike *= 0.6;
-      // the threat rubs a flat second (Eb against D) under the harmony, quiet and slow
-      if (st.threat > 0.25) rub(t, BEAT * 4, 0.02 + 0.05 * st.threat);
       if (st.hold <= 0) {
-        const table = Math.random() < st.int * 1.1 ? TENSE : CALM;
-        // near the end the harmony circles the cadence it will resolve with: Eb and D
-        st.chord = st.climax > 0.5 ? (st.chord === "Eb" ? "D" : pick(["Eb", "Eb", "Cm", "D"])) : st.bar % 8 === 0 && st.int < 0.5 ? "D" : pick(table[st.chord] || ["D"]);
-        st.hold = st.int > 0.6 ? 1 : 2;
+        // a new phrase starts when the last one has cadenced; its mood is chosen then, so the harmony never lurches mid-phrase
+        if (!st.prog || st.pi >= st.prog.length) {
+          const kind = st.climax > 0.5 ? "climax" : st.int > 0.55 ? "tense" : "calm";
+          let pr = pick(PROGS[kind]);
+          if (st.prog && PROGS[kind].length > 1) while (pr === st.prog) pr = pick(PROGS[kind]);
+          st.prog = pr; st.pi = 0; st.minor = kind !== "calm";
+        }
+        st.chord = st.prog[st.pi++];
+        st.scale = scaleFor(st.chord, st.minor);
+        // calm phrases breathe over two bars a chord; tense ones move every bar
+        st.hold = st.minor ? 1 : 2;
         pad(st.chord, t, BEAT * 4 * st.hold, 0.08 + 0.05 * st.int, 0.25 + 0.65 * st.int);
       }
+      // the threat: a slow tremolo on the chord's fifth, low and quiet, uneasy without leaving the key
+      if (st.threat > 0.25) { const [r0] = CH[st.chord]; rub(t, BEAT * 4, 0.02 + 0.045 * st.threat, snap(45, [(r0 + 7) % 12])); }
       st.hold--;
       if (st.bar % 4 === 0 && st.int < 0.8 && Math.random() < 0.8) st.phrase = { k: Math.random() < 0.5 ? 0 : 4 };
       st.bar++;
@@ -1853,8 +1914,8 @@ const Sound = (() => {
       },
       perseus,
       // a new game: back to the calm opening
-      resume() { if (st && st.final) { st.final = null; st.int = 0.1; st.spike = 0; st.climax = 0; st.chord = "D"; st.hold = 0; } },
-      harmony() { return st && !st.final ? { pcs: CH[st.chord][1], scale: st.int > 0.55 ? DARK_SCALE : CALM_SCALE, int: st.int } : null; },
+      resume() { if (st && st.final) { st.final = null; st.int = 0.1; st.spike = 0; st.climax = 0; st.chord = "D"; st.scale = MAJOR; st.prog = null; st.hold = 0; } },
+      harmony() { return st && !st.final ? { pcs: CH[st.chord][1], scale: st.scale, int: st.int, root: CH[st.chord][0] } : null; },
       snap,
       beatT0: () => mus.t0, BEAT,
     };
@@ -1922,6 +1983,48 @@ const Sound = (() => {
     const v = { src, g, end: t + dur };
     if (!o.bus) voices.push(v);
     return v;
+  }
+  // Supernovae are generated, not sampled: a tuned bass boom on the chord the score is playing. A body that goes off young
+  // (a small cell, two or three units) pops short and high; one that held six or seven drops low and rings long.
+  // Each wave of a chain climbs the chord; the bed underneath swells with it.
+  let booms = [];
+  function boom(w, cap, n, pan) {
+    const t = ac.currentTime + 0.006, h = GEN.harmony(), pcs = h ? h.pcs : [2, 6, 9];
+    const size = Math.max(0, Math.min(1, (cap - 2) / 5)), many = Math.min(1, Math.log2(1 + n) / 4);
+    // pitch: the chord's notes from a register that falls with size, climbing a step per wave and settling near the top
+    const reg = Math.round(52 - 17 * size), tones = [];
+    for (let m = reg - 5; m <= reg + 24; m++) if (pcs.includes(((m % 12) + 12) % 12)) tones.push(m);
+    const climb = Math.min(w, tones.length - 1), idx = w < tones.length ? climb : tones.length - 2 + (w % 2);
+    const f = 440 * Math.pow(2, (tones[Math.max(0, idx)] - 69) / 12);
+    const dur = (0.32 + 1.9 * size) * (w > 6 ? 0.7 : 1) * (1 + 0.25 * many), A = (0.36 + 0.26 * size + 0.12 * many) * (1 - Math.min(0.35, w * 0.025));
+    const out = ac.createGain(); out.gain.value = 1;
+    let dest = sfxBus;
+    if (pan && ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = Math.max(-0.8, Math.min(0.8, pan * 0.6)); p.connect(sfxBus); dest = p; }
+    out.connect(dest);
+    const nodes = [];
+    const voice = (type, mul, lvl, drop, d, lp) => {
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = type;
+      o.frequency.setValueAtTime(f * mul * drop, t); o.frequency.exponentialRampToValueAtTime(Math.max(24, f * mul), t + 0.035 + 0.13 * size);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + 0.004 + 0.01 * size); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      let node = o;
+      if (lp) { const fl = ac.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = lp; o.connect(fl); node = fl; }
+      node.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.05); nodes.push(o);
+    };
+    // the boom itself: a sine that drops onto its note; a softer octave for body; for big ones a sub an octave down
+    voice("sine", 1, A, 2.8, dur);
+    voice("triangle", 2, A * 0.22, 2.2, dur * 0.55, 1100 + 1400 * (1 - size));
+    if (size > 0.45) voice("sine", 0.5, A * 0.7 * size, 2.4, dur * 1.1);
+    if (size > 0.7) voice("sine", 3, A * 0.08, 1, dur * 0.7);
+    // the blast: dark noise through a falling low-pass, soft rather than crunchy
+    const s = ac.createBufferSource(); s.buffer = noiseBuf; s.loop = true;
+    const nl = ac.createBiquadFilter(), ng = ac.createGain(), nd = 0.18 + 0.9 * size;
+    nl.type = "lowpass"; nl.Q.value = 0.6; nl.frequency.setValueAtTime(900 + 1500 * (1 - size) + 500 * many, t); nl.frequency.exponentialRampToValueAtTime(110, t + nd);
+    ng.gain.setValueAtTime(0.0001, t); ng.gain.linearRampToValueAtTime(A * (0.5 + 0.6 * size + 0.4 * many), t + 0.01); ng.gain.exponentialRampToValueAtTime(0.0001, t + nd);
+    s.connect(nl); nl.connect(ng); ng.connect(out); s.start(t, Math.random()); s.stop(t + nd + 0.05); nodes.push(s);
+    // long chains keep only the newest few tails ringing
+    booms = booms.filter((b) => b.end > ac.currentTime);
+    booms.push({ out, nodes, end: t + dur + 0.1 });
+    while (booms.length > 9) { const b = booms.shift(); try { b.out.gain.setTargetAtTime(0, ac.currentTime, 0.03); b.nodes.forEach((x) => x.stop(ac.currentTime + 0.2)); } catch (e) {} }
   }
   // A low bed under chain reactions: swells with each wave, releases after the last
   // A soft tuned voice for placements: a sine with a little triangle on top, a quick attack and a bell-like fall
@@ -2043,10 +2146,7 @@ const Sound = (() => {
       const big = Math.max(...caps), n = caps.length;
       if (w === 0) GEN.chain(n);
       swell(Math.min(0.5, 0.12 + 0.05 * w + 0.03 * n), Math.min(520, 140 + 30 * w + 12 * n));
-      // bigger bodies sit an octave lower; each wave of the chain steps up the scale
-      const step = PENTA[Math.min(w, PENTA.length - 1)] - (big >= 6 ? 12 : big >= 4 ? 7 : 0);
-      play("supernova", { rate: NOVA_D * semi(step), gain: Math.min(0.95, 0.5 + 0.1 * Math.log2(1 + n)), pan: pan * 0.6, delay: 0.005 });
-      if (big < 4) play("crunch", { rate: jitter(1.1), gain: 0.22, pan });
+      boom(w, big, n, pan);
       if (remnants) play("hum", { rate: 1.8, gain: 0.24, delay: 0.12, pan });
     },
     // after a chain the line comes home: the motif restarts and a low D settles the run
@@ -3521,7 +3621,7 @@ function logGame() {
   const log = loadLog();
   log.push({ at: Date.now(), mode: CFG.mode, fmt: KO() ? "knockout" : "single", v: CFG.variant || "classic", lv: vsAI ? CFG.level : null, n: S.n, R: B.R,
     teams: S.team ? Math.max(...S.team) + 1 : 0, res, who: S.winner >= 0 ? NAMES[S.winner][0] : null, moves: S.moves,
-    chain: me >= 0 ? GAME.chain[me] || 0 : chains.length ? Math.max(...chains) : 0, round: ko, undos: GAME.undos || 0, rem: !!GAME.rem, low: GAME.low == null ? null : +GAME.low.toFixed(3) });
+    chain: me >= 0 ? GAME.chain[me] || 0 : chains.length ? Math.max(...chains) : 0, round: ko, undos: GAME.undos || 0, hints: !!GAME.hinted, rem: !!GAME.rem, low: GAME.low == null ? null : +GAME.low.toFixed(3) });
   while (log.length > 800) log.shift();
   save("sf2-log", log);
   const rp = replayRecord();
@@ -3537,14 +3637,16 @@ function logTour(mode, size, lv, finish, champion) {
 // the Replays pane: your last games, each playable from its first move
 function renderReplays() {
   const cap = (s) => s[0].toUpperCase() + s.slice(1), esc = (s) => String(s).replace(/[<>&"]/g, "");
-  // recent games you can watch again
-  const rps = loadReplays().map((g, idx) => [g, idx]).reverse();
-  if (!rps.length) $("#recGames").innerHTML = '<p class="vnote">Finished games appear here, ready to replay from the first move.</p>';
-  else {
-    const what = (g) => (g.fmt === "knockout" ? "Knockout" : g.mode === "solo" ? `Solo · ${cap(g.lv || "medium")}` : g.mode === "pass" ? "Pass and play" : "Online");
-    const out = (g) => (g.res === "win" ? "Win" : g.res === "loss" ? "Loss" : g.draw ? "Draw" : `${esc(g.seats[g.winner] ? g.seats[g.winner].name : "")} won`);
-    $("#recGames").innerHTML = (`<figure class="chart"><figcaption>Recent games<small>replay from the first move</small></figcaption><div class="rp-list">${rps.map(([g, idx]) => `<div class="rp-row"><i class="k r-${g.res === "win" || g.res === "loss" ? g.res : "draw"}"></i><span><b>${out(g)}</b> · ${what(g)} · ${tM(g.moves.length)} · ${new Date(g.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span><button class="btn" type="button" data-rp="${idx}">Replay</button></div>`).join("")}</div></figure>`);
-  }
+  const all = loadReplays();
+  const rps = all.map((g, idx) => [g, idx]).reverse();
+  const head = `<figcaption class="rp-head"><span>Replays<small> · ${all.length} kept</small></span><span class="rp-acts">${all.length ? '<button class="btn ghost" type="button" data-rpclear>Clear</button>' : ""}<button class="btn ghost" type="button" data-rpimport>Import</button></span></figcaption>`;
+  if (!rps.length) { $("#recGames").innerHTML = `<figure class="chart">${head}<p class="vnote">Finished games appear here, ready to replay from the first move. Replays someone exports for you can be imported here too.</p></figure>`; return; }
+  const what = (g) => (g.fmt === "knockout" ? "Knockout" : g.mode === "solo" ? `Solo · ${cap(g.lv || "medium")}` : g.mode === "pass" ? "Pass and play" : g.mode === "online" ? `Online${g.room ? ` · ${esc(g.room)}` : ""}` : "Game");
+  const out = (g) => (g.imported ? `${esc(g.seats[g.winner] ? g.seats[g.winner].name : "")} won` : g.res === "win" ? "Win" : g.res === "loss" ? "Loss" : g.draw ? "Draw" : `${esc(g.seats[g.winner] ? g.seats[g.winner].name : "")} won`);
+  const PIN = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2h8v12l-4-3-4 3z" fill="currentColor"/></svg>';
+  const UP = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11V2.5M4.5 6L8 2.5 11.5 6M2.5 10v3.5h11V10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+  const DEL = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+  $("#recGames").innerHTML = `<figure class="chart">${head}<div class="rp-list">${rps.map(([g, idx]) => `<div class="rp-row${g.imported ? " imported" : ""}"><i class="k r-${!g.imported && (g.res === "win" || g.res === "loss") ? g.res : "draw"}"></i><span><b>${out(g)}</b> · ${g.imported ? "Imported · " : ""}${what(g)} · ${tM(g.moves.length)} · ${new Date(g.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span><span class="rp-acts"><button class="btn icon ghost" type="button" data-pin="${idx}" aria-pressed="${!!g.pin}" title="${g.pin ? "Kept: never expires" : "Keep this replay"}" aria-label="Keep">${PIN}</button><button class="btn icon ghost" type="button" data-exp="${idx}" title="Export this replay" aria-label="Export">${UP}</button><button class="btn icon ghost" type="button" data-del="${idx}" title="Delete this replay" aria-label="Delete">${DEL}</button><button class="btn" type="button" data-rp="${idx}">Replay</button></span></div>`).join("")}</div><p class="vnote">${rpDays() ? `Replays expire after ${{ 1: "a day", 7: "a week", 30: "a month" }[rpDays()]}` : "Replays don't expire"}; the last ${rpKeep()} are kept. Pinned ones stay. Change this in Settings.</p></figure>`;
 }
 function renderRecord() {
   const log = loadLog(), tours = loadTours(), f = recFilter, rec = loadRecord();
@@ -3593,6 +3695,8 @@ function renderRecord() {
   if (f !== "pass") {
     split("By AI level", RECORD_LEVELS, (g) => g.lv, cap);
     split("By rules", VARIANTS, (g) => g.v, cap);
+    // games logged before this was tracked aren't counted either way
+    split("With and without hints", ["on", "off"], (g) => (g.hints == null ? null : g.hints ? "on" : "off"), (k) => (k === "on" ? "Hints on" : "Hints off"));
   }
   // how long games run
   if (games.length >= 3) {
@@ -3877,6 +3981,8 @@ async function commit(i, remote) {
   if (busy || over(S)) return;
   const p = S.turn;
   if (!SF.legal(B, S, i, p)) { deny(i); return; }
+  // a game counts as played with hints if they were on for any of your own moves
+  if (!remote && !isAI(p) && hintsOn()) GAME.hinted = true;
   if (CFG.mode === "online") {
     if (!remote && !NET.send({ t: "move", i, n: S.moves, g: NET.game })) { flash("Offline · reconnecting", 1500); return; }
     NET.applied = S.moves + 1;
@@ -4154,7 +4260,7 @@ function endGame() {
   const vsAI = CFG.mode === "solo";
   const meWon = (vsAI && w === 0) || (CFG.mode === "online" && NET.mine(w));
   // the score resolves to D major when you (or your side) win, to D minor when you lose
-  Sound.win(CFG.mode === "pass" || CFG.watch || meWon || (S.team && [...Array(S.n).keys()].some((q) => isMe(q) && SF.mate(S, q, w))));
+  Sound.win(!!(CFG.mode === "pass" || CFG.watch || meWon || (S.team && [...Array(S.n).keys()].some((q) => isMe(q) && SF.mate(S, q, w)))));
   const myTeam = S.team && [...Array(S.n).keys()].some((q) => isMe(q) && SF.mate(S, q, w));
   let title = S.team ? (myTeam ? "Your team collapses into a black hole" : `Team ${TEAM_NAMES[teamOf(w)]} collapses into a black hole`)
     : meWon ? "You collapse into a black hole" : `${NAMES[w][0]} collapses into a black hole`;
@@ -4204,7 +4310,8 @@ async function replayFinal() {
   S = end; view = snapOf(S); lastMove = last; busy = false;
   setAccent(S.winner);
   render();
-  Sound.win();
+  const w = S.winner;
+  Sound.win(!!(CFG.mode === "pass" || CFG.watch || (CFG.mode === "solo" && w === 0) || (CFG.mode === "online" && NET.mine(w)) || (S.team && [...Array(S.n).keys()].some((q) => isMe(q) && SF.mate(S, q, w)))));
   if (GL) beginLens(S.winner);
   setTimeout(() => { if (S.winner >= 0 && !busy) showWin(); }, RM.matches ? 900 : 3300);
 }
@@ -4449,6 +4556,7 @@ function openMenu() {
   form.elements.variant.value = VARIANTS.includes(base.variant) ? base.variant : "classic";
   $("#setMusic").checked = Sound.music; $("#setSfx").checked = Sound.sfx; paintVol();
   $("#setProgress").checked = progressionOn();
+  paintReplaySettings();
   $("#setHints").checked = SET.hints; $("#setOneTap").checked = SET.oneTap; $("#setUndo").checked = SET.undo; $("#setUi").checked = Sound.uiOn;
   paintRoster(); renderRecord(); selectTab("play"); menuDlg.showModal(); dlgBody.scrollTop = 0; paintProgress();
   Sound.ui("open");
@@ -4580,7 +4688,7 @@ function paintAgain() {
 }
 $("#winReplay").addEventListener("click", replayFinal);
 form.addEventListener("change", (e) => {
-  if (!e.target.name || e.target.name === "recf") return;
+  if (!e.target.name || ["recf", "rpkeep", "rpdays"].includes(e.target.name)) return;
   if (e.target.name === "mode") { closePalette(); $("#roster").dataset.key = ""; }
   paintRoster();
   if (e.target.name !== "mode") pushCfg();
@@ -4657,25 +4765,27 @@ $("#setProgress").addEventListener("change", async (e) => {
   const box = e.target;
   if (box.checked) { SET.progression = true; save("sf2-settings", SET); paintRoster(); return; }
   const got = ACH.filter((a) => ACHV[a.id]).length, games = loadLog().length, reps = loadReplays().length;
-  if (got || games || reps || loadTours().length) {
-    box.checked = true;
-    const lose = [got && `${got} badge${got === 1 ? "" : "s"}`, games && `${games} recorded game${games === 1 ? "" : "s"}`, reps && `${reps} replay${reps === 1 ? "" : "s"}`].filter(Boolean);
-    const r = await askConfirm({ title: "Turn off progression?", body: `Every level, rule and field opens right away. The price: ${lose.length ? andList(lose) : "your record"} ${lose.length === 1 && !/s$/.test(lose[0]) ? "is" : "are"} cleared for good, and badges start again from zero.`, ok: "Open everything" });
-    if (!r) return;
-    wipeRecords(true);
-    box.checked = false;
-  }
+  box.checked = true;
+  const lose = [got && `${got} badge${got === 1 ? "" : "s"}`, games && `${games} recorded game${games === 1 ? "" : "s"}`, reps && `${reps} replay${reps === 1 ? "" : "s"}`].filter(Boolean);
+  const r = await askConfirm({ title: "Turn off progression?", ok: "Open everything",
+    body: `Every level, rule and field opens right away, and no badges can be earned while it's off. ${lose.length ? `The price: ${andList(lose)} ${lose.length === 1 && !/s$/.test(lose[0]) ? "is" : "are"} cleared for good. Export your save first to keep a copy.` : "Turning it back on starts your badges from zero."}`,
+    extra: lose.length ? { label: "Export save", run: exportSave } : null });
+  if (!r) return;
+  wipeRecords(true);
+  box.checked = false;
   SET.progression = false; save("sf2-settings", SET); paintRoster();
-  if (got || games) flash("Progression off: everything is open", 1800);
+  flash("Progression off: everything is open", 1800);
 });
 $("#setOneTap").addEventListener("change", (e) => { SET.oneTap = e.target.checked; saveSet(); });
 $("#setUndo").addEventListener("change", (e) => { SET.undo = e.target.checked; saveSet(); });
 // a confirmation inside the menu sheet; resolves to { checked } when confirmed, null when not
 let askDone = null;
-function askConfirm({ title, body, ok, check }) {
+let askExtra = null;
+function askConfirm({ title, body, ok, check, extra }) {
   if (askDone) askDone(false);
-  const el = $("#ask"), ck = $("#askCheck");
+  const el = $("#ask"), ck = $("#askCheck"), xb = $("#askExtra");
   $("#askTitle").textContent = title; $("#askBody").textContent = body; $("#askOk").textContent = ok || "Confirm";
+  xb.hidden = !extra; askExtra = extra ? extra.run : null; if (extra) xb.textContent = extra.label;
   ck.hidden = !check;
   if (check) { ck.querySelector("span").textContent = check; ck.querySelector("input").checked = false; }
   el.hidden = false; Sound.ui("open");
@@ -4684,6 +4794,7 @@ function askConfirm({ title, body, ok, check }) {
 }
 $("#askNo").addEventListener("click", () => { Sound.ui("close"); if (askDone) askDone(false); });
 $("#askOk").addEventListener("click", () => { if (askDone) askDone(true); });
+$("#askExtra").addEventListener("click", () => { if (askExtra) askExtra(); });
 $("#ask").addEventListener("click", (e) => { if (e.target.id === "ask" && askDone) { Sound.ui("close"); askDone(false); } });
 menuDlg.addEventListener("cancel", (e) => { if (askDone) { e.preventDefault(); askDone(false); } });
 menuDlg.addEventListener("close", () => { if (askDone) askDone(false); });
@@ -4691,7 +4802,7 @@ menuDlg.addEventListener("close", () => { if (askDone) askDone(false); });
 function wipeRecords(badges) {
   ["sf2-log", "sf2-tours", "sf2-tour-record", "sf2-replays"].forEach((k) => save(k, null));
   save("sf2-record", {});
-  if (badges) { ACHV = {}; save("sf2-ach", {}); save("sf2-tutorial-done", false); save("sf2-watched", false); }
+  if (badges) { ACHV = {}; save("sf2-ach", {}); save("sf2-tutorial-done", false); save("sf2-watched", 0); save("sf2-flags", null); }
   renderRecord(); paintRoster();
 }
 $("#resetRecord").addEventListener("click", async () => {
@@ -4713,7 +4824,9 @@ $("#panelRecord").addEventListener("click", (e) => {
   const b = e.target.closest("[data-rp]");
   if (!b) return;
   if (NET.inRoom()) { flash("Leave the online room to watch replays", 1800); return; }
-  Sound.ui("open"); startReplay(loadReplays()[+b.dataset.rp], true);
+  const rec = loadReplays()[+b.dataset.rp];
+  if (rec && rec.imported) setFlag("importReplay");
+  Sound.ui("open"); startReplay(rec, true);
 });
 $("#recFilter").addEventListener("change", (e) => { recFilter = e.target.value; renderRecord(); Sound.ui("tab"); });
 function buildLegend() {
@@ -5088,7 +5201,16 @@ function paintPlayers() {
 /* ---------- Replays: any recorded game from its first move, at the speed you pick ---------- */
 const REPLAY_SPEEDS = [0.5, 1, 2, 4, 8];
 let RP = null;
-const loadReplays = () => { const l = load("sf2-replays"); return Array.isArray(l) ? l : []; };
+// how many replays are kept and for how long; kept ones (pinned) stay until unpinned
+const rpKeep = () => [10, 25, 50, 100].includes(SET.rpKeep) ? SET.rpKeep : 25;
+const rpDays = () => [0, 1, 7, 30].includes(SET.rpDays) ? SET.rpDays : 7;
+function pruneReplays(l) {
+  const days = rpDays(), now = Date.now();
+  l = l.filter((g) => g.pin || !days || now - (g.at || now) < days * 864e5);
+  const loose = l.filter((g) => !g.pin), drop = new Set(loose.slice(0, Math.max(0, loose.length - rpKeep())));
+  return l.filter((g) => !drop.has(g));
+}
+const loadReplays = () => { const l = load("sf2-replays"); return Array.isArray(l) ? pruneReplays(l) : []; };
 // what a replay needs: the field, the rules, who sat where, and every move in order
 function replayRecord() {
   if (!S || !B || !GAME.moves || GAME.moves.length !== S.moves || GAME.partial) return null;
@@ -5096,14 +5218,14 @@ function replayRecord() {
     at: Date.now(), mode: CFG.mode, fmt: KO() ? "knockout" : "single", v: CFG.variant || "classic", R: B.R, voids: CFG.voids || null,
     n: S.n, limit: S.limit || 0, race: !!S.race, teams: S.team ? Math.max(...S.team) + 1 : 0,
     seats: [...Array(S.n).keys()].map((q) => ({ name: NAMES[q][0], color: Math.max(0, PALETTE.indexOf(HEX[q])) })),
-    moves: GAME.moves.slice(), winner: S.winner, draw: !!S.draw,
+    moves: GAME.moves.slice(), winner: S.winner, draw: !!S.draw, ...(CFG.mode === "online" && NET.code ? { room: NET.code } : {}),
   };
 }
 function saveReplay(rec) {
   if (!rec) return;
   const l = loadReplays();
   l.push(rec);
-  save("sf2-replays", l.slice(-12));
+  save("sf2-replays", pruneReplays(l));
 }
 // start: the game on the field now (from its result), or a saved one from the Record tab
 function startReplay(rec, past) {
@@ -5144,14 +5266,14 @@ async function replayLoop() {
   }
 }
 async function replayStep(me) {
-  const i = me.rec.moves[me.k];
+  const i = me.rec.moves[me.k], gen = me.gen || 0;
   if (!SF.legal(B, S, i, S.turn)) { flash("This replay can't continue", 1600); exitReplay(); return; }
   const res = SF.apply(B, S, i, true);
   await playMove(S, i, res, 1 / me.speed, `Replay · move ${me.k + 1}`);
-  if (RP !== me) return;
+  if (RP !== me || (me.gen || 0) !== gen) return;
   const p = S.turn;
   S = res.state; view = snapOf(S); me.k++;
-  if (me.k >= me.rec.moves.length && !load("sf2-watched")) { save("sf2-watched", true); checkAch(false); }
+  if (me.k >= me.rec.moves.length && !me.counted) { me.counted = true; save("sf2-watched", (+load("sf2-watched") || 0) + 1); checkAch(false); }
   lastMove = { i, p, flips: [] };
   render(); paintReplay();
 }
@@ -5163,7 +5285,37 @@ function paintReplay() {
   $("#rpPos").textContent = `Move ${RP.k} / ${n}`;
   $("#rpStep").disabled = RP.playing || RP.k >= n;
   $("#replayBar").style.setProperty("--p", `${(RP.k / n) * 100}%`);
+  const sc = $("#rpScrub");
+  sc.max = String(n);
+  if (document.activeElement !== sc || !RP.scrubbing) sc.value = String(RP.k);
+  sc.style.setProperty("--p", `${n ? (RP.k / n) * 100 : 0}%`);
 }
+// Scrubbing: jump straight to any move. A state is kept every 25 moves, so a jump never plays far forward.
+function replayStateAt(me, k) {
+  const r = me.rec, every = 25;
+  if (!me.cache) me.cache = [SF.newState(B, r.n, r.limit, r.race, r.teams)];
+  let at = Math.min(Math.floor(k / every), me.cache.length - 1) * every, s = me.cache[at / every];
+  while (at < k) { s = SF.apply(B, s, r.moves[at], false).state; at++; if (at % every === 0 && !me.cache[at / every]) me.cache[at / every] = s; }
+  return s;
+}
+function replaySeek(k) {
+  if (!RP) return;
+  const me = RP, n = me.rec.moves.length;
+  k = Math.max(0, Math.min(n, k | 0));
+  me.playing = false; me.gen = (me.gen || 0) + 1;
+  if (skipNow) skipNow();
+  animating = false; animMsg = null; preview = null;
+  if (k > 0) {
+    const prev = replayStateAt(me, k - 1), mv = me.rec.moves[k - 1];
+    S = SF.apply(B, prev, mv, false).state;
+    lastMove = { i: mv, p: prev.turn, flips: [] };
+  } else { S = replayStateAt(me, 0); lastMove = null; }
+  view = snapOf(S); me.k = k;
+  render(); paintReplay();
+  if (me.wake) me.wake();
+}
+$("#rpScrub").addEventListener("input", (e) => { if (RP) { RP.scrubbing = true; replaySeek(+e.target.value); } });
+$("#rpScrub").addEventListener("change", () => { if (RP) { RP.scrubbing = false; paintReplay(); } });
 function exitReplay() {
   if (!RP) return;
   const me = RP; RP = null;
@@ -5202,6 +5354,147 @@ $("#rpSpeed").addEventListener("click", () => {
 $("#rpExit").addEventListener("click", () => { Sound.ui("close"); exitReplay(); });
 $("#winFull").addEventListener("click", () => startReplay(replayRecord(), false));
 
+/* ---------- Files: a whole save, a single replay, a room ---------- */
+// download a file (on iPhone and iPad, the share sheet, which can save it to Files)
+async function giveFile(name, obj) {
+  const text = JSON.stringify(obj), file = typeof File === "function" ? new File([text], name, { type: "application/json" }) : null;
+  try {
+    if (file && /iPhone|iPad|iPod/.test(navigator.userAgent) && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); return true; }
+  } catch (e) { if (e && e.name === "AbortError") return false; }
+  try {
+    const url = URL.createObjectURL(new Blob([text], { type: "application/json" })), a = document.createElement("a");
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return true;
+  } catch (e) { flash("This browser can't save files here", 2000); return false; }
+}
+const stamp = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+const setFlag = (k) => { const f = load("sf2-flags") || {}; if (!f[k]) { f[k] = Date.now(); save("sf2-flags", f); checkAch(false); } };
+// everything this game keeps in the browser
+const SAVE_KEY = (k) => k.startsWith("sf2-") || k === "sf-muted";
+async function exportSave() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (SAVE_KEY(k)) data[k] = localStorage.getItem(k); }
+  if (await giveFile(`accrete-save-${stamp()}.json`, { type: "accrete-save", v: 1, at: Date.now(), data })) { setFlag("exportSave"); flash("Save exported", 1400); }
+}
+async function exportReplay(rec) {
+  if (!rec) return;
+  const { pin, imported, ...clean } = rec;
+  if (await giveFile(`accrete-replay-${stamp()}.json`, { type: "accrete-replay", v: 1, rec: clean })) { setFlag("exportReplay"); flash("Replay exported", 1400); }
+}
+// a room's file: its rules, its leaderboard, and the games from it this device kept
+function roomFile() {
+  const r = NET.room;
+  if (!r) return null;
+  return { type: "accrete-room", v: 1, at: Date.now(), code: NET.code, cfg: r.cfg, scores: r.scores || {}, replays: loadReplays().filter((g) => g.room === NET.code).map(({ pin, ...g }) => g) };
+}
+async function exportRoom() { const f = roomFile(); if (f && (await giveFile(`accrete-room-${f.code}-${stamp()}.json`, f))) flash("Room exported", 1400); }
+// a replay from elsewhere is checked move by move before it is kept
+function validReplay(rec) {
+  try {
+    if (!rec || !Array.isArray(rec.moves) || rec.moves.length > 20000 || !Array.isArray(rec.seats)) return false;
+    if (!(rec.R >= 2 && rec.R <= 12) || !(rec.n >= 2 && rec.n <= 8) || rec.seats.length !== rec.n) return false;
+    const b = SF.makeBoard(rec.R, Array.isArray(rec.voids) ? rec.voids : undefined);
+    let s = SF.newState(b, rec.n, rec.limit || 0, !!rec.race, rec.teams || 0);
+    for (const m of rec.moves) { if (!Number.isInteger(m) || !SF.legal(b, s, m, s.turn) || s.winner >= 0 || s.draw) return false; s = SF.apply(b, s, m, false).state; }
+    rec.winner = s.winner; rec.draw = !!s.draw;
+    rec.seats = rec.seats.map((x) => ({ name: String((x && x.name) || "Star").slice(0, 24).replace(/[<>&"]/g, ""), color: Math.max(0, Math.min(PALETTE.length - 1, (x && x.color) | 0)) }));
+    return true;
+  } catch (e) { return false; }
+}
+function addImported(list) {
+  const l = load("sf2-replays") || [], have = new Set(l.map((g) => `${g.at}|${g.moves.join(",")}`));
+  let n = 0;
+  list.forEach((rec) => { if (!validReplay(rec)) return; const key = `${rec.at}|${rec.moves.join(",")}`; if (have.has(key)) return; have.add(key); l.push({ ...rec, imported: true, pin: true, at: rec.at || Date.now() }); n++; });
+  save("sf2-replays", pruneReplays(l));
+  return n;
+}
+async function importFile(file) {
+  let obj;
+  try { if (file.size > 8e6) throw 0; obj = JSON.parse(await file.text()); } catch (e) { flash("That file isn't an Accrete file", 2000); Sound.deny(); return; }
+  if (obj && obj.type === "accrete-replay" && obj.rec) {
+    const n = addImported([obj.rec]);
+    if (!n) { flash(validReplay(obj.rec) ? "You already have that replay" : "That replay doesn't play out on these rules", 2200); return; }
+    flash("Replay imported, pinned to Replays", 1800); openRecordTab("games"); return;
+  }
+  if (obj && obj.type === "accrete-room") {
+    const n = addImported(Array.isArray(obj.replays) ? obj.replays : []);
+    if (NET.inRoom() && NET.isHost() && NET.room && NET.room.phase === "lobby" && obj.scores) {
+      const r = await askConfirm({ title: "Restore this room's leaderboard?", body: `The leaderboard from room ${String(obj.code || "").slice(0, 5)} is added to this room's tally.${n ? ` ${n} of its games were added to your replays.` : ""}`, ok: "Restore" });
+      if (r) { NET.send({ t: "restore", scores: obj.scores }); flash("Leaderboard restored", 1600); }
+    } else flash(`${n ? `${n} game${n === 1 ? "" : "s"} added to your replays. ` : ""}Host a room and import this again to restore its leaderboard.`, 3200);
+    return;
+  }
+  if (obj && obj.type === "accrete-save" && obj.data && typeof obj.data === "object") {
+    const keys = Object.keys(obj.data).filter(SAVE_KEY);
+    if (!keys.length) { flash("That save is empty", 1800); return; }
+    const when = obj.at ? new Date(obj.at).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+    const r = await askConfirm({ title: "Restore this save?", body: `Your record, badges, replays and settings here are replaced by the save${when ? ` from ${when}` : ""}. The page reloads afterwards.`, ok: "Restore save", extra: { label: "Export current first", run: exportSave } });
+    if (!r) return;
+    const old = [];
+    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (SAVE_KEY(k)) old.push(k); }
+    old.forEach((k) => localStorage.removeItem(k));
+    keys.forEach((k) => { try { localStorage.setItem(k, String(obj.data[k])); } catch (e) {} });
+    location.reload();
+    return;
+  }
+  flash("That file isn't an Accrete file", 2000); Sound.deny();
+}
+function openRecordTab(t) {
+  if (!menuDlg.open) openMenu();
+  selectTab("record");
+  const b = $(`#recTabs [data-rt="${t}"]`); if (b) b.click();
+}
+$("#fileIn").addEventListener("change", (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) importFile(f); });
+const pickFile = () => { Sound.ui("click"); $("#fileIn").click(); };
+$("#exportSave").addEventListener("click", () => { Sound.ui("click"); exportSave(); });
+$("#importFile").addEventListener("click", pickFile);
+// a file dropped on the page is imported too
+addEventListener("dragover", (e) => { if (e.dataTransfer && [...e.dataTransfer.types].includes("Files")) e.preventDefault(); });
+addEventListener("drop", (e) => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) { e.preventDefault(); importFile(f); } });
+// replays: keep, export, import
+$("#recGames").addEventListener("click", (e) => {
+  const pin = e.target.closest("[data-pin]"), ex = e.target.closest("[data-exp]"), im = e.target.closest("[data-rpimport]");
+  const del = e.target.closest("[data-del]"), clr = e.target.closest("[data-rpclear]");
+  if (im) { pickFile(); return; }
+  if (del) {
+    const rec = loadReplays()[+del.dataset.del];
+    if (!rec) return;
+    save("sf2-replays", (load("sf2-replays") || []).filter((g) => !(g.at === rec.at && g.moves.length === rec.moves.length)));
+    Sound.ui("close"); renderReplays(); return;
+  }
+  if (clr) {
+    (async () => {
+      const pinned = loadReplays().filter((g) => g.pin).length;
+      const r = await askConfirm({ title: "Clear replays?", body: `Every saved replay is deleted from this device.${pinned ? "" : " This can't be undone."}`, ok: "Clear replays",
+        check: pinned ? `Delete the ${pinned} pinned replay${pinned === 1 ? "" : "s"} too` : null });
+      if (!r) return;
+      save("sf2-replays", r.checked ? [] : loadReplays().filter((g) => g.pin));
+      Sound.ui("close"); renderReplays();
+    })();
+    return;
+  }
+  if (pin || ex) {
+    const l = load("sf2-replays") || [], vis = loadReplays(), rec = vis[+(pin || ex).dataset[pin ? "pin" : "exp"]];
+    if (!rec) return;
+    if (ex) { Sound.ui("click"); exportReplay(rec); return; }
+    const k = l.findIndex((g) => g.at === rec.at && g.moves.length === rec.moves.length);
+    if (k >= 0) { l[k].pin = !l[k].pin; save("sf2-replays", l); Sound.ui("tab"); renderReplays(); }
+  }
+});
+// replay retention settings
+function paintReplaySettings() {
+  const f = form.elements;
+  f.rpkeep.value = String(rpKeep()); f.rpdays.value = String(rpDays());
+  const l = load("sf2-replays") || [], kb = Math.round(JSON.stringify(l).length / 1024);
+  $("#rpNote").textContent = `${l.length} replay${l.length === 1 ? "" : "s"} kept, ${kb < 1 ? "under 1 KB" : `about ${kb} KB`}. Pinned replays never expire.`;
+}
+["rpKeep", "rpDays"].forEach((id) => $(`#${id}`).addEventListener("change", (e) => {
+  if (e.target.name === "rpkeep") SET.rpKeep = +e.target.value; else SET.rpDays = +e.target.value;
+  save("sf2-settings", SET);
+  save("sf2-replays", loadReplays());
+  paintReplaySettings(); Sound.ui("tab");
+}));
 /* ---------- Badges and unlocks: the rules, levels and fields open up as you play ---------- */
 const lostWins = (L) => L.filter((g) => g.res === "win");
 const aiWins = (L, lv) => L.filter((g) => g.res === "win" && g.lv && (!lv || g.lv === lv));
@@ -5241,6 +5534,83 @@ const ACH = [
   { id: "nightshift", name: "Night shift", desc: "Finish a game between midnight and 4 am", test: (L) => L.some((g) => g.at && new Date(g.at).getHours() < 4) },
   { id: "archivist", name: "Archivist", desc: "Watch a replay to the end", test: () => !!load("sf2-watched") },
 ];
+// Badge series: the same picture with a number on its plate, climbing through the classes
+(() => {
+  const W = (L) => L.filter((g) => g.res === "win");
+  const cnt = (f) => (L, T) => f(L, T);
+  const add = (id, name, desc, tier, art, num, count, need) => ACH.push({ id, name, desc, tier, art, num: num == null ? "" : String(num), test: (L, T) => count(L, T) >= need, prog: need > 1 ? (L, T) => [count(L, T), need] : null });
+  const ROMAN = ["I", "II", "III", "IV", "V"];
+  // wins against each AI level
+  [["easy", "Dust devil", "first"], ["medium", "Ignition", "seq"], ["hard", "Fusion", "giant"], ["expert", "Event horizon", "singularity"]].forEach(([lv, nm, art], li) =>
+    [5, 25, 100].forEach((n, k) => add(`lv-${lv}-${n}`, `${nm} ${ROMAN[k]}`, `Win ${n} games against ${lv[0].toUpperCase() + lv.slice(1)}`, "MKGO"[Math.min(3, li + k)], art, n, (L) => aiWins(L, lv).length, n)));
+  // wins and games, all told
+  [[10, "K"], [50, "G"], [100, "G"], [250, "O"]].forEach(([n, t], k) => add(`wins-${n}`, `Accretion ${ROMAN[k]}`, `Win ${n} games`, t, "contender", n, (L) => W(L).length, n));
+  [[100, "G"], [250, "O"], [500, "O"]].forEach(([n, t], k) => add(`games-${n}`, `Galactic year ${ROMAN[k]}`, `Finish ${n} games`, t, "regular", n, (L) => L.length, n));
+  // chains
+  [[5, "Spark", "M", "cascade10"], [15, "Flare", "K", "cascade10"], [40, "Kilonova", "O", "cascade20"], [50, "Gamma burst", "O", "hypernova"], [75, "Magnetar", "O", "hypernova"]].forEach(([n, nm, t, art]) =>
+    add(`chain-${n}`, nm, `Set off a chain of ${n} novae`, t, art, n, (L) => L.reduce((m, g) => Math.max(m, g.chain || 0), 0), n));
+  // every rule set, once and ten times
+  [["classic", "Classicist", "Purist", "rclassic"], ["race", "Photo finish", "Pole position", "rrace"], ["blitz", "Quick draw", "Lightning", "rblitz"], ["epoch", "Long view", "Era", "repoch"], ["belt", "Belter", "Asteroid miner", "rbelt"]].forEach(([v, a1, a10, art]) => {
+    const name = v[0].toUpperCase() + v.slice(1);
+    add(`v-${v}-1`, a1, `Win a game under ${name} rules`, "M", art, null, (L) => W(L).filter((g) => (g.v || "classic") === v).length, 1);
+    add(`v-${v}-10`, a10, `Win 10 games under ${name} rules`, "G", art, 10, (L) => W(L).filter((g) => (g.v || "classic") === v).length, 10);
+  });
+  // every field size
+  for (let R = 2; R <= 12; R++) add(`field-${R}`, `Field ${R}`, `Win on a field of radius ${R}`, R <= 4 ? "M" : R <= 7 ? "K" : R <= 10 ? "G" : "O", "wide", R, (L) => W(L).filter((g) => g.R === R).length, 1);
+  // stars and teams
+  add("stars-3", "Triple system", "Win a game with three stars", "M", "crowded", 3, (L) => W(L).filter((g) => g.n === 3).length, 1);
+  add("stars-5", "Open cluster", "Win a game with five stars", "K", "crowded", 5, (L) => W(L).filter((g) => g.n === 5).length, 1);
+  add("teams-2", "Alliance", "Win a game in two teams", "K", "allied", 2, (L) => W(L).filter((g) => g.teams === 2).length, 1);
+  add("teams-3", "Triad", "Win a game in three teams", "G", "allied", 3, (L) => W(L).filter((g) => g.teams === 3).length, 1);
+  add("teams-10", "Coalition", "Win 10 team games", "G", "allied", 10, (L) => W(L).filter((g) => g.teams).length, 10);
+  // knockouts
+  const titles = (T) => T.filter((t) => t.finish === "Champion");
+  add("ko-final", "Finalist", "Reach a knockout final", "K", "champion", null, (L, T) => T.filter((t) => t.finish === "Final" || t.finish === "Champion").length, 1);
+  add("ko-10", "Hall of fame", "Win 10 knockout tournaments", "O", "dynasty", 10, (L, T) => titles(T).length, 10);
+  add("ko-expert", "Unbeaten", "Win a knockout against Expert", "O", "grand", null, (L, T) => titles(T).filter((t) => t.lv === "expert").length, 1);
+  add("ko-8hard", "Grand slam", "Win an 8-star knockout against Hard or Expert", "O", "grand", 8, (L, T) => titles(T).filter((t) => t.size === 8 && (t.lv === "hard" || t.lv === "expert")).length, 1);
+  // online and pass-and-play
+  const onl = (L) => L.filter((g) => g.mode === "online");
+  add("online-10", "Signal", "Finish 10 online games", "K", "contact", 10, (L) => onl(L).length, 10);
+  add("online-w10", "Broadcast", "Win 10 online games", "G", "contact", 10, (L) => W(onl(L)).length, 10);
+  add("online-w25", "Deep space network", "Win 25 online games", "O", "contact", 25, (L) => W(onl(L)).length, 25);
+  add("online-ko", "Open champion", "Win an online knockout", "G", "champion", null, (L) => W(onl(L)).filter((g) => g.fmt === "knockout" && g.round === "Final").length, 1);
+  const pass = (L) => L.filter((g) => g.mode === "pass");
+  add("pass-10", "Game night", "Finish 10 pass-and-play games", "K", "local", 10, (L) => pass(L).length, 10);
+  add("pass-50", "House rules", "Finish 50 pass-and-play games", "G", "local", 50, (L) => pass(L).length, 50);
+  add("pass-6", "Full table", "Finish a pass-and-play game with six stars", "K", "local", 6, (L) => pass(L).filter((g) => g.n >= 6).length, 1);
+  // streaks, speed and length
+  const best = (L) => { let r = 0, b = 0; L.filter((g) => g.lv && g.res !== "na").forEach((g) => { r = g.res === "win" ? r + 1 : 0; b = Math.max(b, r); }); return b; };
+  [[3, "K"], [10, "G"], [20, "O"]].forEach(([n, t]) => add(`streak-${n}`, n === 3 ? "Warm streak" : n === 10 ? "Blazing" : "Wildfire", `Win ${n} in a row against the AI`, t, "streak", n, best, n));
+  add("swift-25", "Flash", "Win before T+25M years", "G", "swift", 25, (L) => W(L).filter((g) => g.moves < 25 && g.v !== "epoch").length, 1);
+  add("swift-15", "Instant", "Win before T+15M years", "O", "swift", 15, (L) => W(L).filter((g) => g.moves < 15 && g.v !== "epoch" && g.n >= 2).length, 1);
+  add("long-300", "Deep time", "Play a game past T+300M years", "G", "marathon", 300, (L) => L.filter((g) => g.moves >= 300).length, 1);
+  add("long-500", "Heat death", "Play a game past T+500M years", "O", "marathon", 500, (L) => L.filter((g) => g.moves >= 500).length, 1);
+  // clean hands, comebacks, remnants
+  const clean = (L, lv) => W(L).filter((g) => g.mode === "solo" && g.undos === 0 && (!lv || g.lv === lv));
+  add("clean-hard", "Steady nerve", "Beat Hard without an undo", "G", "clean", null, (L) => clean(L, "hard").length, 1);
+  add("clean-expert", "Cold steel", "Beat Expert without an undo", "O", "clean", null, (L) => clean(L, "expert").length, 1);
+  add("clean-10", "Never look back", "Win 10 solo games without an undo", "G", "clean", 10, (L) => clean(L).length, 10);
+  add("comeback-10", "Phoenix", "Win after falling under 10% of the matter", "G", "comeback", 10, (L) => W(L).filter((g) => g.low != null && g.low < 0.1).length, 1);
+  add("comeback-5", "Lazarus", "Win after falling under 5% of the matter", "O", "comeback", 5, (L) => W(L).filter((g) => g.low != null && g.low < 0.05).length, 1);
+  add("rem-10", "Pulsar field", "Leave neutron stars in 10 games", "K", "remnant", 10, (L) => L.filter((g) => g.rem).length, 10);
+  add("rem-50", "Neutron graveyard", "Leave neutron stars in 50 games", "G", "remnant", 50, (L) => L.filter((g) => g.rem).length, 50);
+  // when you play
+  const days = (L) => new Set(L.filter((g) => g.at).map((g) => new Date(g.at).toDateString())).size;
+  add("early", "Early riser", "Finish a game between 5 and 7 am", "M", "first", null, (L) => L.filter((g) => g.at && [5, 6].includes(new Date(g.at).getHours())).length, 1);
+  add("weekend", "Weekender", "Win a game on a weekend", "M", "calendar", null, (L) => W(L).filter((g) => g.at && [0, 6].includes(new Date(g.at).getDay())).length, 1);
+  [[3, "M"], [7, "K"], [30, "G"]].forEach(([n, t]) => add(`days-${n}`, n === 3 ? "Regular orbit" : n === 7 ? "Week of stars" : "Lunar month", `Play on ${n} different days`, t, "calendar", n, days, n));
+  // replays, export and import
+  const flag = (k) => () => ((load("sf2-flags") || {})[k] ? 1 : 0);
+  add("watch-10", "Film archive", "Watch 10 replays to the end", "K", "archivist", 10, () => +load("sf2-watched") || 0, 10);
+  add("export-replay", "Correspondent", "Export a replay to share", "M", "upload", null, flag("exportReplay"), 1);
+  add("import-replay", "Pen pal", "Watch a replay someone else exported", "M", "download", null, flag("importReplay"), 1);
+  add("backup", "Vault", "Export your whole save", "M", "vault", null, flag("exportSave"), 1);
+  // grit
+  add("undo-5", "Second thoughts", "Win a game after five or more undos", "M", "rewind", 5, (L) => W(L).filter((g) => g.undos >= 5).length, 1);
+  add("expert-multi", "Against the void", "Beat three or more Expert stars at once", "O", "singularity", 3, (L) => aiWins(L, "expert").filter((g) => g.n >= 4 && !g.teams).length, 1);
+  add("expert-big", "Edge of the universe", "Beat Expert on a field of radius 10 or more", "O", "supercluster", null, (L) => aiWins(L, "expert").filter((g) => g.R >= 10).length, 1);
+})();
 const UNLOCK_NAMES = { "lv:medium": "Medium AI", "lv:hard": "Hard AI", "lv:expert": "Expert AI", "n:3": "3 stars", "n:4": "4 stars", "n:5": "5 stars", "n:6": "6 stars",
   "v:race": "Race", "v:blitz": "Blitz", "v:epoch": "Epoch", "v:belt": "Belt", "r:8": "fields up to radius 8", "r:12": "fields up to radius 12", teams: "Teams", ko: "Knockout", ko8: "8-star knockouts" };
 const OPEN = new Set(["lv:easy", "n:2", "v:classic"]);
@@ -5284,6 +5654,8 @@ function legacyLog() {
 }
 const achLog = () => legacyLog().concat(loadLog());
 function checkAch(quiet) {
+  // with progression off everything is open, and nothing is earned
+  if (!progressionOn()) return;
   const L = achLog(), T = loadTours(), fresh = [];
   for (const a of ACH) if (!ACHV[a.id]) { let ok = false; try { ok = a.test(L, T); } catch (e) {} if (ok) { ACHV[a.id] = Date.now(); fresh.push(a); } }
   if (!fresh.length) return;
@@ -5298,7 +5670,7 @@ function achNext() {
   if (!a) { achBusy = false; el.classList.remove("on"); return; }
   achBusy = true;
   const un = (a.unlocks || []).filter((k) => progressionOn()).map((k) => UNLOCK_NAMES[k]);
-  const [tn, tc] = TIERS[TIER[a.id] || "M"];
+  const [tn, tc] = TIERS[tierOf(a)];
   el.style.setProperty("--tc", tc);
   el.innerHTML = `${medal(a, true, 0, "pop")}<span class="eyebrow">Badge earned · ${tn}</span><b>${a.name}</b><small>${a.desc}${un.length ? ` · Unlocked ${andList(un)}` : ""}</small>`;
   el.classList.add("on"); Sound.ui("confirm");
@@ -5312,6 +5684,7 @@ const TIER = { first: "M", local: "M", cadet: "M", regular: "M", remnant: "M", a
   seq: "K", wide: "K", binary: "K", contender: "K", clean: "K", swift: "K", contact: "K", marathon: "K",
   giant: "G", deep: "G", champion: "G", cascade20: "G", comeback: "G", streak: "G", rules: "G", supercluster: "G", constellation: "G", crowded: "G",
   grand: "O", singularity: "O", veteran: "O", hypernova: "O", quasar: "O", dynasty: "O" };
+const tierOf = (a) => a.tier || TIER[a.id] || "M";
 // Each badge's picture, drawn on a 32-unit square at the medal's centre
 const ART = (() => {
   const c = (x, y, r, k, x2 = "") => `<circle class="${k}" cx="${x}" cy="${y}" r="${r}" ${x2}/>`;
@@ -5358,6 +5731,16 @@ const ART = (() => {
     local: c(9, 10.5, 3.4, "t") + p("M3.2 24.5c0-5 2.6-8.2 5.8-8.2s5.8 3.2 5.8 8.2z", "t") + c(23, 10.5, 3.4, "w") + p("M17.2 24.5c0-5 2.6-8.2 5.8-8.2s5.8 3.2 5.8 8.2z", "tl") + p("M10 28.8h11.5m-2.4-2.2l2.4 2.2-2.4 2.2", "sw") + p("M22 3.4H10.5m2.4-2.2l-2.4 2.2 2.4 2.2", "sw"),
     cadet: p("M6 23l10-8 10 8", "st thick") + s4(16, 8.5, 5, "w") + c(16, 8.5, 1.3, "t") + p("M9.5 28h13", "sl"),
     nightshift: c(14, 17, 11.5, "t") + c(19.5, 12.5, 9.5, "bg") + s4(24, 11, 2.8, "w") + s4(28, 18, 1.8, "tl") + c(7, 6, 0.9, "w") + c(26, 26, 0.8, "w"),
+    rclassic: hx(16, 16, 11.5, "st thick") + s4(16, 16, 7, "w") + c(16, 16, 1.6, "t"),
+    rrace: p("M8 3.5v25", "sw thick") + p("M9 5h15v11.5H9z", "t") + p("M9 5h5v3.8H9zM19 5h5v3.8h-5zM14 8.8h5v3.9h-5zM9 12.7h5v3.8H9zM19 12.7h5v3.8h-5z", "w") + p("M5 28.5h7", "sw"),
+    rblitz: p("M18.5 2L7 18h7.5L12 30l12.5-17H17z", "t") + p("M18.5 2L7 18h7.5L12 30l12.5-17H17z", "sw"),
+    repoch: c(16, 16, 12.5, "st") + rays(16, 16, 9.5, 11.5, 12, "sl") + p("M16 8v8l5.5 3.5", "sw thick") + c(16, 16, 1.6, "t"),
+    rbelt: e(16, 16, 14.5, 5, -15, "sl") + c(16, 16, 5, "t") + c(14.8, 14.8, 2, "tl") + [[3.2, 18.6, 1.6], [8, 12.2, 1.2], [24.5, 12, 1.4], [28.6, 14.2, 1.1], [21, 21.4, 1.5], [10, 21.8, 1]].map(([x, y, r], i) => c(x, y, r, i % 2 ? "w" : "tl")).join(""),
+    calendar: p("M5 8h22v19H5z", "st") + p("M5 13h22", "st") + p("M10.5 5v5M21.5 5v5", "sw thick") + [9, 14, 19, 24].map((x) => c(x, 17.5, 1.3, "tl") + c(x, 22.5, 1.3, x === 19 ? "t" : "w")).join(""),
+    upload: p("M16 21.5V5m-6.5 6.5L16 5l6.5 6.5", "sw thick") + p("M5.5 19.5v8h21v-8", "st thick"),
+    download: p("M16 4.5V21m-6.5-6.5L16 21l6.5-6.5", "sw thick") + p("M5.5 19.5v8h21v-8", "st thick"),
+    vault: c(16, 16, 12.5, "st thick") + c(16, 16, 7.5, "sl") + p("M16 8.5V5M16 23.5V27M8.5 16H5M23.5 16H27", "sw") + c(16, 16, 2.8, "t") + p("M16 16l3.6-3.6", "sw thick"),
+    rewind: p("M15.5 8.5L4.5 16l11 7.5z", "t") + p("M27.5 8.5L16.5 16l11 7.5z", "tl"),
     archivist: c(16, 16, 12, "sl") + p("M16 4.5a11.5 11.5 0 1 1-10.9 7.8", "st thick") + p("M6.3 8.6L2.5 11.4L7.7 13.3Z", "t") + p("M13 11v10l8.4-5z", "w"),
   };
 })();
@@ -5365,20 +5748,24 @@ const ART = (() => {
 const hexD = (r) => `M${[0, 1, 2, 3, 4, 5].map((i) => { const a = (Math.PI / 3) * i - Math.PI / 2; return `${(32 + r * Math.cos(a)).toFixed(2)} ${(32 + r * Math.sin(a)).toFixed(2)}`; }).join("L")}Z`;
 const HEX_O = hexD(30), HEX_I = hexD(24.5);
 function medal(a, on, frac, extra) {
-  const tier = TIER[a.id] || "M", when = on && typeof ACHV[a.id] === "number" ? new Date(ACHV[a.id]).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "2-digit" }) : on ? "Earned" : "Locked";
+  const tier = tierOf(a), when = on && typeof ACHV[a.id] === "number" ? new Date(ACHV[a.id]).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "2-digit" }) : on ? "Earned" : "Locked";
   return `<span class="medal3d${on ? " on" : ""}${extra ? " " + extra : ""}" aria-hidden="true">
-    <svg class="medal front" viewBox="0 0 64 64"><path class="m-face" d="${HEX_O}"/><path class="m-gloss" d="M32 2L57.98 17V30H6.02V17Z"/>${frac ? `<path class="m-prog" d="${HEX_O}" pathLength="100" stroke-dasharray="${(frac * 100).toFixed(1)} 100"/>` : ""}<path class="m-inner" d="${HEX_I}"/><g class="m-art" transform="translate(16 16)">${ART[a.id] || ""}</g></svg>
+    <svg class="medal front" viewBox="0 0 64 64"><path class="m-face" d="${HEX_O}"/><path class="m-gloss" d="M32 2L57.98 17V30H6.02V17Z"/>${frac ? `<path class="m-prog" d="${HEX_O}" pathLength="100" stroke-dasharray="${(frac * 100).toFixed(1)} 100"/>` : ""}<path class="m-inner" d="${HEX_I}"/><g class="m-art" transform="translate(16 16)">${ART[a.art || a.id] || ""}</g>${a.num ? `<g class="m-plate"><rect x="${32 - (5 + a.num.length * 2.7)}" y="49" width="${10 + a.num.length * 5.4}" height="10" rx="1.5"/><text x="32" y="56.6">${a.num}</text></g>` : ""}</svg>
     <svg class="medal back" viewBox="0 0 64 64"><path class="m-face" d="${HEX_O}"/><path class="m-inner" d="${HEX_I}"/><text class="m-letter" x="32" y="37">${tier}</text><text class="m-sub" x="32" y="47">${when}</text><text class="m-sub" x="32" y="21">CLASS</text></svg>
   </span>`;
 }
+let achFilter = "all";
+$("#recAch").addEventListener("click", (e) => { const b = e.target.closest("[data-af]"); if (!b) return; achFilter = b.dataset.af; $("#recAch").innerHTML = achGallery(); Sound.ui("tab"); });
 // the badges in the Record tab: earned first (newest first), then the closest to earning
 function achGallery() {
   const L = achLog(), T = loadTours(), got = ACH.filter((a) => ACHV[a.id]).length;
   const rows = ACH.map((a, i) => { const on = !!ACHV[a.id], p = !on && a.prog ? a.prog(L, T) : null; return { a, i, on, p, frac: p ? Math.min(1, p[0] / p[1]) : 0 }; });
   rows.sort((x, y) => (y.on - x.on) || (x.on ? (ACHV[y.a.id] || 0) - (ACHV[x.a.id] || 0) : (y.frac - x.frac) || (x.i - y.i)));
-  const tiers = Object.keys(TIERS).map((k) => { const all = ACH.filter((a) => TIER[a.id] === k); return `<span class="tier-chip" style="--tc:${TIERS[k][1]}"><i></i>${TIERS[k][0]} <b>${all.filter((a) => ACHV[a.id]).length}/${all.length}</b></span>`; }).join("");
-  return `<figure class="chart"><figcaption>Badges<small>${got} of ${ACH.length} earned · flick a medal to spin it</small></figcaption><div class="badge-meter" aria-hidden="true"><i style="--w:${((got / ACH.length) * 100).toFixed(1)}%"></i></div><div class="tier-row">${tiers}</div><div class="achs">${rows.map(({ a, on, p, frac }) => {
-    const [tn, tc] = TIERS[TIER[a.id] || "M"], un = (a.unlocks || []).map((k) => UNLOCK_NAMES[k]);
+  const tiers = Object.keys(TIERS).map((k) => { const all = ACH.filter((a) => tierOf(a) === k); return `<span class="tier-chip" style="--tc:${TIERS[k][1]}"><i></i>${TIERS[k][0]} <b>${all.filter((a) => ACHV[a.id]).length}/${all.length}</b></span>`; }).join("");
+  const shown = rows.filter((r) => (achFilter === "earned" ? r.on : achFilter === "todo" ? !r.on : true));
+  const chips = [["all", `All ${ACH.length}`], ["earned", `Earned ${got}`], ["todo", `To earn ${ACH.length - got}`]].map(([k, l]) => `<button type="button" class="btn ghost${achFilter === k ? " on" : ""}" data-af="${k}" aria-pressed="${achFilter === k}">${l}</button>`).join("");
+  return `<figure class="chart"><figcaption>Badges<small>${got} of ${ACH.length} earned · flick a medal to spin it</small></figcaption><div class="badge-meter" aria-hidden="true"><i style="--w:${((got / ACH.length) * 100).toFixed(1)}%"></i></div><div class="tier-row">${tiers}</div><div class="ach-filter">${chips}</div><div class="achs">${shown.map(({ a, on, p, frac }) => {
+    const [tn, tc] = TIERS[tierOf(a)], un = (a.unlocks || []).map((k) => UNLOCK_NAMES[k]);
     return `<div class="ach${on ? " on" : ""}" style="--tc:${tc}" title="${a.name}: ${a.desc}${on ? " (earned)" : ""}">${medal(a, on, frac)}<span><small class="tier">${tn}${on ? "" : " · locked"}</small><b>${a.name}</b><small>${a.desc}</small>${p ? `<span class="ach-bar"><i style="--w:${(frac * 100).toFixed(1)}%"></i><em>${Math.min(p[0], p[1])}/${p[1]}</em></span>` : ""}${un.length ? `<em class="ach-un">${on ? "Unlocked" : "Unlocks"} ${andList(un)}</em>` : ""}</span></div>`;
   }).join("")}</div></figure>`;
 }
@@ -5548,6 +5935,7 @@ function paintOnline() {
     : host ? `${taken} of ${r.seats.length} ${r.cfg.format === "knockout" ? "slots" : "seats"} filled. Empty ones go to the AI when you start.`
     : `Waiting for ${hostM ? hostM.name : "the host"} to start.`;
   $("#closeRoom").hidden = !host;
+  $("#importRoom").hidden = !host || !NET.room || NET.room.phase !== "lobby";
   const seated = new Set(r ? r.seats.filter((s) => s.kind === "human").map((s) => s.pid) : []);
   const watch = r ? r.members.filter((m) => m.online && !seated.has(m.pid)).map((m) => m.name + (m.pid === NET.pid ? " (you)" : "")) : [];
   const w = $("#watchers");
@@ -5576,14 +5964,14 @@ $("#players").addEventListener("click", (e) => {
   if (sit) { NET.send({ t: "sit", k: +sit.dataset.sit }); Sound.ui("click"); return; }
   if (kind) { NET.send({ t: "seat", k: +kind.dataset.kind, kind: kind.dataset.to }); Sound.ui("click"); }
 });
-// closing asks twice, so a stray tap doesn't end the room for everyone
-let closeArm = 0;
-$("#closeRoom").addEventListener("click", (e) => {
-  const b = e.currentTarget;
-  if (!closeArm) { b.textContent = "Tap again to close"; closeArm = setTimeout(() => { closeArm = 0; b.textContent = "Close room"; }, 3000); return; }
-  clearTimeout(closeArm); closeArm = 0; b.textContent = "Close room";
+// closing asks first, and offers the room's file: once it's closed, its leaderboard is gone
+$("#closeRoom").addEventListener("click", async () => {
+  const r = await askConfirm({ title: "Close the room?", body: "Everyone is sent out and the room is deleted with its leaderboard. Export the room to keep its leaderboard and games; a new room can restore them.", ok: "Close room", extra: { label: "Export room", run: exportRoom } });
+  if (!r) return;
   NET.send({ t: "close" }); Sound.ui("close");
 });
+$("#exportRoom").addEventListener("click", () => { Sound.ui("click"); exportRoom(); });
+$("#importRoom").addEventListener("click", pickFile);
 NET.onClosed = () => {
   flash("The host closed the room", 2200);
   const wasGame = CFG.mode === "online";
@@ -5607,7 +5995,13 @@ $("#copyLink").addEventListener("click", async () => {
   } catch (e) { flash(`Room ${NET.code}`, 2000); }
   Sound.ui("click");
 });
-$("#leaveRoom").addEventListener("click", () => {
+$("#leaveRoom").addEventListener("click", async () => {
+  // the last one out: an empty room is deleted after ten minutes, so offer its file first
+  const r0 = NET.room, others = r0 ? r0.members.filter((m) => m.online && m.pid !== NET.pid).length : 0;
+  if (r0 && !others) {
+    const ok = await askConfirm({ title: "Leave the empty room?", body: "You're the last one here. An empty room is deleted after ten minutes, with its leaderboard. Export it to keep a copy.", ok: "Leave room", extra: { label: "Export room", run: exportRoom } });
+    if (!ok) return;
+  }
   const wasGame = CFG.mode === "online";
   leaveOnline(); Sound.ui("close");
   if (wasGame) newGame({ ...DEFAULT_CFG, ...(load("sf2-prefs") || {}), mode: "solo" });
