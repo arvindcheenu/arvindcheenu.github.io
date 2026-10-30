@@ -415,9 +415,9 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .dlg.split { display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; }
 .dlg.split > .dlg-head { flex: none; padding: 18px 20px 6px; }
 .dlg.split > .tabs { flex: none; margin: 0 20px; }
-.dlg-body { flex: 1 1 auto; min-height: 0; min-width: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 18px 20px 20px; scrollbar-width: none; transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.dlg-body { background: var(--panel-solid); flex: 1 1 auto; min-height: 0; min-width: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 18px 20px 20px; scrollbar-width: none; transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 /* while the list scrolls, rows sliding under a still pointer don't light up */
-dialog.scrolling .dlg-body { pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { dialog.scrolling .dlg-body { pointer-events: none; } }
 dialog.scrolling .dlg-body *::after { transition: none !important; }
 .dlg-body::-webkit-scrollbar { display: none; }
 .dlg-foot { position: relative; flex: none; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--panel-solid); }
@@ -525,6 +525,9 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 .tier-chip i { width: 9px; height: 10px; background: var(--tc); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); box-shadow: 0 0 6px var(--tc); }
 .tier-chip b { color: var(--fg); font-weight: 600; }
 .ach-filter { display: flex; flex-wrap: wrap; gap: 6px; }
+.ach-off { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid color-mix(in oklab, var(--hud) 35%, var(--line)); background: color-mix(in oklab, var(--hud) 8%, var(--bg)); }
+.ach-off p { margin: 0; font-size: 13.5px; color: var(--fg); line-height: 1.45; }
+.ach-off .btn { justify-self: start; height: 30px; font-size: 12px; --cut: 6px; }
 .ach-filter .btn { height: 28px; padding: 0 10px; font-size: 12px; --cut: 5px; }
 .ach-filter .btn.on { color: var(--hud); background: color-mix(in oklab, var(--hud) 16%, var(--line)); }
 .achs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 8px; }
@@ -546,14 +549,18 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 .ach-bar i { height: 3px; background: linear-gradient(90deg, var(--tc) var(--w), var(--line) var(--w)); }
 .ach-bar em { font: 600 11px var(--hud-font); font-style: normal; color: var(--fg); }
 /* the medal: two faces back to back, turned by a flick */
-.medal3d { --face: color-mix(in oklab, var(--tc) 22%, #05070c); position: relative; display: block; width: 56px; height: 56px; transform-style: preserve-3d; transform: perspective(260px) rotateY(0deg);
+.medal3d { --face: color-mix(in oklab, var(--tc) 22%, #05070c); position: relative; isolation: isolate; display: block; width: 56px; height: 56px;
   touch-action: pan-y; cursor: var(--cur-grab, grab); -webkit-user-select: none; user-select: none; }
 .medal3d:active { cursor: var(--cur-grabbing, grabbing); }
-.medal3d .medal { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.medal3d .back { transform: rotateY(180deg); }
-.medal3d:not(.on) { --face: #0a0d14; }
-.medal3d:not(.on) .medal { filter: grayscale(1) brightness(.8); opacity: .5; }
-.medal3d.on .front { filter: drop-shadow(0 0 7px color-mix(in oklab, var(--tc) 50%, transparent)); }
+.medal3d .medal { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+/* at rest a medal is flat (no 3D layer, no filter), which keeps a long list cheap to scroll; it turns 3D only while it spins */
+.medal3d .back { display: none; }
+.medal3d.spinning, .medal3d.pop { transform-style: preserve-3d; }
+.medal3d.spinning .medal, .medal3d.pop .medal { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.medal3d.spinning .back, .medal3d.pop .back { display: block; transform: rotateY(180deg); }
+.medal3d:not(.on) { --face: #0a0d14; --tc: #6f7a8a; }
+.medal3d:not(.on) .medal { opacity: .55; }
+.medal3d.on::before { content: ""; position: absolute; inset: -9px; z-index: -1; pointer-events: none; background: radial-gradient(closest-side, color-mix(in oklab, var(--tc) 34%, transparent), transparent); }
 .medal .m-face { fill: var(--face); stroke: var(--tc); stroke-width: 1.8; }
 .medal3d:not(.on) .m-face { stroke: var(--line-2); stroke-width: 1.4; }
 .medal .m-gloss { fill: #fff; opacity: .05; }
@@ -3673,7 +3680,7 @@ function logGame() {
   const log = loadLog();
   log.push({ at: Date.now(), mode: CFG.mode, fmt: KO() ? "knockout" : "single", v: CFG.variant || "classic", lv: vsAI ? CFG.level : null, n: S.n, R: B.R,
     teams: S.team ? Math.max(...S.team) + 1 : 0, res, who: S.winner >= 0 ? NAMES[S.winner][0] : null, moves: S.moves,
-    chain: me >= 0 ? GAME.chain[me] || 0 : chains.length ? Math.max(...chains) : 0, round: ko, undos: GAME.undos || 0, hints: !!GAME.hinted, rem: !!GAME.rem, low: GAME.low == null ? null : +GAME.low.toFixed(3) });
+    chain: me >= 0 ? GAME.chain[me] || 0 : chains.length ? Math.max(...chains) : 0, round: ko, undos: GAME.undos || 0, hints: !!GAME.hinted, po: progressionOn(), rem: !!GAME.rem, low: GAME.low == null ? null : +GAME.low.toFixed(3) });
   while (log.length > 800) log.shift();
   save("sf2-log", log);
   const rp = replayRecord();
@@ -3683,7 +3690,7 @@ function logGame() {
 }
 function logTour(mode, size, lv, finish, champion) {
   const l = loadTours();
-  l.push({ at: Date.now(), mode, size, lv, finish, champion });
+  l.push({ at: Date.now(), mode, size, lv, finish, champion, po: progressionOn() });
   save("sf2-tours", l.slice(-300));
 }
 // the Replays pane: your last games, each playable from its first move
@@ -5691,7 +5698,7 @@ const maxRadius = () => (isOpen("r:12") ? 12 : isOpen("r:8") ? 8 : 5);
 function lockHint(key) {
   const a = unlockedBy(key);
   if (!a) return "";
-  const p = a.prog ? a.prog(achLog(), loadTours()) : null;
+  const p = a.prog ? a.prog(achLog(), achTours()) : null;
   return `${UNLOCK_NAMES[key] || key} unlocks with the ${a.name} badge: ${a.desc[0].toLowerCase() + a.desc.slice(1)}${p ? ` (${Math.min(p[0], p[1])}/${p[1]})` : ""}.`;
 }
 // keep a configuration inside what you've unlocked
@@ -5716,11 +5723,13 @@ function legacyLog() {
   ["easy", "medium", "hard", "expert"].forEach((lv) => { const r = rec[lv] || {}; for (let k = 0; k < Math.min(r.w || 0, 5); k++) out.push({ mode: "solo", fmt: "single", v: "classic", lv, n: 2, R: 3, res: "win", moves: 999, chain: r.chain || 0 }); });
   return out;
 }
-const achLog = () => legacyLog().concat(loadLog());
+// games and tournaments played with progression off never count toward badges
+const achLog = () => legacyLog().concat(loadLog().filter((g) => g.po !== false));
+const achTours = () => loadTours().filter((t) => t.po !== false);
 function checkAch(quiet) {
   // with progression off everything is open, and nothing is earned
   if (!progressionOn()) return;
-  const L = achLog(), T = loadTours(), fresh = [];
+  const L = achLog(), T = achTours(), fresh = [];
   for (const a of ACH) if (!ACHV[a.id]) { let ok = false; try { ok = a.test(L, T); } catch (e) {} if (ok) { ACHV[a.id] = Date.now(); fresh.push(a); } }
   if (!fresh.length) return;
   save("sf2-ach", ACHV);
@@ -5839,24 +5848,30 @@ function medal(a, on, frac, extra) {
   </span>`;
 }
 let achFilter = "all";
-$("#recAch").addEventListener("click", (e) => { const b = e.target.closest("[data-af]"); if (!b) return; achFilter = b.dataset.af; $("#recAch").innerHTML = achGallery(); Sound.ui("tab"); });
+$("#recAch").addEventListener("click", (e) => {
+  if (e.target.closest("[data-progon]")) {
+    SET.progression = true; save("sf2-settings", SET); $("#setProgress").checked = true; paintRoster();
+    checkAch(true); $("#recAch").innerHTML = achGallery(); Sound.ui("confirm"); flash("Progression on: badges count again", 1800); return;
+  }
+  const b = e.target.closest("[data-af]"); if (!b) return; achFilter = b.dataset.af; $("#recAch").innerHTML = achGallery(); Sound.ui("tab"); });
 // the badges in the Record tab: earned first (newest first), then the closest to earning
 function achGallery() {
-  const L = achLog(), T = loadTours(), got = ACH.filter((a) => ACHV[a.id]).length;
+  const L = achLog(), T = achTours(), got = ACH.filter((a) => ACHV[a.id]).length, paused = !progressionOn();
   const fresh = new Set(achNew());
   const rows = ACH.map((a, i) => { const on = !!ACHV[a.id], p = !on && a.prog ? a.prog(L, T) : null; return { a, i, on, p, frac: p ? Math.min(1, p[0] / p[1]) : 0, nu: fresh.has(a.id) }; });
   rows.sort((x, y) => (y.nu - x.nu) || (y.on - x.on) || (x.on ? (ACHV[y.a.id] || 0) - (ACHV[x.a.id] || 0) : (y.frac - x.frac) || (x.i - y.i)));
   const tiers = Object.keys(TIERS).map((k) => { const all = ACH.filter((a) => tierOf(a) === k); return `<span class="tier-chip" style="--tc:${TIERS[k][1]}"><i></i>${TIERS[k][0]} <b>${all.filter((a) => ACHV[a.id]).length}/${all.length}</b></span>`; }).join("");
   const shown = rows.filter((r) => (achFilter === "earned" ? r.on : achFilter === "todo" ? !r.on : true));
   const chips = [["all", `All ${ACH.length}`], ["earned", `Earned ${got}`], ["todo", `To earn ${ACH.length - got}`]].map(([k, l]) => `<button type="button" class="btn ghost${achFilter === k ? " on" : ""}" data-af="${k}" aria-pressed="${achFilter === k}">${l}</button>`).join("");
-  return `<figure class="chart"><figcaption>Badges<small>${got} of ${ACH.length} earned · flick a medal to spin it</small></figcaption><div class="badge-meter" aria-hidden="true"><i style="--w:${((got / ACH.length) * 100).toFixed(1)}%"></i></div><div class="tier-row">${tiers}</div><div class="ach-filter">${chips}</div><div class="achs">${shown.map(({ a, on, p, frac, nu }) => {
+  return `<figure class="chart"><figcaption>Badges<small>${got} of ${ACH.length} earned · flick a medal to spin it</small></figcaption><div class="badge-meter" aria-hidden="true"><i style="--w:${((got / ACH.length) * 100).toFixed(1)}%"></i></div><div class="tier-row">${tiers}</div>${paused ? '<div class="ach-off"><p>Progression is off, so badges are paused: games played now don\'t count toward them.</p><button class="btn" type="button" data-progon>Turn progression on</button></div>' : ""}<div class="ach-filter">${chips}</div><div class="achs">${shown.map(({ a, on, p, frac, nu }) => {
     const [tn, tc] = TIERS[tierOf(a)], un = (a.unlocks || []).map((k) => UNLOCK_NAMES[k]);
-    return `<div class="ach${on ? " on" : ""}${nu ? " new" : ""}" style="--tc:${tc}" title="${a.name}: ${a.desc}${on ? " (earned)" : ""}">${medal(a, on, frac)}<span><small class="tier">${tn}${on ? "" : " · locked"}</small><b>${a.name}</b><small>${a.desc}</small>${p ? `<span class="ach-bar"><i style="--w:${(frac * 100).toFixed(1)}%"></i><em>${Math.min(p[0], p[1])}/${p[1]}</em></span>` : ""}${un.length ? `<em class="ach-un">${on ? "Unlocked" : "Unlocks"} ${andList(un)}</em>` : ""}</span></div>`;
+    return `<div class="ach${on ? " on" : ""}${nu ? " new" : ""}" style="--tc:${tc}" title="${a.name}: ${a.desc}${on ? " (earned)" : ""}">${medal(a, on, frac)}<span><small class="tier">${tn}${on ? "" : paused ? " · paused" : " · locked"}</small><b>${a.name}</b><small>${a.desc}</small>${p ? `<span class="ach-bar"><i style="--w:${(frac * 100).toFixed(1)}%"></i><em>${Math.min(p[0], p[1])}/${p[1]}</em></span>` : ""}${un.length ? `<em class="ach-un">${on ? "Unlocked" : "Unlocks"} ${andList(un)}</em>` : ""}</span></div>`;
   }).join("")}</div></figure>`;
 }
 // flick a medal: it follows the drag, keeps spinning with the flick's speed, and settles on a face; a tap gives it a turn
 (() => {
-  const set = (m, a) => { m.style.transform = `perspective(260px) rotateY(${a.toFixed(1)}deg)`; };
+  const set = (m, a) => { m.classList.add("spinning"); m.style.transform = `perspective(260px) rotateY(${a.toFixed(1)}deg)`; };
+  const rest = (m) => { m.classList.remove("spinning"); m.style.transform = ""; };
   function run(m, s) {
     cancelAnimationFrame(s.raf);
     let last = performance.now();
@@ -5864,9 +5879,9 @@ function achGallery() {
       const dt = Math.min(48, now - last); last = now;
       if (Math.abs(s.v) > 0.09) { s.a += s.v * dt; s.v *= Math.pow(0.9972, dt); }
       else {
-        const target = Math.round(s.a / 180) * 180;
+        const target = Math.round(s.a / 360) * 360;
         s.v = 0; s.a += (target - s.a) * Math.min(1, dt * 0.012);
-        if (Math.abs(target - s.a) < 0.25) { s.a = target % 360; set(m, s.a); s.raf = 0; return; }
+        if (Math.abs(target - s.a) < 0.25) { s.a = 0; rest(m); s.raf = 0; return; }
       }
       set(m, s.a); s.raf = requestAnimationFrame(step);
     };
@@ -5876,14 +5891,19 @@ function achGallery() {
     const m = e.target.closest && e.target.closest(".medal3d");
     if (!m || m.classList.contains("pop")) return;
     const s = m._spin || (m._spin = { a: 0, v: 0, raf: 0 });
-    cancelAnimationFrame(s.raf); s.v = 0;
-    s.drag = { id: e.pointerId, x: e.clientX, a: s.a, lx: e.clientX, lt: performance.now(), vel: 0, moved: false };
-    try { m.setPointerCapture(e.pointerId); } catch (err) {}
+    // the drag is only claimed once it goes sideways, so a vertical swipe over a medal still scrolls the list
+    s.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, a: s.a, lx: e.clientX, lt: performance.now(), vel: 0, moved: false, live: false };
   });
   document.addEventListener("pointermove", (e) => {
     const m = e.target.closest && e.target.closest(".medal3d"), s = m && m._spin;
     if (!s || !s.drag || s.drag.id !== e.pointerId) return;
     const d = s.drag, now = performance.now(), dx = e.clientX - d.x;
+    if (!d.live) {
+      if (Math.abs(e.clientY - d.y) > 8 && Math.abs(e.clientY - d.y) > Math.abs(dx)) { s.drag = null; return; }
+      if (Math.abs(dx) < 6) return;
+      d.live = true; cancelAnimationFrame(s.raf); s.v = 0; d.a = s.a; d.x = e.clientX;
+      try { m.setPointerCapture(e.pointerId); } catch (err) {}
+    }
     if (Math.abs(dx) > 3) d.moved = true;
     s.a = d.a + dx * 1.7;
     const v = ((e.clientX - d.lx) * 1.7) / Math.max(8, now - d.lt);
