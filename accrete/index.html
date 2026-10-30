@@ -390,7 +390,10 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .dlg.split { display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; }
 .dlg.split > .dlg-head { flex: none; padding: 18px 20px 6px; }
 .dlg.split > .tabs { flex: none; margin: 0 20px; }
-.dlg-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 20px 20px; scrollbar-width: none; }
+.dlg-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 20px 20px; scrollbar-width: none; transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+/* while the list scrolls, rows sliding under a still pointer don't light up */
+dialog.scrolling .dlg-body { pointer-events: none; }
+dialog.scrolling .dlg-body *::after { transition: none !important; }
 .dlg-body::-webkit-scrollbar { display: none; }
 .dlg-foot { position: relative; flex: none; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--panel-solid); }
 /* off the Play tab the footer is only its top edge, which still carries the scroll progress */
@@ -454,6 +457,14 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .hist-x { display: flex; justify-content: space-between; font: 500 12px var(--hud-font); color: var(--muted); }
 .rec-since, .rec-empty { margin: 0; }
 .rp-list { display: grid; gap: 4px; }
+/* Record's sticky tab bar */
+.subtabs { position: sticky; top: -18px; z-index: 4; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; margin: -18px -20px 0; padding: 10px 20px 8px; background: var(--panel-solid); border-bottom: 1px solid var(--line); }
+.subtabs button { appearance: none; border: 1px solid transparent; background: none; color: var(--muted); padding: 7px 4px; font: 600 12.5px var(--hud-font); letter-spacing: .06em; text-transform: uppercase; cursor: var(--cur-pointer, pointer); white-space: nowrap; }
+.subtabs button:hover { color: var(--fg); }
+.subtabs button[aria-selected="true"] { color: var(--fg); background: var(--elev); border-color: var(--line); box-shadow: inset 0 -1.5px 0 var(--hud); }
+.subtabs button span { color: var(--hud); font-weight: 500; letter-spacing: .02em; }
+.rec-pane { display: grid; gap: 14px; }
+.rec-pane[hidden] { display: none; }
 /* room leaderboard */
 .lb { display: grid; gap: 4px; }
 .lb-h { font: 600 12px var(--hud-font); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
@@ -957,6 +968,12 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
       </div>
     </section>
     <section class="tabpanel" role="tabpanel" id="panelRecord" data-panel="record" aria-labelledby="tabRecord" hidden>
+      <div class="subtabs" id="recTabs" role="tablist" aria-label="Record sections">
+        <button type="button" role="tab" data-rt="stats" aria-selected="true">Stats</button>
+        <button type="button" role="tab" data-rt="ach" aria-selected="false">Achievements <span id="achCount"></span></button>
+        <button type="button" role="tab" data-rt="games" aria-selected="false">Replays</button>
+      </div>
+      <div class="rec-pane" data-pane="stats">
       <div class="dlg-head"><span class="eyebrow">Your record</span><button class="btn ghost" type="button" id="resetRecord">Reset</button></div>
       <div class="seg rec-filter" id="recFilter" role="radiogroup" aria-label="Which games">
         <input type="radio" name="recf" id="rfA" value="all" checked><label for="rfA">All</label>
@@ -966,6 +983,9 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         <input type="radio" name="recf" id="rfK" value="knockout"><label for="rfK">Knockout</label>
       </div>
       <div class="record" id="record"></div>
+      </div>
+      <div class="rec-pane" data-pane="ach" hidden><div class="record" id="recAch"></div></div>
+      <div class="rec-pane" data-pane="games" hidden><div class="record" id="recGames"></div></div>
     </section>
     <section class="tabpanel" role="tabpanel" id="panelHelp" data-panel="help" aria-labelledby="tabHelp" hidden>
       <div class="legend" id="legend"></div>
@@ -1572,6 +1592,44 @@ const Sound = (() => {
       g.gain.setValueAtTime(lvl, t); g.gain.exponentialRampToValueAtTime(0.0001, t + (open ? 0.22 : 0.05));
       s.connect(hp); hp.connect(g); out(g, 0.15); s.start(t, Math.random()); s.stop(t + 0.25);
     }
+    function thump(t, lvl) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.16);
+      g.gain.setValueAtTime(lvl, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+      o.connect(g); out(g, 0.1); o.start(t); o.stop(t + 0.32);
+    }
+    function rub(t, dur, lvl) {
+      const o = ac.createOscillator(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
+      o.type = "sine"; o.frequency.value = hz(51);   // Eb3
+      lfo.frequency.value = 5.2; lg.gain.value = lvl * 0.5; lfo.connect(lg); lg.connect(g.gain);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + dur * 0.4); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); out(g, 0.5); o.start(t); lfo.start(t); o.stop(t + dur + 0.05); lfo.stop(t + dur + 0.05);
+    }
+    function crash(t, lvl) {
+      const s = ac.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const hp = ac.createBiquadFilter(), g = ac.createGain();
+      hp.type = "highpass"; hp.frequency.value = 4200;
+      g.gain.setValueAtTime(lvl, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2);
+      s.connect(hp); hp.connect(g); out(g, 0.7); s.start(t); s.stop(t + 3.3);
+    }
+    // the finale: one bar on Eb with a rising roll, then the resolution on D, then a long drone under the ending
+    function finaleBar(t) {
+      const f = st.final;
+      if (f.k === 0) { st.chord = "Eb"; pad("Eb", t, BEAT * 4, 0.14, 1); swoosh(t, BEAT * 4, 0.16); bass(snap(38, [3]), t, BEAT * 4, 0.3); }
+      else if (f.k === 1) {
+        st.chord = f.won ? "D" : "Dm"; f.at = t;
+        kick(t, 0.6); crash(t, 0.12);
+        const pcs = f.won ? [2, 6, 9] : [2, 5, 9];
+        CH.Dm = [2, [2, 5, 9]];
+        pad(f.won ? "D" : "Dm", t, BEAT * 16, 0.16, 0.8);
+        bass(38, t, BEAT * 12, 0.34); bass(26, t, BEAT * 14, 0.22);
+        [81, 78, 74].forEach((m, k) => bell(snap(m, pcs), t + k * BEAT * 0.5, 0.1));
+      }
+      f.k++;
+    }
+    function finaleStep(s, t) {
+      const f = st.final;
+      if (f.k === 1 && s % 2 === 0) hat(t, 0.02 + 0.006 * s, false);   // the roll into the downbeat
+    }
     function swoosh(t, dur, lvl) {
       const s = ac.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const bp = ac.createBiquadFilter(), g = ac.createGain();
       bp.type = "bandpass"; bp.Q.value = 2.5; bp.frequency.setValueAtTime(300, t); bp.frequency.exponentialRampToValueAtTime(6000, t + dur);
@@ -1582,7 +1640,7 @@ const Sound = (() => {
     function start() {
       if (!bus) build();
       bus.gain.cancelScheduledValues(ac.currentTime); bus.gain.setValueAtTime(0.9, ac.currentTime);
-      st = { next: ac.currentTime + 0.1, step: 0, bar: 0, chord: "D", hold: 0, int: 0.1, tension: 0, energy: 0, spike: 0, fill: false, arp: 0, timer: setInterval(tick, 50) };
+      st = { next: ac.currentTime + 0.1, step: 0, bar: 0, chord: "D", hold: 0, int: 0.1, tension: 0, energy: 0, spike: 0, climax: 0, threat: 0, final: null, fill: false, arp: 0, timer: setInterval(tick, 50) };
       mus.t0 = st.next;
       tick();
     }
@@ -1600,6 +1658,9 @@ const Sound = (() => {
       const s = n % 16;
       if (s === 0) bar(t);
       const I = st.int, [root, pcs] = CH[st.chord], scale = I > 0.55 ? DARK_SCALE : CALM_SCALE;
+      if (st.final) { finaleStep(s, t); return; }
+      // the lingering threat: a low heartbeat on the beat while bodies of yours can be taken
+      if (st.threat > 0.05 && s % 4 === 0) { thump(t, 0.12 + 0.22 * st.threat); thump(t + STEP * 0.9, 0.07 + 0.14 * st.threat); }
       // drums arrive with tension
       if (I > 0.32 && (s === 0 || (I > 0.62 && s === 8) || (I > 0.8 && (s === 6 || s === 14)))) kick(t, 0.32 + 0.25 * I);
       if (I > 0.42 && s % 4 === 2) hat(t, 0.035 + 0.04 * I, s === 14 && I > 0.7);
@@ -1628,12 +1689,16 @@ const Sound = (() => {
       }
     }
     function bar(t) {
-      // follow the game: intensity eases toward the target; chains lift it for a while
-      const target = Math.max(0, Math.min(1, 0.08 + 0.6 * st.tension + 0.25 * st.energy + st.spike));
+      if (st.final) { finaleBar(t); st.bar++; return; }
+      // follow the game: intensity eases toward the target; chains lift it; the climax pushes it to the top
+      const target = Math.max(0, Math.min(1, 0.08 + 0.6 * st.tension + 0.25 * st.energy + st.spike + 0.5 * st.climax));
       st.int += (target - st.int) * 0.45; st.spike *= 0.6;
+      // the threat rubs a flat second (Eb against D) under the harmony, quiet and slow
+      if (st.threat > 0.25) rub(t, BEAT * 4, 0.02 + 0.05 * st.threat);
       if (st.hold <= 0) {
         const table = Math.random() < st.int * 1.1 ? TENSE : CALM;
-        st.chord = st.bar % 8 === 0 && st.int < 0.5 ? "D" : pick(table[st.chord] || ["D"]);
+        // near the end the harmony circles the cadence it will resolve with: Eb and D
+        st.chord = st.climax > 0.5 ? (st.chord === "Eb" ? "D" : pick(["Eb", "Eb", "Cm", "D"])) : st.bar % 8 === 0 && st.int < 0.5 ? "D" : pick(table[st.chord] || ["D"]);
         st.hold = st.int > 0.6 ? 1 : 2;
         pad(st.chord, t, BEAT * 4 * st.hold, 0.08 + 0.05 * st.int, 0.25 + 0.65 * st.int);
       }
@@ -1644,8 +1709,20 @@ const Sound = (() => {
     return {
       start, stop,
       get on() { return !!st; },
-      mood(t, e) { if (st) { st.tension = t || 0; st.energy = e || 0; } },
-      chain(n) { if (st) { st.spike = Math.min(0.45, st.spike + 0.06 + 0.01 * n); st.fill = true; } },
+      mood(t, e, threat, climax) { if (st) { st.tension = t || 0; st.energy = e || 0; st.threat = threat || 0; st.climax = climax || 0; } },
+      chain(n) { if (st && !st.final) { st.spike = Math.min(0.45, st.spike + 0.06 + 0.01 * n); st.fill = true; } },
+      // the game is over: resolve at the next bar line; returns the time of the resolving downbeat
+      finale(won) {
+        if (!st) return null;
+        const bars = (Math.ceil((st.next - mus.t0) / (BEAT * 4)) * BEAT * 4) + mus.t0;
+        st.final = { won: won !== false, k: 0 };
+        st.hold = 0;
+        return bars + BEAT * 4;
+      },
+      // a new game: back to the calm opening
+      resume() { if (st && st.final) { st.final = null; st.int = 0.1; st.spike = 0; st.climax = 0; st.chord = "D"; st.hold = 0; } },
+      harmony() { return st && !st.final ? { pcs: CH[st.chord][1], scale: st.int > 0.55 ? DARK_SCALE : CALM_SCALE, int: st.int } : null; },
+      snap,
       beatT0: () => mus.t0, BEAT,
     };
   })();
@@ -1864,14 +1941,23 @@ const Sound = (() => {
       uiBus.gain.setTargetAtTime(prefs.sfxVol * 1.1, ac.currentTime, 0.03);
     },
     // the game's mood: tension 0..1 (a runaway leader, cells under threat) and energy 0..1 (big bodies on the field)
-    mood(tension, energy) { if (seq) { seq.tension = tension || 0; seq.energy = energy || 0; } if (ac) GEN.mood(tension, energy); },
+    mood(tension, energy, threat, climax) { if (seq) { seq.tension = tension || 0; seq.energy = energy || 0; } if (ac) GEN.mood(tension, energy, threat, climax); },
+    // 1 on each beat of the score, falling away until the next: the board's threat markers pulse with it
+    beatPulse() {
+      if (!ac || !mus || !mus.t0 || ac.state !== "running" || !prefs.music) return null;
+      const B0 = mus.gen ? GEN.BEAT : mus.adaptive ? AD.beat : LOOP.beat, ph = (((ac.currentTime - (ac.outputLatency || 0) - mus.t0) % B0) + B0) % B0;
+      return Math.exp(-ph / B0 * 4.5);
+    },
     get style() { return prefs.style; },
     setStyle(s) { if (!["gen", "adaptive", "loop"].includes(s)) return; prefs.style = s; save("sf2-audio", prefs); if (mus) { mus.ready = s === "gen" || !!mus.buf; startMusic(); applyMusic(1.2); } },
     place(stage, atCap, pan) {
       if (!ok()) return;
       // the melody: the next note of the loop's motif, an octave down for young bodies, brighter as a body grows
-      const semi = MOTIF[motifAt++ % MOTIF.length] + (stage <= 2 ? -12 : 0), bright = Math.min(1, (stage - 1) / 6);
-      tone(semi, 0.16 + 0.03 * Math.min(stage, 5), pan, bright);
+      const h = mus && mus.gen ? GEN.harmony() : null;
+      let semi = MOTIF[motifAt++ % MOTIF.length] + (stage <= 2 ? -12 : 0), bright = Math.min(1, (stage - 1) / 6);
+      // with the generated score, the motif note bends onto the chord sounding now (or its scale for young bodies)
+      if (h) { semi = GEN.snap(74 + semi, stage >= 3 ? h.pcs : h.scale) - 74; bright = Math.min(1, bright * 0.7 + h.int * 0.5); }
+      tone(semi, 0.16 + 0.03 * Math.min(stage, 5) + (h ? 0.04 * h.int : 0), pan, bright);
       if (atCap) tone(semi + 12, 0.07, pan, 1, 0.07);
       // the body's own texture, quieter so the note leads
       if (stage === 1) play("rock", { rate: jitter(1), gain: 0.5, pan });
@@ -1908,19 +1994,21 @@ const Sound = (() => {
       if (!ac) return;
       endingNodes.forEach((n) => { try { n.g.gain.cancelScheduledValues(ac.currentTime); n.g.gain.setTargetAtTime(0, ac.currentTime, 0.3); n.src.stop(ac.currentTime + 1.5); } catch (e) {} });
       endingNodes = [];
+      GEN.resume();
       if (was) rise(1.6);
     },
     // The ending is tuned to the loop (D): the sonification is lowered a whole tone so its partials land on A and D,
     // the drone sits on low D, and both enter on the music's beat while the loop sinks under them
-    win() {
+    win(won) {
       if (!init()) return;
       this.stopEnding();
       ending = true; release(3);
-      sink(2.8);
+      const at = mus && mus.gen && mus.ready && prefs.music ? GEN.finale(won) : null;
+      if (at == null) sink(2.8);
       const nodes = [];
       if (prefs.sfx) nodes.push(play("implode", { gain: 0.85 }));
-      // NASA's Perseus sonification, retuned to the loop's D (pitch +35 cents, D major pentatonic resonance), enters on the beat
-      const per = play("perseus", { gain: 0.95, delay: nextBeat(1.2), att: 1.4, bus: endBus });
+      // NASA's Perseus sonification, retuned to D, enters on the beat (with the generated score: on its resolving downbeat)
+      const per = play("perseus", { gain: 0.95, delay: at != null ? Math.max(0.5, at - ac.currentTime) : nextBeat(1.2), att: 1.4, bus: endBus });
       nodes.push(per);
       nodes.forEach((n) => n && endingNodes.push(n));
       const pDur = per ? per.end - ac.currentTime : 20;
@@ -2794,7 +2882,8 @@ function drawField() {
   }
   const lm = !animating && !preview ? lastMove : null;
   const lmFlips = lm ? new Set(lm.flips) : null;
-  const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 160);
+  const bp = Sound.beatPulse();
+  const pulse = bp != null ? bp : 0.5 + 0.5 * Math.sin(performance.now() / 160);
   x.drawImage(wellLayer(w, h, k), 0, 0);
   const lw = Math.max(1, k * 0.025);
   for (let i = 0; i < B.N; i++) {
@@ -2819,7 +2908,7 @@ function drawField() {
 
     if (th && th.endangered.has(i)) {
       hexPath(x, px, py, 0.88 * k);
-      x.setLineDash([k * 0.1, k * 0.07]); x.lineWidth = lw * 1.8; x.strokeStyle = "rgba(255,93,93,0.95)"; x.stroke(); x.setLineDash([]);
+      x.setLineDash([k * 0.1, k * 0.07]); x.lineWidth = lw * (1.6 + 0.8 * pulse); x.strokeStyle = `rgba(255,93,93,${(0.6 + 0.38 * pulse).toFixed(3)})`; x.stroke(); x.setLineDash([]);
     }
     if (th && th.sources.has(i) && o >= 0) {
       hexPath(x, px, py, 0.93 * k);
@@ -2859,7 +2948,7 @@ function ensurePulse() {
   if (pulseTimer || !needsPulse()) return;
   const step = () => {
     pulseTimer = 0;
-    if (needsPulse() && !document.hidden && !animating) { drawField(); pulseTimer = setTimeout(step, 90); }
+    if (needsPulse() && !document.hidden && !animating) { if (!document.querySelector("dialog[open]")) drawField(); pulseTimer = setTimeout(step, 90); }
   };
   pulseTimer = setTimeout(step, 90);
 }
@@ -2964,7 +3053,10 @@ function updateMood() {
   if (THR) tension = Math.max(tension, clamp01(THR.endangered.size / 5) * 0.9);
   let big = 0;
   for (let i = 0; i < B.N; i++) if (view.units[i] >= 4) big++;
-  Sound.mood(tension, clamp01(big / 6));
+  const share = tot > 0 && S.played.every(Boolean) ? Math.max(...masses) / tot : 0;
+  const climax = S.n === 2 ? clamp01((share - 0.72) / 0.2) : clamp01((share - 0.6) / 0.28);
+  const threat = KO() || !THR ? 0 : clamp01(THR.endangered.size / 6);
+  Sound.mood(tension, clamp01(big / 6), threat, climax);
 }
 
 // time on the field: each move is a million years. Short form where space is tight.
@@ -3243,6 +3335,18 @@ function logTour(mode, size, lv, finish, champion) {
   l.push({ at: Date.now(), mode, size, lv, finish, champion });
   save("sf2-tours", l.slice(-300));
 }
+// the Replays pane: your last games, each playable from its first move
+function renderReplays() {
+  const cap = (s) => s[0].toUpperCase() + s.slice(1), esc = (s) => String(s).replace(/[<>&"]/g, "");
+  // recent games you can watch again
+  const rps = loadReplays().map((g, idx) => [g, idx]).reverse();
+  if (!rps.length) $("#recGames").innerHTML = '<p class="vnote">Finished games appear here, ready to replay from the first move.</p>';
+  else {
+    const what = (g) => (g.fmt === "knockout" ? "Knockout" : g.mode === "solo" ? `Solo · ${cap(g.lv || "medium")}` : g.mode === "pass" ? "Pass and play" : "Online");
+    const out = (g) => (g.res === "win" ? "Win" : g.res === "loss" ? "Loss" : g.draw ? "Draw" : `${esc(g.seats[g.winner] ? g.seats[g.winner].name : "")} won`);
+    $("#recGames").innerHTML = (`<figure class="chart"><figcaption>Recent games<small>replay from the first move</small></figcaption><div class="rp-list">${rps.map(([g, idx]) => `<div class="rp-row"><i class="k r-${g.res === "win" || g.res === "loss" ? g.res : "draw"}"></i><span><b>${out(g)}</b> · ${what(g)} · ${tM(g.moves.length)} · ${new Date(g.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span><button class="btn" type="button" data-rp="${idx}">Replay</button></div>`).join("")}</div></figure>`);
+  }
+}
 function renderRecord() {
   const log = loadLog(), tours = loadTours(), f = recFilter, rec = loadRecord();
   const inF = (g) => (f === "all" ? true : f === "knockout" ? g.fmt === "knockout" : g.mode === f && g.fmt !== "knockout");
@@ -3309,20 +3413,16 @@ function renderRecord() {
     const mx = Math.max(1, ...rows.map((r) => r[2]));
     if (rows.length) charts.push(`<figure class="chart"><figcaption>Undos per win<small>clean = no undo</small></figcaption>${rows.map(([l, n, avg, clean]) => `<div class="hrow wide" title="${cap(l)}: ${avg.toFixed(1)} undos per win over ${n} win${n === 1 ? "" : "s"}, ${clean} without undo"><span>${cap(l)}</span><div class="track"><i class="bs r-one" style="width:${(avg / mx) * 100}%"></i></div><b>${avg.toFixed(1)} · ${clean} clean</b></div>`).join("")}</figure>`);
   }
-  // recent games you can watch again
-  const rps = loadReplays().map((g, idx) => [g, idx]).filter(([g]) => f === "all" || (f === "knockout" ? g.fmt === "knockout" : g.mode === f && g.fmt !== "knockout")).reverse().slice(0, 8);
-  if (rps.length) {
-    const what = (g) => (g.fmt === "knockout" ? "Knockout" : g.mode === "solo" ? `Solo · ${cap(g.lv || "medium")}` : g.mode === "pass" ? "Pass and play" : "Online");
-    const out = (g) => (g.res === "win" ? "Win" : g.res === "loss" ? "Loss" : g.draw ? "Draw" : `${esc(g.seats[g.winner] ? g.seats[g.winner].name : "")} won`);
-    charts.push(`<figure class="chart"><figcaption>Recent games<small>replay from the first move</small></figcaption><div class="rp-list">${rps.map(([g, idx]) => `<div class="rp-row"><i class="k r-${g.res === "win" || g.res === "loss" ? g.res : "draw"}"></i><span><b>${out(g)}</b> · ${what(g)} · ${tM(g.moves.length)} · ${new Date(g.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span><button class="btn" type="button" data-rp="${idx}">Replay</button></div>`).join("")}</div></figure>`);
-  }
   const since = log.length ? new Date(log[0].at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null;
   const empty = !games.length && !(f === "knockout" && tours.length);
   const table = f === "all" || f === "solo" ? `<figure class="chart"><figcaption>Solo by AI level<small>all time</small></figcaption><table><thead><tr><th>Level</th><th>W–L</th><th>Streak</th><th>Best</th><th>Fastest</th><th>Chain</th></tr></thead><tbody>${RECORD_LEVELS.map((l) => {
     const r = rec[l];
     return `<tr><td>${cap(l)}</td><td>${r.w}–${r.l}</td><td>${r.streak}</td><td>${r.bestStreak}</td><td>${r.fastest ? tM(r.fastest) : "–"}</td><td>${r.chain || "–"}</td></tr>`;
   }).join("")}</tbody></table></figure>` : "";
-  $("#record").innerHTML = `<div class="tiles">${tiles}</div>${f === "all" ? achGallery() : ""}
+  $("#recAch").innerHTML = achGallery();
+  $("#achCount").textContent = `${ACH.filter((a) => ACHV[a.id]).length}/${ACH.length}`;
+  renderReplays();
+  $("#record").innerHTML = `<div class="tiles">${tiles}</div>
     ${empty ? `<p class="vnote rec-empty">No ${f === "all" ? "" : { solo: "solo ", pass: "pass-and-play ", online: "online ", knockout: "knockout " }[f]}games yet. Finished games show up here.</p>` : (f !== "pass" && mine.length ? legend : "") + charts.join("")}
     ${table}
     ${since ? `<p class="vnote rec-since">Charts count games since ${since}, on this device.</p>` : ""}`;
@@ -3810,9 +3910,10 @@ function endGame() {
   logGame();
   $("#winEyebrow").textContent = "Collapse";
   const w = S.winner;
-  Sound.win();
   const vsAI = CFG.mode === "solo";
   const meWon = (vsAI && w === 0) || (CFG.mode === "online" && NET.mine(w));
+  // the score resolves to D major when you (or your side) win, to D minor when you lose
+  Sound.win(CFG.mode === "pass" || CFG.watch || meWon || (S.team && [...Array(S.n).keys()].some((q) => isMe(q) && SF.mate(S, q, w))));
   const myTeam = S.team && [...Array(S.n).keys()].some((q) => isMe(q) && SF.mate(S, q, w));
   let title = S.team ? (myTeam ? "Your team collapses into a black hole" : `Team ${TEAM_NAMES[teamOf(w)]} collapses into a black hole`)
     : meWon ? "You collapse into a black hole" : `${NAMES[w][0]} collapses into a black hole`;
@@ -4156,7 +4257,12 @@ function paintProgress() {
   bar.parentNode.classList.toggle("on", max > 4);
   bar.style.setProperty("--sp", max > 4 ? Math.min(1, dlgBody.scrollTop / max).toFixed(4) : "0");
 }
-dlgBody.addEventListener("scroll", paintProgress, { passive: true });
+let scrollRest = 0;
+dlgBody.addEventListener("scroll", () => {
+  paintProgress();
+  menuDlg.classList.add("scrolling"); clearTimeout(scrollRest);
+  scrollRest = setTimeout(() => menuDlg.classList.remove("scrolling"), 160);
+}, { passive: true });
 new ResizeObserver(paintProgress).observe(dlgBody);
 new MutationObserver(() => requestAnimationFrame(paintProgress)).observe(dlgBody, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
 function selectTab(name) {
@@ -4319,7 +4425,15 @@ $("#resetRecord").addEventListener("click", (e) => {
   ["sf2-record", "sf2-log", "sf2-tours", "sf2-tour-record"].forEach((k) => save(k, k === "sf2-record" ? {} : null));
   renderRecord();
 });
-$("#record").addEventListener("click", (e) => {
+// Record's own tabs: Stats, Achievements, Replays
+$("#recTabs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-rt]");
+  if (!b) return;
+  $("#recTabs").querySelectorAll("[data-rt]").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+  document.querySelectorAll(".rec-pane").forEach((p) => { p.hidden = p.dataset.pane !== b.dataset.rt; });
+  dlgBody.scrollTop = 0; Sound.ui("tab");
+});
+$("#panelRecord").addEventListener("click", (e) => {
   const b = e.target.closest("[data-rp]");
   if (!b) return;
   if (NET.inRoom()) { flash("Leave the online room to watch replays", 1800); return; }
@@ -4472,7 +4586,7 @@ void main(){
     const L = lens();
     frame++;
     if (!L && frame % 2) return;
-    if (!L && document.querySelector("dialog[open]") && frame % 12) return;
+    if (!L && document.querySelector("dialog[open]")) return;
     gl.uniform2f(U.uRes, W0, H0); gl.uniform1f(U.uDpr, dpr);
     gl.uniform1f(U.uTime, RM.matches ? 0 : now / 1000);
     gl.uniform2f(U.uC, L ? L.cx : -1e4, L ? L.cy : -1e4);
