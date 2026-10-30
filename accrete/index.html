@@ -259,6 +259,7 @@ input[type=text], input:not([type]), textarea { cursor: text; }
 dialog { width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 48px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); box-sizing: border-box; padding: 0; border: 0; background: transparent; color: var(--fg); overflow: visible; }
 dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .sheet { --cut: 16px; max-height: calc(100dvh - 48px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: hidden; display: flex; box-shadow: 0 24px 80px rgb(0 0 0 / .6); }
+.sheet > .dlg:not(.split) { overflow: auto; }
 .sheet > .dlg { flex: 1; min-width: 0; max-height: calc(100dvh - 50px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto; box-sizing: border-box; }
 .sheet.hud::before { background: var(--panel-solid); }
 .dlg { display: grid; gap: 18px; padding: 20px; }
@@ -370,7 +371,20 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .match span.tbd i { background: none; box-shadow: inset 0 0 0 1px var(--line-2); }
 @media (max-width: 899px), (max-height: 539px) { .tour .round:not(.now) { display: none; } .tour .rounds { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .tour .round.now { display: contents; } }
 /* Start stays in reach on short screens */
-.start-bar { position: sticky; bottom: -1px; z-index: 3; margin: 0 -2px; padding: 12px 2px 2px; background: linear-gradient(transparent, var(--panel-solid) 14px); }
+/* the menu: head and tabs stay put, only the body scrolls, the footer sits on the bottom edge */
+.dlg.split { display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; }
+.dlg.split > .dlg-head { flex: none; padding: 18px 20px 6px; }
+.dlg.split > .tabs { flex: none; margin: 0 20px; }
+.dlg-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 20px 20px; scrollbar-width: none; }
+.dlg-body::-webkit-scrollbar { display: none; }
+.dlg-foot { flex: none; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--panel-solid); }
+.dlg-foot[hidden] { display: none; }
+/* scroll progress: a hairline along the bottom of the tabs, under the tab marker */
+.dlg-progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.dlg-progress.on { opacity: 1; }
+.dlg-progress i { position: absolute; inset: 0 auto 0 0; width: calc(var(--sp, 0) * 100%); background: color-mix(in oklab, var(--hud) 70%, #fff); box-shadow: 0 0 8px color-mix(in oklab, var(--hud) 60%, transparent); }
+.dlg-progress i::after { content: ""; position: absolute; right: -2px; top: -1.5px; width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px var(--hud); }
+#formatNote:empty { display: none; }
 @media (max-width: 899px) { .ml .pct { display: none; } }
 .links { display: flex; gap: 8px; flex-wrap: wrap; }
 .sep { height: 1px; background: var(--line); }
@@ -395,9 +409,9 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .record td { padding: 5px 8px 5px 0; border-top: 1px solid var(--line); white-space: nowrap; }
 .record td:first-child { color: var(--fg); }
 
-.legend { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 8px; }
+.legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 12px 8px; }
 .legend figure { margin: 0; display: grid; justify-items: center; gap: 6px; text-align: center; }
-.legend figcaption { font: 500 12px var(--hud-font); color: var(--muted); line-height: 1.35; text-transform: uppercase; letter-spacing: .04em; overflow-wrap: anywhere; max-width: 100%; }
+.legend figcaption { font: 500 12px var(--hud-font); color: var(--muted); line-height: 1.35; text-transform: uppercase; letter-spacing: .04em; overflow-wrap: normal; hyphens: none; max-width: 100%; }
 .legend canvas { width: 44px; height: 44px; border: 1px solid var(--line); background: #060a12; }
 
 /* Event horizon (win) */
@@ -711,7 +725,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 
 <dialog id="menuDlg" aria-labelledby="menuTitle">
   <div class="sheet hud">
-  <form class="dlg" id="setupForm">
+  <form class="dlg split" id="setupForm">
     <div class="dlg-head"><h2 id="menuTitle" class="dlg-brand"><svg class="logo" width="24" height="24" aria-hidden="true"><use href="#logoMark"/></svg><span>Accrete</span></h2><button class="btn ghost icon" type="button" id="menuClose" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
     <div class="tabs" role="tablist" aria-label="Console sections">
       <span class="tab-ink" id="tabInk" aria-hidden="true"></span>
@@ -719,7 +733,9 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
       <button class="tab" type="button" role="tab" id="tabSettings" data-tab="settings" aria-selected="false" aria-controls="panelSettings">Settings</button>
       <button class="tab" type="button" role="tab" id="tabRecord" data-tab="record" aria-selected="false" aria-controls="panelRecord">Record</button>
       <button class="tab" type="button" role="tab" id="tabHelp" data-tab="help" aria-selected="false" aria-controls="panelHelp">Help</button>
+      <span class="dlg-progress" aria-hidden="true"><i id="dlgProgress"></i></span>
     </div>
+    <div class="dlg-body" id="dlgBody">
     <section class="tabpanel" role="tabpanel" id="panelPlay" data-panel="play" aria-labelledby="tabPlay">
       <div class="field">
         <span>Mode</span>
@@ -809,7 +825,6 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         </div>
       </div>
       <div class="roster" id="roster"></div>
-      <div class="actions start-bar"><button class="btn primary" type="submit">Start game</button></div>
     </section>
     <section class="tabpanel" role="tabpanel" id="panelSettings" data-panel="settings" aria-labelledby="tabSettings" hidden>
       <div class="settings">
@@ -840,6 +855,8 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
       <div class="links"><button class="btn primary" type="button" id="tutorialBtn">Tutorial</button><button class="btn" type="button" id="rulesBtn">Full rules</button></div>
       <p class="copy">© 2026 Arvind Srinivasan</p>
     </section>
+    </div>
+    <div class="dlg-foot actions start-bar" id="dlgFoot"><button class="btn primary" type="submit">Start game</button></div>
   </form>
   </div>
 </dialog>
@@ -3503,7 +3520,7 @@ function openMenu() {
   form.elements.variant.value = VARIANTS.includes(base.variant) ? base.variant : "classic";
   $("#setMusic").checked = Sound.music; $("#setSfx").checked = Sound.sfx; paintVol();
   $("#setHints").checked = SET.hints; $("#setOneTap").checked = SET.oneTap; $("#setUndo").checked = SET.undo; $("#setUi").checked = Sound.uiOn;
-  paintRoster(); renderRecord(); selectTab("play"); menuDlg.showModal(); menuDlg.querySelector(".sheet").scrollTop = 0;
+  paintRoster(); renderRecord(); selectTab("play"); menuDlg.showModal(); dlgBody.scrollTop = 0; paintProgress();
   Sound.ui("open");
 }
 $("#menuBtn").addEventListener("click", openMenu);
@@ -3543,9 +3560,24 @@ window.addEventListener("pointermove", (e) => {
   });
 });
 $("#menuClose").addEventListener("click", () => { Sound.ui("close"); menuDlg.close(); });
+// menu body scroll: a hairline under the tabs fills as you scroll; it only shows when there is more to see
+const dlgBody = $("#dlgBody");
+function paintProgress() {
+  const max = dlgBody.scrollHeight - dlgBody.clientHeight;
+  const bar = $("#dlgProgress");
+  bar.parentNode.classList.toggle("on", max > 4);
+  bar.style.setProperty("--sp", max > 4 ? Math.min(1, dlgBody.scrollTop / max).toFixed(4) : "0");
+}
+dlgBody.addEventListener("scroll", paintProgress, { passive: true });
+new ResizeObserver(paintProgress).observe(dlgBody);
+new MutationObserver(() => requestAnimationFrame(paintProgress)).observe(dlgBody, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
 function selectTab(name) {
   menuDlg.querySelectorAll(".tab").forEach((b) => { const on = b.dataset.tab === name; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; });
   menuDlg.querySelectorAll(".tabpanel").forEach((p) => { p.hidden = p.dataset.panel !== name; });
+  // the start button belongs to the Play tab
+  $("#dlgFoot").hidden = name !== "play";
+  dlgBody.scrollTop = 0;
+  requestAnimationFrame(paintProgress);
   requestAnimationFrame(() => {
     const on = menuDlg.querySelector(`.tab[data-tab="${name}"]`), ink = $("#tabInk");
     if (on && ink) { ink.style.width = `${on.offsetWidth * 0.6}px`; ink.style.transform = `translateX(${on.offsetLeft + on.offsetWidth * 0.2}px)`; }
