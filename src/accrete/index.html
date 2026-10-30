@@ -441,6 +441,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .strip .cell { aspect-ratio: 1; border-radius: 2px; }
 .strip .cell.r-loss { background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / .16) 0 1.5px, transparent 1.5px 4px); }
 .hrow { display: grid; grid-template-columns: 92px minmax(0, 1fr) 46px; align-items: center; gap: 8px; font: 500 12.5px var(--hud-font); }
+.hrow.wide { grid-template-columns: 92px minmax(0, 1fr) 104px; }
 .hrow > span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hrow > b { font-weight: 600; color: var(--fg); text-align: right; font-variant-numeric: tabular-nums; }
 .track { display: flex; gap: 2px; height: 10px; background: rgb(255 255 255 / .04); }
@@ -452,6 +453,52 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .hist .col i { width: 100%; border-radius: 3px 3px 0 0; background: color-mix(in oklab, var(--hud) 75%, #000); }
 .hist-x { display: flex; justify-content: space-between; font: 500 12px var(--hud-font); color: var(--muted); }
 .rec-since, .rec-empty { margin: 0; }
+.rp-list { display: grid; gap: 4px; }
+/* room leaderboard */
+.lb { display: grid; gap: 4px; }
+.lb-h { font: 600 12px var(--hud-font); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.lb-row { display: grid; grid-template-columns: 18px 10px minmax(0, 1fr) auto auto; align-items: center; gap: 8px; font: 500 13px var(--hud-font); color: var(--fg); font-variant-numeric: tabular-nums; }
+.lb-row .n { color: var(--muted); font-size: 12px; text-align: right; }
+.lb-row i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.lb-row span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-row span small { color: var(--muted); font-size: 12px; margin-left: 4px; }
+.lb-row b { font-weight: 600; }
+.lb-row em { font-style: normal; color: var(--hud); font-size: 12px; min-width: 22px; text-align: right; }
+@media (max-width: 899px), (max-height: 539px) { .lb-side { display: none !important; } }
+/* locked options: dimmed, with a small padlock; tapping one says how to open it */
+.seg label.locked, .rticks button.locked { opacity: .38; position: relative; }
+.seg label.locked::before { content: ""; display: inline-block; width: 9px; height: 10px; margin-right: 5px; vertical-align: -1px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 10'%3E%3Cpath d='M2 4V3a2.5 2.5 0 0 1 5 0v1h1v6H1V4zm1 0h3V3a1.5 1.5 0 0 0-3 0z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 10'%3E%3Cpath d='M2 4V3a2.5 2.5 0 0 1 5 0v1h1v6H1V4zm1 0h3V3a1.5 1.5 0 0 0-3 0z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.seg input:disabled + label.locked { cursor: var(--cur-off, not-allowed); }
+.unlock-note { font-size: 12.5px; }
+/* achievements */
+.achs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; }
+.ach { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 10px; border: 1px solid var(--line); background: var(--bg); opacity: .55; }
+.ach.on { opacity: 1; border-color: color-mix(in oklab, var(--hud) 35%, var(--line)); }
+.ach i { width: 24px; height: 26px; margin-top: 1px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: var(--line-2); }
+.ach.on i { background: radial-gradient(circle at 50% 45%, #fff 0 18%, var(--hud) 40%, color-mix(in oklab, var(--hud) 40%, #000) 100%); box-shadow: 0 0 10px var(--hud); }
+.ach span { display: grid; gap: 1px; min-width: 0; }
+.ach b { font: 600 13px var(--hud-font); color: var(--fg); }
+.ach small { font: 400 12px var(--font); color: var(--muted); line-height: 1.35; }
+.ach em { font: 500 12px var(--hud-font); font-style: normal; color: var(--hud); letter-spacing: .02em; }
+.ach:not(.on) em { color: var(--muted); }
+.achv { --cut: 12px; position: fixed; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 60; display: grid; gap: 2px; justify-items: center; min-width: min(320px, calc(100vw - 32px)); max-width: calc(100vw - 32px); padding: 12px 18px; text-align: center;
+  transform: translate(-50%, -140%); opacity: 0; transition: transform .45s cubic-bezier(.2, .8, .3, 1), opacity .3s; pointer-events: none; }
+.achv.on { transform: translate(-50%, 0); opacity: 1; }
+.achv b { font: 700 17px var(--hud-font); color: var(--fg); }
+.achv small { font: 400 13px var(--font); color: var(--muted); }
+.rp-row { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 4px 4px 4px 10px; border: 1px solid var(--line); background: var(--bg); font: 500 12.5px var(--hud-font); color: var(--muted); }
+.rp-row b { color: var(--fg); font-weight: 600; }
+.rp-row .btn { height: 28px; padding: 0 10px; font-size: 12px; --cut: 5px; }
+.rp-row .k { width: 10px; height: 10px; }
+/* replay controls */
+.replay { --cut: 10px; position: absolute; left: 50%; bottom: calc(var(--fb) + 14px); transform: translateX(-50%); z-index: 6; display: flex; align-items: center; gap: 6px; padding: 8px 10px 10px; pointer-events: auto; max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: center; }
+.replay[hidden] { display: none; }
+.replay .btn { height: 30px; padding: 0 10px; font-size: 12px; --cut: 5px; }
+.rp-pos { font: 600 12.5px var(--hud-font); color: var(--fg); letter-spacing: .06em; min-width: 104px; text-align: center; font-variant-numeric: tabular-nums; }
+.rp-bar { position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--hud); box-shadow: 0 0 8px var(--hud); transition: width .3s; }
+#app.replaying .zoom { opacity: .4; }
 .record table { margin-top: 2px; }
 .record .chart table { overflow-x: auto; }
 .record table { width: 100%; border-collapse: collapse; font: 400 12.5px var(--hud-font); font-variant-numeric: tabular-nums; }
@@ -480,7 +527,8 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .hz-body .eyebrow { color: color-mix(in oklab, var(--c) 70%, #fff); }
 .win h2 { margin: 0; font: 700 clamp(17px, calc(var(--d) * .058), 23px)/1.22 var(--hud-font); letter-spacing: .01em; text-wrap: balance; }
 .win .log { justify-content: center; gap: 3px 12px; font-size: 12px; max-width: 92%; }
-.win .actions { justify-content: center; gap: 6px; margin-top: 4px; flex-wrap: nowrap; }
+.win .actions { justify-content: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; max-width: 92%; }
+.win h2 { max-width: 92%; }
 .win .actions .btn { height: 32px; padding: 0 11px; font-size: 12px; }
 .peek-btn { position: absolute; left: 85.36%; top: 14.64%; translate: -50% -50%; width: 32px; height: 32px; }
 .win.peek .horizon { scale: .12; opacity: 0; pointer-events: none; }
@@ -569,7 +617,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .bubble { position: absolute; top: 0; left: calc(9px + (100% - 18px) * var(--f, .5)); transform: translateX(-50%); font: 700 12px var(--hud-font); color: var(--bg); background: var(--hud); padding: 2px 6px; letter-spacing: .04em; pointer-events: none; transition: left .08s; }
 .bubble::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 7px; height: 7px; background: var(--hud); transform: translateX(-50%) rotate(45deg); z-index: -1; }
 .rticks { position: relative; height: 26px; margin: 2px 9px 0; }
-.rticks button { position: absolute; top: 0; left: calc(var(--i) * 12.5%); transform: translateX(-50%); min-width: 28px; appearance: none; background: none; border: 0; padding: 7px 0 2px; cursor: var(--cur-pointer, pointer); color: var(--muted); font: 600 12px var(--hud-font); transition: color .15s; }
+.rticks button { position: absolute; top: 0; left: calc(var(--i) * 10%); transform: translateX(-50%); min-width: 28px; appearance: none; background: none; border: 0; padding: 7px 0 2px; cursor: var(--cur-pointer, pointer); color: var(--muted); font: 600 12px var(--hud-font); transition: color .15s; }
 .rticks button::before { content: ""; position: absolute; top: 0; left: 50%; width: 1px; height: 4px; background: var(--line-2); }
 .rticks button:hover { color: var(--fg); }
 .rticks button.on { color: var(--hud); }
@@ -665,6 +713,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 <div class="glow" id="glow" aria-hidden="true"></div>
 <div class="crt" aria-hidden="true"></div>
 <div class="rotate" aria-hidden="true"><div><svg viewBox="0 0 664 664" width="64" height="64"><path d="M93.9018 188.427C90.2499 190.537 88.0002 194.436 88.0002 198.655L88 466.345C88.0002 470.564 90.2498 474.464 93.9015 476.573L325.598 610.418C329.25 612.527 333.75 612.527 337.401 610.418L569.098 476.573C572.75 474.463 575 470.564 575 466.345L575 198.655C575 194.436 572.75 190.537 569.098 188.427L337.402 54.582C333.75 52.4725 329.251 52.4728 325.599 54.5821L93.9018 188.427ZM209.005 311.739C176.661 367.792 195.48 439.386 251.238 471.596C331.779 518.122 434.767 490.511 481.267 409.925C527.767 329.339 500.172 226.294 419.631 179.767C350.331 139.735 290.886 134.038 238.323 144.044C233.695 144.925 230.349 136.877 234.429 134.521L328.351 80.264C330.299 79.1388 332.699 79.1388 334.646 80.264L548.246 203.655C550.194 204.78 551.394 206.859 551.394 209.11L551.392 455.889C551.392 458.14 550.192 460.219 548.245 461.344L334.647 584.735C332.7 585.86 330.3 585.86 328.352 584.735L114.753 461.344C112.805 460.219 111.605 458.14 111.605 455.89L111.606 274.393C111.606 244.891 124.828 216.943 147.633 198.241C152.977 193.859 158.781 190.032 164.933 186.883C195.193 171.395 198.977 170.769 241.853 162.607C289.903 153.46 344.752 158.331 410.188 196.132C481.697 237.44 506.197 328.929 464.912 400.477C423.627 472.026 332.189 496.54 260.681 455.232C214.068 428.305 198.165 368.315 225.36 321.187C236.071 302.623 251.854 288.855 269.899 280.632C276.054 277.826 280.668 286.932 276.785 292.474C275.55 294.235 274.383 296.065 273.288 297.963L272.821 298.785C253.268 333.682 265.345 377.923 300.074 397.985C335.075 418.204 379.831 406.205 400.039 371.184L400.507 370.362C420.059 335.465 407.982 291.224 373.254 271.162C371.649 270.236 370.024 269.376 368.381 268.584L368.483 268.407C312.726 236.197 241.348 255.687 209.005 311.739Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></svg><p>Turn your phone upright</p></div></div>
+<div class="achv hud" id="achv" role="status" aria-live="polite"></div>
 <div class="splash" id="splash" role="presentation">
   <div class="splash-in">
     <div class="splash-logo"><svg viewBox="0 0 664 664" width="144" height="144" aria-hidden="true"><path d="M93.9018 188.427C90.2499 190.537 88.0002 194.436 88.0002 198.655L88 466.345C88.0002 470.564 90.2498 474.464 93.9015 476.573L325.598 610.418C329.25 612.527 333.75 612.527 337.401 610.418L569.098 476.573C572.75 474.463 575 470.564 575 466.345L575 198.655C575 194.436 572.75 190.537 569.098 188.427L337.402 54.582C333.75 52.4725 329.251 52.4728 325.599 54.5821L93.9018 188.427ZM209.005 311.739C176.661 367.792 195.48 439.386 251.238 471.596C331.779 518.122 434.767 490.511 481.267 409.925C527.767 329.339 500.172 226.294 419.631 179.767C350.331 139.735 290.886 134.038 238.323 144.044C233.695 144.925 230.349 136.877 234.429 134.521L328.351 80.264C330.299 79.1388 332.699 79.1388 334.646 80.264L548.246 203.655C550.194 204.78 551.394 206.859 551.394 209.11L551.392 455.889C551.392 458.14 550.192 460.219 548.245 461.344L334.647 584.735C332.7 585.86 330.3 585.86 328.352 584.735L114.753 461.344C112.805 460.219 111.605 458.14 111.605 455.89L111.606 274.393C111.606 244.891 124.828 216.943 147.633 198.241C152.977 193.859 158.781 190.032 164.933 186.883C195.193 171.395 198.977 170.769 241.853 162.607C289.903 153.46 344.752 158.331 410.188 196.132C481.697 237.44 506.197 328.929 464.912 400.477C423.627 472.026 332.189 496.54 260.681 455.232C214.068 428.305 198.165 368.315 225.36 321.187C236.071 302.623 251.854 288.855 269.899 280.632C276.054 277.826 280.668 286.932 276.785 292.474C275.55 294.235 274.383 296.065 273.288 297.963L272.821 298.785C253.268 333.682 265.345 377.923 300.074 397.985C335.075 418.204 379.831 406.205 400.039 371.184L400.507 370.362C420.059 335.465 407.982 291.224 373.254 271.162C371.649 270.236 370.024 269.376 368.381 268.584L368.483 268.407C312.726 236.197 241.348 255.687 209.005 311.739Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></svg></div>
@@ -693,6 +742,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
   <section class="mass" id="mass" aria-label="Players">
     <div class="mlabels" id="mlabels"></div>
     <div class="tour hud" id="tour" hidden></div>
+    <div class="tour hud lb-side" id="sideBoard" hidden></div>
   </section>
 
   <aside class="side" aria-label="Turn">
@@ -714,9 +764,9 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
       <span class="kbd">M</span><span>Music</span>
       <span class="kbd">S</span><span>Sound</span>
       <span class="kbd">N</span><span>Menu</span>
-      <span class="kbd">Space</span><span>Skip chain</span>
+      <span class="kbd">Space</span><span>Skip to your turn · hold to speed up</span>
       <span class="kbd">+ −</span><span>Zoom</span>
-      <span class="kbd">0</span><span>Fit field</span>
+      <span class="kbd">0</span><span>Fit field (zero or O)</span>
       <span class="kbd">F</span><span>Full screen</span>
     </div>
   </div>
@@ -731,6 +781,14 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
     <div class="overlay">
       <div class="brackets" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="readout tl" id="roTL"></span><span class="readout tr" id="roTR"></span><span class="readout br" id="roBR"></span><span class="clock" id="clock"><i></i></span></div>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div class="replay hud" id="replayBar" hidden>
+        <span class="rp-pos" id="rpPos">Move 0 / 0</span>
+        <button class="btn" type="button" id="rpPlay">Pause</button>
+        <button class="btn" type="button" id="rpStep">Step</button>
+        <button class="btn" type="button" id="rpSpeed" title="Replay speed">1×</button>
+        <button class="btn ghost" type="button" id="rpExit">Exit</button>
+        <i class="rp-bar" aria-hidden="true"></i>
+      </div>
       <div class="fs-hud" id="fsHud">
         <div class="fs-chip hud"><canvas id="fsIcon" aria-hidden="true"></canvas><div><span class="fs-name" id="fsName"></span><span class="fs-what" id="fsWhat"></span></div></div>
         <div class="fs-bars" id="fsBar" aria-hidden="true"></div>
@@ -748,6 +806,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
             <div class="log" id="winLog"></div>
             <div class="actions">
               <button class="btn" type="button" id="winReplay" title="Replay the move that won">Replay chain</button>
+              <button class="btn" type="button" id="winFull" title="Replay the whole game from the first move">Replay game</button>
               <button class="btn" type="button" id="winMenu">Menu</button>
               <button class="btn primary" type="button" id="winAgain">Rematch</button>
             </div>
@@ -759,7 +818,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         <button class="btn icon" type="button" id="zoomOut" aria-label="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
         <span id="zoomLvl">1.0×</span>
         <button class="btn icon" type="button" id="zoomIn" aria-label="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
-        <button class="btn icon" type="button" id="zoomFit" aria-label="Fit field" title="Fit field (0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 19.4 7.75v8.5L12 20.5 4.6 16.25v-8.5z"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></button>
+        <button class="btn icon" type="button" id="zoomFit" aria-label="Fit field" title="Fit field (zero or O)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 19.4 7.75v8.5L12 20.5 4.6 16.25v-8.5z"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></button>
         <button class="btn icon fs-only" id="fsBtn" type="button" aria-label="Full-screen field" aria-pressed="false" title="Full-screen field (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="fs-in"><path d="M15 3h6v6"/><path d="M21 3l-7 7"/><path d="M9 21H3v-6"/><path d="M3 21l7-7"/></g><g class="fs-out"><path d="M4 14h6v6"/><path d="M10 14l-7 7"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/></g></svg></button>
       </div>
     </div>
@@ -794,6 +853,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
           <input type="radio" name="mode" id="mdPass" value="pass"><label for="mdPass">Pass and play</label>
           <input type="radio" name="mode" id="mdNet" value="online"><label for="mdNet">Online</label>
         </div>
+        <p class="vnote unlock-note" id="unlockNote"></p>
       </div>
       <div class="online" id="onlineBox" hidden>
         <div class="online-join" id="onlineJoin">
@@ -807,6 +867,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
           </div>
           <p class="vnote" id="roomNote"></p>
           <div class="players" id="players"></div>
+          <div class="lb" id="roomBoard" hidden></div>
           <p class="vnote watchers" id="watchers" hidden></p>
           <div class="room-foot"><button class="btn ghost" type="button" id="leaveRoom">Leave room</button><button class="btn ghost danger" type="button" id="closeRoom" hidden>Close room</button></div>
         </div>
@@ -870,7 +931,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         <div class="sizer-row"><span class="size-read" id="sizeRead"></span><span id="sizeStars"></span></div>
         <div class="range-wrap" id="rangeWrap">
           <output class="bubble" id="sizeBubble" for="sizeRange">R3</output>
-          <input class="range" type="range" name="size" id="sizeRange" min="2" max="10" step="1" aria-label="Field radius">
+          <input class="range" type="range" name="size" id="sizeRange" min="2" max="12" step="1" aria-label="Field radius">
           <div class="rticks" id="rticks"></div>
         </div>
       </div>
@@ -881,8 +942,17 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
         <label class="switch" for="setHints"><span>Hints<small>Threat outlines and the cells a move would capture</small></span><input type="checkbox" id="setHints" role="switch"></label>
         <label class="switch" for="setOneTap"><span>One-tap placement<small>Place on the first tap, without a preview</small></span><input type="checkbox" id="setOneTap" role="switch"></label>
         <label class="switch" for="setUndo"><span>Undo<small>Show the undo button</small></span><input type="checkbox" id="setUndo" role="switch"></label>
+        <label class="switch" for="setProgress"><span>Progression<small>Unlock levels, rules and fields with achievements. Off opens everything.</small></span><input type="checkbox" id="setProgress" role="switch"></label>
         <div class="switch audio-row"><span><label for="setMusic">Music</label><input class="range vol" type="range" id="volMusic" min="0" max="100" step="1" aria-label="Music volume"></span><input type="checkbox" id="setMusic" role="switch" aria-label="Music"></div>
         <div class="switch audio-row"><span><label for="setSfx">Sound effects</label><input class="range vol" type="range" id="volSfx" min="0" max="100" step="1" aria-label="Sound effects volume"></span><input type="checkbox" id="setSfx" role="switch" aria-label="Sound effects"></div>
+        <div class="field music-style"><span>Soundtrack</span>
+          <div class="seg" id="musicStyle">
+            <input type="radio" name="mstyle" id="msG" value="gen"><label for="msG">Generated</label>
+            <input type="radio" name="mstyle" id="msA" value="adaptive"><label for="msA">Rearranged</label>
+            <input type="radio" name="mstyle" id="msL" value="loop"><label for="msL">Original</label>
+          </div>
+          <p class="vnote" id="musicNote"></p>
+        </div>
         <label class="switch" for="setUi"><span>Interface sounds<small>Hover and click sounds on controls</small></span><input type="checkbox" id="setUi" role="switch"></label>
       </div>
     </section>
@@ -1321,6 +1391,8 @@ const Sound = (() => {
   let motifAt = 0;
   const semi = (s) => Math.pow(2, s / 12);
   const prefs = Object.assign({ music: true, sfx: true, ui: true, musicVol: 0.5, sfxVol: 0.9 }, load("sf2-audio") || {});
+  // soundtrack: "gen" (generated live from the loop's language), "adaptive" (the loop's bars rearranged) or "loop" (the loop as written)
+  if (!["gen", "adaptive", "loop"].includes(prefs.style)) prefs.style = prefs.adaptive === false ? "loop" : "gen";
   if (prefs.musicVol === 0.6 && !prefs.volSet) prefs.musicVol = 0.5;
   const vol = (v) => Math.max(0, Math.min(1, +v || 0));
   if (load("sf-muted")) { prefs.music = false; prefs.sfx = false; save("sf2-audio", prefs); save("sf-muted", false); }
@@ -1332,6 +1404,10 @@ const Sound = (() => {
   const LOOP_FP = [-0.0144, -0.0057, 0.0026, 0.01, 0.0168, 0.0228, 0.0283, 0.0332, 0.0376, 0.0411, 0.044, 0.0462, 0.048, 0.0493, 0.0503, 0.0509, 0.0512, 0.0511, 0.0506, 0.0497, 0.0484, 0.0468, 0.0446, 0.042, 0.0391, 0.0357, 0.032, 0.0279, 0.0233, 0.0183, 0.013, 0.0074, 0.0015, -0.0045, -0.0108, -0.0171, -0.0233, -0.0294, -0.0349, -0.04, -0.0446, -0.0483, -0.0513, -0.0535, -0.0547, -0.0549, -0.0543, -0.0526, -0.0499, -0.0461, -0.0416, -0.0362, -0.03, -0.0229, -0.0154, -0.0075, 0.0009, 0.009, 0.0174, 0.0255, 0.0332, 0.0406, 0.0472, 0.0533, 0.0585, 0.063, 0.0666, 0.0694, 0.0715, 0.0727, 0.0731, 0.073, 0.072, 0.0703, 0.068, 0.0648, 0.061, 0.0564, 0.0508, 0.0445, 0.0374, 0.0294, 0.0206, 0.0113, 0.001, -0.0099, -0.0213, -0.0333, -0.0454, -0.0579, -0.0703, -0.0826, -0.0946, -0.1057, -0.1161, -0.1256, -0.1337, -0.1407, -0.1461, -0.1505, -0.1532, -0.1543, -0.1538, -0.1519, -0.1485, -0.1436, -0.1375, -0.1301, -0.1216, -0.1118, -0.1011, -0.0895, -0.0772, -0.0644, -0.051, -0.0373, -0.0234, -0.0097, 0.0039, 0.0173, 0.0301, 0.0422, 0.0537, 0.0644, 0.0741, 0.083, 0.091, 0.0978, 0.1035, 0.1082, 0.112, 0.1146, 0.1162, 0.1167, 0.1163, 0.1155, 0.1139, 0.1117, 0.1094, 0.1066, 0.1034, 0.1003, 0.0968, 0.093, 0.0886, 0.0839, 0.0786, 0.0728, 0.0664, 0.0596, 0.0522, 0.0443, 0.0364, 0.0281, 0.0197, 0.0114, 0.0032, -0.0049, -0.0127, -0.0202, -0.0273, -0.0338, -0.0398, -0.0454, -0.0505, -0.0551, -0.0589, -0.062, -0.0645, -0.0661, -0.0669, -0.0665, -0.0653, -0.0633, -0.0602, -0.0562, -0.0512, -0.0452, -0.0385, -0.0309, -0.0225, -0.0133, -0.0036, 0.0065, 0.017, 0.0273, 0.0377, 0.0477, 0.0572, 0.0663, 0.0749, 0.0827, 0.0898, 0.0959, 0.101, 0.1052, 0.1082, 0.1103, 0.1112, 0.111, 0.1099, 0.108, 0.105, 0.1012, 0.0967, 0.0915, 0.0858, 0.0792, 0.0722, 0.0648, 0.057, 0.0488, 0.0402, 0.0313, 0.0222, 0.0131, 0.0038, -0.0052, -0.0142, -0.0228, -0.031, -0.0387, -0.0459, -0.0522, -0.058, -0.0633, -0.0681, -0.0723, -0.076, -0.0793, -0.0823, -0.0848, -0.0867, -0.0881, -0.089, -0.0891, -0.0887, -0.0877, -0.086, -0.0836, -0.0806, -0.0771, -0.0731, -0.0683, -0.0636, -0.0584, -0.0531, -0.0478, -0.0425, -0.0374, -0.0327, -0.0283, -0.0241, -0.0206, -0.0177, -0.0155];
   let mus = null;
   const bufs = {};
+  // Adaptive music: the loop cut into its 44 bars (175 beats), each with an energy from 0 (the calm intro) to 1 (the peaks),
+  // and for each bar the bars that can follow it without a harmonic jolt. Made by analysing gameloop.wav offline.
+  const AD = {"beat":0.6037189084762135,"phase":0.0468,"bars":[[0.0468,0.14],[2.46168,0.07],[4.87655,0.047],[7.29143,0.0],[9.7063,0.023],[12.12118,0.186],[14.53605,0.349],[16.95093,0.302],[19.36581,0.279],[21.78068,0.209],[24.19556,0.163],[26.61043,0.116],[29.02531,0.093],[31.44018,0.256],[33.85506,0.465],[36.26993,0.395],[38.68481,0.442],[41.09969,0.814],[43.51456,0.721],[45.92944,0.581],[48.34431,0.512],[50.75919,0.651],[53.17406,0.744],[55.58894,1.0],[58.00382,0.953],[60.41869,0.884],[62.83357,0.907],[65.24844,0.837],[67.66332,0.372],[70.07819,0.326],[72.49307,0.488],[74.90794,0.628],[77.32282,0.674],[79.7377,0.535],[82.15257,0.86],[84.56745,0.791],[86.98232,0.767],[89.3972,0.558],[91.81207,0.605],[94.22695,0.93],[96.64183,0.977],[99.0567,0.698],[101.47158,0.419],[103.88645,0.233]],"jumps":[[13,10,30,16,7,12],[13,8,7,12,10,30],[19,15,6,17,23,27],[27,6,19,29,30,23],[25,9],[27,22,23,3,30,19],[1,31,16,35,2,13],[2,12,14,43,13,1],[5,1,25],[1,30,23,0,13,22],[31,39,23,35,43,7],[43,30,8,1,2,23],[2,1,30,8,7,10],[12,8,43,30,2,23],[17,19,39,23,31,35],[7,1,31,39,35,18],[15,19,39,23,31,35],[26,37,33,35,31,24],[15,17,27,3,23,39],[],[19,40,38,15,36,25],[19,6,4,15,27],[39,17,15,31,35,19],[26,35,34,31,42,11],[38,15,19,17,9,3],[31,35,39,18,7,23],[23,19,39,43,15,17],[],[27,43,23,6,3,42],[12,13,27,23,10,1],[35,39,23,17,11,7],[35,39,34,17,11,23],[41,15,36,17,37,25],[39,32,23,31,43,11],[31,39,23,32,17,11],[26,33,15,19,17,18],[33,26,18],[25,9,36,16],[23,31,35,17,15,43],[36],[33,37,36,15,25],[24,26],[23,8,12,7,39,31],[23,12,8,10,30,14]]};
+  let seq = null;
 
   function impulse(sec, decay) {
     const len = Math.floor(ac.sampleRate * sec), buf = ac.createBuffer(2, len, ac.sampleRate);
@@ -1340,7 +1416,7 @@ const Sound = (() => {
   }
   function init() {
     // iOS also parks the context as "interrupted" (calls, other apps); any tap wakes it, and retries music that failed
-    if (ac) { if (ac.state !== "running") ac.resume().catch(() => {}); if (mus && !mus.ready && !loopBusy) loadLoop(); return true; }
+    if (ac) { if (ac.state !== "running") ac.resume().catch(() => {}); if (mus && prefs.style !== "gen" && !mus.buf && !loopBusy) loadLoop(); return true; }
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return false;
     try { ac = new AC({ sampleRate: 48000, latencyHint: "interactive" }); } catch (e) { try { ac = new AC(); } catch (e2) { return false; } }
@@ -1369,7 +1445,8 @@ const Sound = (() => {
     noiseBuf = nb;
     buildBed();
     loadAll();
-    loadLoop();
+    // the generated score needs no file; the loop styles load it first
+    if (prefs.style === "gen") { mus.ready = true; startMusic(); applyMusic(2.5); } else loadLoop();
     document.addEventListener("visibilitychange", () => { if (!ac) return; if (document.hidden) ac.suspend().catch(() => {}); else ac.resume().catch(() => {}); });
     return true;
   }
@@ -1402,15 +1479,236 @@ const Sound = (() => {
         if (buf.length < want - 2) continue;
         const off = loopOffset(buf, want);
         if (off < 0) continue;
-        const src = ac.createBufferSource(); src.buffer = buf; src.loop = true;
-        src.loopStart = off / ac.sampleRate; src.loopEnd = (off + Math.min(want, buf.length - off)) / ac.sampleRate;
-        src.connect(mus.duck);
-        mus.t0 = ac.currentTime + 0.05; mus.dur = src.loopEnd - src.loopStart; src.start(mus.t0, src.loopStart);
-        mus.src = src; mus.ready = true;
+        mus.buf = buf; mus.ls = off / ac.sampleRate; mus.le = (off + Math.min(want, buf.length - off)) / ac.sampleRate;
+        mus.dur = mus.le - mus.ls; mus.ready = true;
+        startMusic();
         applyMusic(2.5);
         return;
       } catch (e) {}
     }
+  }
+  /* ---- Generative score: the loop's language, played live. D at 99.4 BPM; calm chords D, Dsus4, G, Gsus4;
+     tense chords from the loop's darker bars (Eb, Cm, Bbsus4, Fm, Absus4); the motif F#-D-A-G-D / D-A-F#-G as melody. ---- */
+  const GEN = (() => {
+    const BEAT = 60 / 99.384, STEP = BEAT / 4;
+    const CH = {
+      D: [2, [2, 6, 9]], Dsus4: [2, [2, 7, 9]], G: [7, [7, 11, 2]], Gsus4: [7, [7, 0, 2]], Em: [4, [4, 7, 11]], C: [0, [0, 4, 7]],
+      Eb: [3, [3, 7, 10]], Cm: [0, [0, 3, 7]], Bbsus4: [10, [10, 3, 5]], Fm: [5, [5, 8, 0]], Absus4: [8, [8, 1, 3]],
+    };
+    // chord moves taken from the loop's own bar-to-bar changes
+    const CALM = { D: ["Dsus4", "Gsus4", "G", "D"], Dsus4: ["D", "G", "Gsus4"], G: ["Dsus4", "D", "Gsus4"], Gsus4: ["D", "Gsus4", "Dsus4", "Em"], Em: ["C"], C: ["Gsus4"],
+      Eb: ["D"], Cm: ["D"], Bbsus4: ["D"], Fm: ["Cm"], Absus4: ["Eb"] };
+    const TENSE = { D: ["Eb", "Cm", "D", "Gsus4"], Dsus4: ["Eb", "D"], G: ["Cm", "D"], Gsus4: ["D", "C", "Eb"], Em: ["C"], C: ["Gsus4", "Cm"],
+      Eb: ["D", "Fm", "Eb", "Cm"], Cm: ["D", "Bbsus4", "Cm"], Bbsus4: ["Fm", "D"], Fm: ["Cm", "Eb", "Absus4"], Absus4: ["Eb"] };
+    const CALM_SCALE = [2, 4, 6, 7, 9, 11, 0], DARK_SCALE = [2, 3, 6, 7, 9, 10, 0];
+    const MOTIF = [78, 74, 69, 79, 74, 81, 78, 79];   // F#5 D5 A4 G5 D5 A5 F#5 G5
+    const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+    let bus = null, verb = null, dly = null, st = null;
+    const pick = (a) => a[Math.floor(Math.random() * a.length)];
+    // nearest pitch at or around m whose pitch class is in the set
+    const snap = (m, pcs) => { for (let d = 0; d < 7; d++) for (const s of [m - d, m + d]) if (pcs.includes(((s % 12) + 12) % 12)) return s; return m; };
+    function build() {
+      bus = ac.createGain(); bus.gain.value = 0.9; bus.connect(mus.duck);
+      verb = ac.createConvolver(); verb.buffer = impulse(3.4, 2.6);
+      const vg = ac.createGain(); vg.gain.value = 0.36; verb.connect(vg); vg.connect(bus);
+      // dotted-eighth echo for the plucks, the loop's own feel
+      dly = ac.createDelay(1.5); dly.delayTime.value = BEAT * 0.75;
+      const fb = ac.createGain(); fb.gain.value = 0.32; const dlp = ac.createBiquadFilter(); dlp.type = "lowpass"; dlp.frequency.value = 2600;
+      const dg = ac.createGain(); dg.gain.value = 0.3;
+      dly.connect(dlp); dlp.connect(fb); fb.connect(dly); dlp.connect(dg); dg.connect(bus); dg.connect(verb);
+    }
+    function out(node, wet) { node.connect(bus); if (wet) { const g = ac.createGain(); g.gain.value = wet; node.connect(g); g.connect(verb); } }
+    // --- voices ---
+    function pad(chord, t, dur, lvl, bright) {
+      const [root, pcs] = CH[chord];
+      const notes = [snap(50, [root]), ...pcs.map((pc, k) => snap(57 + k * 4, [pc]))];
+      const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500 + 2600 * bright; lp.Q.value = 0.4;
+      const g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + 1.4);
+      g.gain.setValueAtTime(lvl, t + dur - 0.2); g.gain.linearRampToValueAtTime(0.0001, t + dur + 1.8);
+      lp.connect(g); out(g, 0.5);
+      notes.forEach((m) => [-7, 7].forEach((c) => {
+        const o = ac.createOscillator(); o.type = "sawtooth"; o.frequency.value = hz(m); o.detune.value = c;
+        const og = ac.createGain(); og.gain.value = 0.05; o.connect(og); og.connect(lp); o.start(t); o.stop(t + dur + 2);
+      }));
+    }
+    function bass(m, t, dur, lvl) {
+      const o = ac.createOscillator(), o2 = ac.createOscillator(), g = ac.createGain(), lp = ac.createBiquadFilter();
+      o.type = "sine"; o2.type = "triangle"; o.frequency.value = hz(m); o2.frequency.value = hz(m);
+      lp.type = "lowpass"; lp.frequency.value = 380;
+      const g2 = ac.createGain(); g2.gain.value = 0.35;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + 0.02); g.gain.exponentialRampToValueAtTime(lvl * 0.5, t + dur * 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); o2.connect(g2); g2.connect(lp); lp.connect(g); out(g, 0);
+      o.start(t); o2.start(t); o.stop(t + dur + 0.05); o2.stop(t + dur + 0.05);
+    }
+    function pluck(m, t, lvl, pan) {
+      const o = ac.createOscillator(), o2 = ac.createOscillator(), g = ac.createGain(), lp = ac.createBiquadFilter();
+      o.type = "triangle"; o2.type = "sine"; o.frequency.value = hz(m); o2.frequency.value = hz(m + 12);
+      lp.type = "lowpass"; lp.frequency.setValueAtTime(5200, t); lp.frequency.exponentialRampToValueAtTime(900, t + 0.3);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+      const g2 = ac.createGain(); g2.gain.value = 0.25;
+      o.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(g);
+      let node = g; if (ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = pan; g.connect(p); node = p; }
+      out(node, 0.25); node.connect(dly);
+      o.start(t); o2.start(t); o.stop(t + 0.6); o2.stop(t + 0.6);
+    }
+    function bell(m, t, lvl) {
+      const c = ac.createOscillator(), mo = ac.createOscillator(), mg = ac.createGain(), g = ac.createGain();
+      c.type = "sine"; mo.type = "sine"; c.frequency.value = hz(m); mo.frequency.value = hz(m) * 3.5;
+      mg.gain.setValueAtTime(hz(m) * 1.6, t); mg.gain.exponentialRampToValueAtTime(1, t + 1.2);
+      mo.connect(mg); mg.connect(c.frequency);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+      c.connect(g); out(g, 0.6); g.connect(dly);
+      c.start(t); mo.start(t); c.stop(t + 2.3); mo.stop(t + 2.3);
+    }
+    function kick(t, lvl) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(46, t + 0.12);
+      g.gain.setValueAtTime(lvl, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
+      o.connect(g); out(g, 0); o.start(t); o.stop(t + 0.4);
+    }
+    function hat(t, lvl, open) {
+      const s = ac.createBufferSource(); s.buffer = noiseBuf; const hp = ac.createBiquadFilter(), g = ac.createGain();
+      hp.type = "highpass"; hp.frequency.value = 7200;
+      g.gain.setValueAtTime(lvl, t); g.gain.exponentialRampToValueAtTime(0.0001, t + (open ? 0.22 : 0.05));
+      s.connect(hp); hp.connect(g); out(g, 0.15); s.start(t, Math.random()); s.stop(t + 0.25);
+    }
+    function swoosh(t, dur, lvl) {
+      const s = ac.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const bp = ac.createBiquadFilter(), g = ac.createGain();
+      bp.type = "bandpass"; bp.Q.value = 2.5; bp.frequency.setValueAtTime(300, t); bp.frequency.exponentialRampToValueAtTime(6000, t + dur);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + dur * 0.9); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.1);
+      s.connect(bp); bp.connect(g); out(g, 0.4); s.start(t); s.stop(t + dur + 0.2);
+    }
+    // --- the score: sixteenth-note steps, chords every one or two bars, the motif at phrase starts ---
+    function start() {
+      if (!bus) build();
+      bus.gain.cancelScheduledValues(ac.currentTime); bus.gain.setValueAtTime(0.9, ac.currentTime);
+      st = { next: ac.currentTime + 0.1, step: 0, bar: 0, chord: "D", hold: 0, int: 0.1, tension: 0, energy: 0, spike: 0, fill: false, arp: 0, timer: setInterval(tick, 50) };
+      mus.t0 = st.next;
+      tick();
+    }
+    function stop() {
+      if (!st) return;
+      clearInterval(st.timer); st = null;
+      if (bus) { bus.gain.cancelScheduledValues(ac.currentTime); bus.gain.setTargetAtTime(0, ac.currentTime, 0.4); const b = bus; setTimeout(() => { try { b.disconnect(); } catch (e) {} }, 3000); bus = null; }
+    }
+    function tick() {
+      if (!st || ac.state !== "running") return;
+      if (st.next < ac.currentTime) st.next = ac.currentTime + 0.03;
+      while (st.next < ac.currentTime + 0.25) { step(st.step, st.next); st.next += STEP; st.step++; }
+    }
+    function step(n, t) {
+      const s = n % 16;
+      if (s === 0) bar(t);
+      const I = st.int, [root, pcs] = CH[st.chord], scale = I > 0.55 ? DARK_SCALE : CALM_SCALE;
+      // drums arrive with tension
+      if (I > 0.32 && (s === 0 || (I > 0.62 && s === 8) || (I > 0.8 && (s === 6 || s === 14)))) kick(t, 0.32 + 0.25 * I);
+      if (I > 0.42 && s % 4 === 2) hat(t, 0.035 + 0.04 * I, s === 14 && I > 0.7);
+      if (I > 0.72 && s % 2 === 1) hat(t, 0.018, false);
+      // bass: long notes when calm, a pulse when tense
+      const bm = snap(38, [root]);
+      if (I < 0.35 ? s === 0 && st.bar % 2 === 0 : I < 0.65 ? s === 0 || s === 8 : s % 2 === 0) bass(I > 0.65 && s % 8 === 6 ? bm + 12 : bm, t, I < 0.35 ? BEAT * 8 : I < 0.65 ? BEAT * 2 : STEP * 1.8, 0.2 + 0.12 * I);
+      // plucked arpeggio through the chord, denser as the game tightens
+      const pat = I < 0.25 ? [0, 10] : I < 0.5 ? [0, 3, 6, 10, 14] : I < 0.75 ? [0, 2, 3, 6, 8, 10, 11, 14] : [0, 2, 3, 4, 6, 8, 10, 11, 12, 14];
+      if (pat.includes(s) && !(I < 0.25 && st.bar % 2)) {
+        const tones = pcs.map((pc) => snap(62 + pcs.indexOf(pc) * 4, [pc]));
+        const m = tones[st.arp++ % tones.length] + (st.arp % 6 === 5 ? 12 : 0);
+        pluck(m, t, 0.06 + 0.05 * I, ((st.arp % 3) - 1) * 0.35);
+      }
+      // the motif: at the head of each four-bar phrase, quarter notes, bent onto the chord of the moment
+      if (st.phrase && s % 4 === 0) {
+        const k = st.phrase.k++, m = snap(MOTIF[k % 8], s % 8 === 0 ? pcs : scale);
+        bell(m, t, 0.07 + 0.04 * (1 - I));
+        if (st.phrase.k >= 8) st.phrase = null;
+      }
+      // a chain throws in a fill: a fast run of the motif and a rising sweep into the next bar
+      if (st.fill && s >= 8) {
+        if (s === 8) swoosh(t, STEP * 8, 0.12);
+        pluck(snap(MOTIF[s % 8] + 12, scale), t, 0.08, (s % 2) - 0.5);
+        if (s === 15) st.fill = false;
+      }
+    }
+    function bar(t) {
+      // follow the game: intensity eases toward the target; chains lift it for a while
+      const target = Math.max(0, Math.min(1, 0.08 + 0.6 * st.tension + 0.25 * st.energy + st.spike));
+      st.int += (target - st.int) * 0.45; st.spike *= 0.6;
+      if (st.hold <= 0) {
+        const table = Math.random() < st.int * 1.1 ? TENSE : CALM;
+        st.chord = st.bar % 8 === 0 && st.int < 0.5 ? "D" : pick(table[st.chord] || ["D"]);
+        st.hold = st.int > 0.6 ? 1 : 2;
+        pad(st.chord, t, BEAT * 4 * st.hold, 0.08 + 0.05 * st.int, 0.25 + 0.65 * st.int);
+      }
+      st.hold--;
+      if (st.bar % 4 === 0 && st.int < 0.8 && Math.random() < 0.8) st.phrase = { k: Math.random() < 0.5 ? 0 : 4 };
+      st.bar++;
+    }
+    return {
+      start, stop,
+      get on() { return !!st; },
+      mood(t, e) { if (st) { st.tension = t || 0; st.energy = e || 0; } },
+      chain(n) { if (st) { st.spike = Math.min(0.45, st.spike + 0.06 + 0.01 * n); st.fill = true; } },
+      beatT0: () => mus.t0, BEAT,
+    };
+  })();
+
+  // the generated score, the original loop looping sample-exactly, or the loop's bars rearranged
+  function startMusic() {
+    stopMusic();
+    mus.gen = prefs.style === "gen";
+    if (mus.gen) { mus.adaptive = false; GEN.start(); return; }
+    if (!mus.buf) { mus.ready = false; applyMusic(0.3); loadLoop(); return; }
+    if (prefs.style === "loop") {
+      const src = ac.createBufferSource(); src.buffer = mus.buf; src.loop = true; src.loopStart = mus.ls; src.loopEnd = mus.le;
+      src.connect(mus.duck); mus.t0 = ac.currentTime + 0.05; src.start(mus.t0, mus.ls); mus.src = src; mus.adaptive = false;
+      return;
+    }
+    mus.adaptive = true;
+    seq = { next: ac.currentTime + 0.12, bar: 0, target: 0.12, tension: 0, energy: 0, spike: 0, last: [], timer: 0 };
+    mus.t0 = seq.next;
+    seq.timer = setInterval(seqTick, 100);
+    seqTick();
+  }
+  function stopMusic() {
+    GEN.stop();
+    if (seq) { clearInterval(seq.timer); seq = null; }
+    if (mus.src) { try { mus.src.stop(ac.currentTime + 0.05); } catch (e) {} mus.src = null; }
+    (mus.voices || []).forEach((v) => { try { v.g.gain.cancelScheduledValues(ac.currentTime); v.g.gain.setTargetAtTime(0, ac.currentTime, 0.08); v.s.stop(ac.currentTime + 0.5); } catch (e) {} });
+    mus.voices = [];
+  }
+  const barLen = (i) => (i === AD.bars.length - 1 ? 3 : 4) * AD.beat;
+  // keep about half a second of music scheduled ahead
+  function seqTick() {
+    if (!seq || ac.state !== "running") return;
+    if (seq.next < ac.currentTime) seq.next = ac.currentTime + 0.05;
+    while (seq.next < ac.currentTime + 0.6) {
+      playBar(seq.bar, seq.next);
+      seq.next += barLen(seq.bar);
+      seq.spike *= 0.55;
+      seq.bar = nextBar(seq.bar);
+    }
+  }
+  // one bar from the buffer, cross-faded with its neighbours; looping the source lets the last bar run into the first
+  function playBar(i, when) {
+    const h = 0.012, a = mus.ls + AD.bars[i][0], len = barLen(i);
+    const s = ac.createBufferSource(); s.buffer = mus.buf; s.loop = true; s.loopStart = mus.ls; s.loopEnd = mus.le;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0, when - h); g.gain.linearRampToValueAtTime(1, when + h);
+    g.gain.setValueAtTime(1, when + len - h); g.gain.linearRampToValueAtTime(0, when + len + h);
+    s.connect(g); g.connect(mus.duck);
+    s.start(Math.max(ac.currentTime, when - h), Math.max(mus.ls, a - h), len + 2 * h);
+    mus.voices = (mus.voices || []).filter((v) => v.end > ac.currentTime);
+    mus.voices.push({ s, g, end: when + len + h });
+  }
+  // where the game wants the music: calm early on, rising with tension and big bodies, a lift after each chain
+  const targetEnergy = () => Math.max(0, Math.min(1, 0.1 + 0.55 * seq.tension + 0.25 * seq.energy + seq.spike));
+  function nextBar(i) {
+    const n = AD.bars.length, nat = (i + 1) % n, E = targetEnergy();
+    const miss = Math.abs(AD.bars[nat][1] - E);
+    // follow the written order unless it heads the wrong way; jumps land on phrase lines (every second bar) unless far off
+    if (!AD.jumps[i].length || !((miss > 0.3 && (i % 2 === 1 || miss > 0.5)) || (Math.random() < 0.08 && i % 2 === 1))) return nat;
+    const pick = AD.jumps[i].filter((j) => !seq.last.includes(j)).map((j) => [j, Math.abs(AD.bars[j][1] - E) + Math.random() * 0.12]).sort((x, y) => x[1] - y[1])[0];
+    if (!pick || pick[1] >= miss) return nat;
+    seq.last = [pick[0]].concat(seq.last).slice(0, 4);
+    return pick[0];
   }
   function applyMusic(fade) {
     if (!mus) return;
@@ -1420,8 +1718,10 @@ const Sound = (() => {
   // Seconds until the music's next beat, at least `min` away
   function nextBeat(min) {
     if (!mus || !mus.ready) return min;
-    const pos = (((ac.currentTime - mus.t0) % mus.dur) + mus.dur) % mus.dur;
-    let t = LOOP.beat - (((pos - LOOP.phase) % LOOP.beat) + LOOP.beat) % LOOP.beat;
+    // adaptive bars all start on a beat, so the beat grid runs straight on from the first bar
+    if (mus.gen) { const p = Math.max(0, ac.currentTime - mus.t0); let g = GEN.BEAT - (p % GEN.BEAT); while (g < min) g += GEN.BEAT; return g; }
+    const pos = mus.adaptive ? Math.max(0, ac.currentTime - mus.t0) : (((ac.currentTime - mus.t0) % mus.dur) + mus.dur) % mus.dur;
+    let t = mus.adaptive ? AD.beat - (pos % AD.beat) : LOOP.beat - (((pos - LOOP.phase) % LOOP.beat) + LOOP.beat) % LOOP.beat;
     while (t < min) t += LOOP.beat;
     return t;
   }
@@ -1563,7 +1863,10 @@ const Sound = (() => {
       if (prefs.sfx) sfxBus.gain.setTargetAtTime(prefs.sfxVol, ac.currentTime, 0.03);
       uiBus.gain.setTargetAtTime(prefs.sfxVol * 1.1, ac.currentTime, 0.03);
     },
-    mood() {},
+    // the game's mood: tension 0..1 (a runaway leader, cells under threat) and energy 0..1 (big bodies on the field)
+    mood(tension, energy) { if (seq) { seq.tension = tension || 0; seq.energy = energy || 0; } if (ac) GEN.mood(tension, energy); },
+    get style() { return prefs.style; },
+    setStyle(s) { if (!["gen", "adaptive", "loop"].includes(s)) return; prefs.style = s; save("sf2-audio", prefs); if (mus) { mus.ready = s === "gen" || !!mus.buf; startMusic(); applyMusic(1.2); } },
     place(stage, atCap, pan) {
       if (!ok()) return;
       // the melody: the next note of the loop's motif, an octave down for young bodies, brighter as a body grows
@@ -1583,6 +1886,8 @@ const Sound = (() => {
     wave(w, caps, remnants, pan) {
       if (!ok()) return;
       const big = Math.max(...caps), n = caps.length;
+      if (seq) seq.spike = Math.min(0.45, seq.spike + 0.06 + 0.01 * n);
+      if (w === 0) GEN.chain(n);
       swell(Math.min(0.5, 0.12 + 0.05 * w + 0.03 * n), Math.min(520, 140 + 30 * w + 12 * n));
       // bigger bodies sit an octave lower; each wave of the chain steps up the scale
       const step = PENTA[Math.min(w, PENTA.length - 1)] - (big >= 6 ? 12 : big >= 4 ? 7 : 0);
@@ -2206,7 +2511,7 @@ const maxStars = (R) => (R <= 2 ? 3 : R === 3 ? 4 : 6);
 const cellsOf = (R) => 3 * R * R + 3 * R + 1;
 let CFG = load("sf2-prefs") || { ...DEFAULT_CFG };
 CFG.size = radiusOf(CFG.size);
-if (!(CFG.size >= 2 && CFG.size <= 10) || !(CFG.n >= 2 && CFG.n <= maxStars(CFG.size)) || !["solo", "pass"].includes(CFG.mode)) CFG = { ...DEFAULT_CFG, size: 3 };
+if (!(CFG.size >= 2 && CFG.size <= 12) || !(CFG.n >= 2 && CFG.n <= maxStars(CFG.size)) || !["solo", "pass"].includes(CFG.mode)) CFG = { ...DEFAULT_CFG, size: 3 };
 if (!VARIANTS.includes(CFG.variant)) CFG.variant = "classic";
 // teams: 2 teams for four or six stars, 3 teams for six
 const teamsOk = (n, t) => (t === 2 && (n === 4 || n === 6)) || (t === 3 && n === 6);
@@ -2227,7 +2532,7 @@ const VNOTE = {
   epoch: (R) => `${epochRounds(cellsOf(R))} rounds. The most massive star collapses.`,
   belt: () => "Asteroids break up the field. Cells beside them hold less.",
 };
-let SET = Object.assign({ hints: true, oneTap: false, undo: true }, load("sf2-settings") || {});
+let SET = Object.assign({ hints: true, oneTap: false, undo: true, progression: true }, load("sf2-settings") || {});
 let B = null, S = null, view = null, W = 12, H = 11;
 let history = [], busy = false, animating = false, thinking = false, preview = null, hoverI = -1, denyI = -1, note = null, animMsg = null;
 let pointerKind = "touch", skipNow = null, polys = [], FLAT = false, lastMove = null, finalMove = null, TH = null, THR = null, TU = null;
@@ -2593,11 +2898,32 @@ function buildHits() {
     const el = document.createElementNS(ns, "polygon");
     el.setAttribute("points", pts.join(" "));
     el.setAttribute("class", "hit");
-    el.setAttribute("tabindex", "0");
+    el.setAttribute("tabindex", "-1");
     el.setAttribute("role", "button");
     el.dataset.i = i;
     hits.appendChild(el); polys.push(el);
   }
+  // keyboard: Tab lands on one cell (the centre to start), the arrow keys move between cells
+  kbCell = B.depth.indexOf(Math.max(...B.depth)); kbX = null;
+  polys[kbCell].setAttribute("tabindex", "0");
+}
+let kbCell = 0, kbX = null;
+function kbMove(dx, dy) {
+  const i = kbCell, x0 = cx(i), y0 = cy(i);
+  if (dx) kbX = null; else if (kbX == null) kbX = x0;
+  let best = -1, bs = -Infinity;
+  for (const j of B.nb[i]) {
+    const vx = cx(j) - x0, vy = cy(j) - y0, len = Math.hypot(vx, vy), dot = (vx * dx + vy * dy) / len;
+    if (dot < 0.3) continue;
+    // up and down keep to the column you started in, so a run of presses doesn't drift sideways
+    const score = dot - (dy && kbX != null ? Math.abs(cx(j) - kbX) * 0.4 : 0);
+    if (score > bs) { bs = score; best = j; }
+  }
+  if (best < 0) return;
+  polys[kbCell].setAttribute("tabindex", "-1");
+  kbCell = best;
+  polys[best].setAttribute("tabindex", "0");
+  polys[best].focus();
 }
 
 function ringName(i) {
@@ -2904,10 +3230,13 @@ function logGame() {
   const log = loadLog();
   log.push({ at: Date.now(), mode: CFG.mode, fmt: KO() ? "knockout" : "single", v: CFG.variant || "classic", lv: vsAI ? CFG.level : null, n: S.n, R: B.R,
     teams: S.team ? Math.max(...S.team) + 1 : 0, res, who: S.winner >= 0 ? NAMES[S.winner][0] : null, moves: S.moves,
-    chain: me >= 0 ? GAME.chain[me] || 0 : chains.length ? Math.max(...chains) : 0, round: ko });
+    chain: me >= 0 ? GAME.chain[me] || 0 : chains.length ? Math.max(...chains) : 0, round: ko, undos: GAME.undos || 0, rem: !!GAME.rem, low: GAME.low == null ? null : +GAME.low.toFixed(3) });
   while (log.length > 800) log.shift();
   save("sf2-log", log);
+  const rp = replayRecord();
+  if (rp) { rp.res = res; rp.lv = log[log.length - 1].lv; saveReplay(rp); }
   if (key) save("sf2-log-last", key);
+  checkAch(false);
 }
 function logTour(mode, size, lv, finish, champion) {
   const l = loadTours();
@@ -2974,13 +3303,26 @@ function renderRecord() {
     const mx = Math.max(1, ...rows.map((r) => r[1]));
     if (tours.length) charts.push(`<figure class="chart"><figcaption>Knockout finishes</figcaption>${rows.map(([o, c]) => `<div class="hrow" title="${o}: ${c}"><span>${o === "Champion" ? "Champion" : `Out in ${o.toLowerCase()}`}</span><div class="track"><i class="bs r-one" style="width:${(c / mx) * 100}%"></i></div><b>${c}</b></div>`).join("")}</figure>`);
   }
+  // how many undos a win took, per AI level
+  if (f === "all" || f === "solo") {
+    const rows = RECORD_LEVELS.map((l) => { const ws = log.filter((g) => g.mode === "solo" && g.fmt !== "knockout" && g.lv === l && g.res === "win" && g.undos != null); return [l, ws.length, ws.length ? ws.reduce((a, g) => a + g.undos, 0) / ws.length : 0, ws.filter((g) => !g.undos).length]; }).filter((r) => r[1]);
+    const mx = Math.max(1, ...rows.map((r) => r[2]));
+    if (rows.length) charts.push(`<figure class="chart"><figcaption>Undos per win<small>clean = no undo</small></figcaption>${rows.map(([l, n, avg, clean]) => `<div class="hrow wide" title="${cap(l)}: ${avg.toFixed(1)} undos per win over ${n} win${n === 1 ? "" : "s"}, ${clean} without undo"><span>${cap(l)}</span><div class="track"><i class="bs r-one" style="width:${(avg / mx) * 100}%"></i></div><b>${avg.toFixed(1)} · ${clean} clean</b></div>`).join("")}</figure>`);
+  }
+  // recent games you can watch again
+  const rps = loadReplays().map((g, idx) => [g, idx]).filter(([g]) => f === "all" || (f === "knockout" ? g.fmt === "knockout" : g.mode === f && g.fmt !== "knockout")).reverse().slice(0, 8);
+  if (rps.length) {
+    const what = (g) => (g.fmt === "knockout" ? "Knockout" : g.mode === "solo" ? `Solo · ${cap(g.lv || "medium")}` : g.mode === "pass" ? "Pass and play" : "Online");
+    const out = (g) => (g.res === "win" ? "Win" : g.res === "loss" ? "Loss" : g.draw ? "Draw" : `${esc(g.seats[g.winner] ? g.seats[g.winner].name : "")} won`);
+    charts.push(`<figure class="chart"><figcaption>Recent games<small>replay from the first move</small></figcaption><div class="rp-list">${rps.map(([g, idx]) => `<div class="rp-row"><i class="k r-${g.res === "win" || g.res === "loss" ? g.res : "draw"}"></i><span><b>${out(g)}</b> · ${what(g)} · ${tM(g.moves.length)} · ${new Date(g.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span><button class="btn" type="button" data-rp="${idx}">Replay</button></div>`).join("")}</div></figure>`);
+  }
   const since = log.length ? new Date(log[0].at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null;
   const empty = !games.length && !(f === "knockout" && tours.length);
   const table = f === "all" || f === "solo" ? `<figure class="chart"><figcaption>Solo by AI level<small>all time</small></figcaption><table><thead><tr><th>Level</th><th>W–L</th><th>Streak</th><th>Best</th><th>Fastest</th><th>Chain</th></tr></thead><tbody>${RECORD_LEVELS.map((l) => {
     const r = rec[l];
     return `<tr><td>${cap(l)}</td><td>${r.w}–${r.l}</td><td>${r.streak}</td><td>${r.bestStreak}</td><td>${r.fastest ? tM(r.fastest) : "–"}</td><td>${r.chain || "–"}</td></tr>`;
   }).join("")}</tbody></table></figure>` : "";
-  $("#record").innerHTML = `<div class="tiles">${tiles}</div>
+  $("#record").innerHTML = `<div class="tiles">${tiles}</div>${f === "all" ? achGallery() : ""}
     ${empty ? `<p class="vnote rec-empty">No ${f === "all" ? "" : { solo: "solo ", pass: "pass-and-play ", online: "online ", knockout: "knockout " }[f]}games yet. Finished games show up here.</p>` : (f !== "pass" && mine.length ? legend : "") + charts.join("")}
     ${table}
     ${since ? `<p class="vnote rec-since">Charts count games since ${since}, on this device.</p>` : ""}`;
@@ -3135,7 +3477,7 @@ function enterMode(cfg) {
   CFG = cfg; gameGen++;
   setupBoard();
   busy = false; animating = false; thinking = false; preview = null; note = null; animMsg = null; lastMove = null; finalMove = null; history = [];
-  thKey = ""; sweptKey = ""; GAME = { chain: [] };
+  thKey = ""; sweptKey = ""; GAME = { chain: [], moves: [], undos: 0 };
   leaveEnding(true);
 }
 
@@ -3156,7 +3498,7 @@ function afterLessonMove(res, prevOwner) {
   if (S.winner < 0) S.turn = 0;
   if (TU.done) {
     if (k < LESSONS.length - 1) setTimeout(() => { if (gen === gameGen) startLesson(k + 1); }, 1800);
-    else save("sf2-tutorial-seen", true);
+    else { save("sf2-tutorial-seen", true); save("sf2-tutorial-done", true); checkAch(false); }
   }
   if (!TU.done) TU.targets = lessonTargets(l);
 }
@@ -3181,7 +3523,10 @@ function setPreview(i, ai) {
   drawField(); renderBar();
 }
 
+let ffHold = false, ffToMe = false;
+const fast = () => ffHold || ffToMe;
 function waitOrSkip(ms) {
+  if (fast()) { skipNow = null; return Promise.resolve(true); }
   return new Promise((res) => {
     const t = setTimeout(() => { skipNow = null; res(false); }, ms);
     skipNow = () => { clearTimeout(t); skipNow = null; res(true); };
@@ -3232,6 +3577,7 @@ async function commit(i, remote) {
   }
   const pre = JSON.stringify(S);
   history.push(pre); if (history.length > 120) history.shift();
+  GAME.moves.push(i);
   busy = true; preview = null; note = null; lastMove = null;
   const before = S.owner.slice();
   const res = SF.apply(B, S, i, true);
@@ -3241,6 +3587,11 @@ async function commit(i, remote) {
   for (let k = 0; k < B.N; k++) if (k !== i && before[k] !== p && S.owner[k] === p) flips.push(k);
   lastMove = { i, p, flips };
   GAME.chain[p] = Math.max(GAME.chain[p] || 0, res.novae);
+  if (isMe(p) && res.remnants > 0) GAME.rem = true;
+  for (let q = 0; q < S.n; q++) if (isMe(q) && S.played[q] && S.moves > S.n * 3 && S.winner < 0) {
+    const tot = S.units.reduce((a, u) => a + u, 0), m = S.team ? SF.teamMass(S, q) : SF.mass(S, q);
+    if (tot) GAME.low = Math.min(GAME.low == null ? 1 : GAME.low, m / tot);
+  }
   if (CFG.mode === "tutorial" && TU && !TU.done) afterLessonMove(res, before[i]);
   if (over(S)) finalMove = { pre, i };
   busy = false;
@@ -3250,7 +3601,8 @@ async function commit(i, remote) {
 }
 
 function maybeAI() {
-  if (CFG.mode === "online") { NET.after(); return; }
+  if (ffToMe && (over(S) || !isAI(S.turn))) ffToMe = false;
+  if (CFG.mode === "online") { if (ffToMe && NET.mine(S.turn)) ffToMe = false; NET.after(); return; }
   if (CFG.watch && watchSkip && !over(S)) { finishWatch(); return; }
   runAI();
 }
@@ -3268,7 +3620,7 @@ function finishWatch() {
   let s = S;
   const step = () => {
     if (gen !== gameGen) return;
-    for (let k = 0; k < 30 && s.winner < 0 && !s.draw && s.moves < 4000; k++) s = SF.apply(B, s, SF.choose(B, s, "medium"), false).state;
+    for (let k = 0; k < 30 && s.winner < 0 && !s.draw && s.moves < 4000; k++) { const m = SF.choose(B, s, "medium"); GAME.moves.push(m); s = SF.apply(B, s, m, false).state; }
     if (s.winner < 0 && !s.draw && s.moves < 4000) { setTimeout(step, 0); return; }
     S = s; view = snapOf(S); lastMove = null; finalMove = null; busy = false; watchSkip = false;
     render(); persist();
@@ -3276,23 +3628,32 @@ function finishWatch() {
   };
   step();
 }
-function runAI() {
+// the AI thinks, shows its pick, then places; both pauses give way to Space
+async function runAI() {
   if (over(S) || !isAI(S.turn)) return;
   busy = true; thinking = true; render();
   const p = S.turn, gen = gameGen;
-  setTimeout(() => {
-    if (gen !== gameGen || S.turn !== p || over(S)) return;
-    const m = SF.choose(B, S, CFG.level);
-    thinking = false;
+  await waitOrSkip(RM.matches ? 150 : CFG.watch ? 220 : S.n > 3 ? 380 : 650);
+  if (gen !== gameGen || S.turn !== p || over(S)) return;
+  const m = SF.choose(B, S, CFG.level);
+  thinking = false;
+  if (!fast()) {
     setPreview(m, true);
     if (GL) GL.poke();
-    setTimeout(() => {
-      if (gen !== gameGen) return;
-      busy = false; preview = null;
-      commit(m);
-    }, RM.matches ? 120 : CFG.watch ? 160 : S.n > 3 ? 260 : 420);
-  }, RM.matches ? 150 : CFG.watch ? 220 : S.n > 3 ? 380 : 650);
+    await waitOrSkip(RM.matches ? 120 : CFG.watch ? 160 : S.n > 3 ? 260 : 420);
+    if (gen !== gameGen) return;
+  }
+  busy = false; preview = null;
+  commit(m);
 }
+// Space: a tap jumps ahead to your turn; held, everything runs at speed (also through matches you watch)
+function fastForward() {
+  if (!S || over(S) || canPlay()) return;
+  if (!CFG.watch && (CFG.mode === "solo" || CFG.mode === "online")) ffToMe = true;
+  if (skipNow) skipNow();
+}
+addEventListener("keyup", (e) => { if (e.key === " ") ffHold = false; });
+addEventListener("blur", () => { ffHold = false; });
 
 function canUndo() {
   if (!history.length || CFG.mode === "online" || KO()) return false;
@@ -3306,13 +3667,14 @@ function undo() {
   let s = JSON.parse(history.pop());
   if (CFG.mode === "solo") while (s.turn !== 0 && history.length) s = JSON.parse(history.pop());
   S = s; view = snapOf(S); preview = null; note = null; lastMove = null; finalMove = null;
+  GAME.moves.length = S.moves; GAME.undos++;
   leaveEnding(true);
   render(); persist();
 }
 
 function persist() {
-  if (CFG.mode === "online") return;
-  save("sf2-game", { S, CFG, lastMove, TU: TU ? { k: TU.k, done: TU.done } : null });
+  if (CFG.mode === "online" || RP) return;
+  save("sf2-game", { S, CFG, lastMove, TU: TU ? { k: TU.k, done: TU.done } : null, moves: GAME.moves, undos: GAME.undos, partial: !!GAME.partial });
   if ((CFG.mode === "solo" || CFG.mode === "pass") && !KO()) save("sf2-prefs", CFG);
 }
 
@@ -3337,6 +3699,7 @@ new ResizeObserver(() => {
 }).observe(stageEl);
 
 function newGame(cfg) {
+  cfg = clampCfg(cfg);
   const variant = VARIANTS.includes(cfg.variant) ? cfg.variant : "classic", R = radiusOf(cfg.size);
   if (NET.inRoom()) leaveOnline();
   if (cfg.format === "knockout" && cfg.mode === "solo") { startTournament(cfg); return; }
@@ -3433,7 +3796,7 @@ function endDraw() {
   $("#winTitle").textContent = "The field is covered";
   $("#winLog").innerHTML = [`T+<b>${S.moves}M</b> years`, `Biggest chain <b>${chains.length ? Math.max(...chains) : 0}</b>`, KO() ? "A knockout needs a winner: play it again" : "No star collapsed"].map((r) => `<span>${r}</span>`).join("");
   $("#win").style.setProperty("--c", "var(--muted)");
-  $("#winReplay").hidden = !finalMove;
+  $("#winReplay").hidden = !finalMove; $("#winFull").hidden = !replayRecord();
   paintAgain();
   setAccent(null);
   renderMass();
@@ -3467,12 +3830,15 @@ function endGame() {
     `T+<b>${S.moves}M</b> years`,
     `Biggest chain <b>${chains.length ? Math.max(...chains) : 0}</b>`,
     ...sc.lines,
+    ...(CFG.mode === "solo" && !CFG.watch && meWon ? [`Undos <b>${GAME.undos || 0}</b>`] : []),
+    ...(CFG.mode === "online" && NET.room ? ['<span id="roomRow"></span>'] : []),
     ...sc.best.map((t) => `<span class="best">New best · ${t}</span>`),
   ];
   $("#winTitle").textContent = title;
-  $("#winLog").innerHTML = rows.map((r) => `<span>${r}</span>`).join("");
+  $("#winLog").innerHTML = rows.map((r) => (r.startsWith("<span") ? r : `<span>${r}</span>`)).join("");
+  if (CFG.mode === "online") paintBoards();
   $("#win").style.setProperty("--c", `var(--p${w})`);
-  $("#winReplay").hidden = !finalMove;
+  $("#winReplay").hidden = !finalMove; $("#winFull").hidden = !replayRecord();
   paintAgain();
   setAccent(w);
   renderMass();
@@ -3561,6 +3927,7 @@ const cellOf = (e) => { const el = e.target.closest && e.target.closest(".hit");
 wrap.addEventListener("pointerdown", (e) => { pointerKind = e.pointerType === "mouse" ? "mouse" : "touch"; Sound.unlock(); if (GL) GL.poke(); });
 wrap.addEventListener("click", (e) => {
   if (animating) { if (skipNow) skipNow(); return; }
+  if (S && !over(S) && !canPlay() && (thinking || CFG.watch)) { fastForward(); return; }
   if (!canPlay()) return;
   const i = cellOf(e);
   if (i < 0) { if (preview) { preview = null; drawField(); renderBar(); } return; }
@@ -3587,15 +3954,22 @@ hits.addEventListener("focusin", (e) => {
   let kb = false; try { kb = e.target.matches(":focus-visible"); } catch (err) {}
   if (kb && i >= 0 && canPlay()) { setPreview(i); if (GL) GL.setHover(i); }
 });
+const ARROWS = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
 hits.addEventListener("keydown", (e) => {
   const i = cellOf(e);
   if (i < 0) return;
-  if (e.key === "Enter" || e.key === " ") {
-    e.preventDefault();
+  if (ARROWS[e.key]) { e.preventDefault(); e.stopPropagation(); kbCell = i; kbMove(...ARROWS[e.key]); return; }
+  if (e.key === "Enter" || (e.key === " " && canPlay())) {
+    e.preventDefault(); e.stopPropagation();
     if (animating) { if (skipNow) skipNow(); return; }
     if (!canPlay()) return;
     if (!SF.legal(B, S, i, S.turn)) deny(i); else commit(i);
   } else if (e.key === "Escape") { preview = null; drawField(); renderBar(); }
+});
+hits.addEventListener("focusin", (e) => {
+  const i = cellOf(e);
+  if (i < 0 || i === kbCell) return;
+  polys[kbCell].setAttribute("tabindex", "-1"); kbCell = i; polys[i].setAttribute("tabindex", "0");
 });
 document.addEventListener("pointerdown", () => Sound.unlock(), { passive: true });
 
@@ -3661,18 +4035,19 @@ function paintRoster() {
   range.dataset.min = minR;
   if (+range.value < +range.min) range.value = range.min;
   const R = +range.value;
-  const f2 = (R - 2) / 8;
+  const f2 = (R - 2) / 10;
   range.style.setProperty("--p", `${f2 * 100}%`);
   $("#rangeWrap").style.setProperty("--f", f2);
   $("#sizeBubble").textContent = `R${R}`;
   const tk = $("#rticks");
-  if (!tk.children.length) tk.innerHTML = [2, 3, 4, 5, 6, 7, 8, 9, 10].map((r) => `<button type="button" data-r="${r}" style="--i:${r - 2}" aria-label="Radius ${r}">${r}</button>`).join("");
+  if (!tk.children.length) tk.innerHTML = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((r) => `<button type="button" data-r="${r}" style="--i:${r - 2}" aria-label="Radius ${r}">${r}</button>`).join("");
   tk.querySelectorAll("button").forEach((b) => { const r = +b.dataset.r; b.disabled = r < minR; b.classList.toggle("on", r === R); });
   $("#sizeRead").innerHTML = `<b>${cellsOf(R)}</b> cells`;
   $("#sizeStars").textContent = ko ? "two stars a match" : `up to ${maxStars(R)} stars`;
   $("#sizeNote").textContent = minR > 2 ? `· radius ${minR}+` : "";
   $("#variantNote").textContent = VNOTE[variant](R);
   paintOnline();
+  paintLocks();
   const ro = $("#roster");
   // online and in a knockout against the AI, the roster is just your own star
   if (online || (solo && ko)) { paintSeats(); return; }
@@ -3730,6 +4105,8 @@ function openMenu() {
   form.elements.level.value = base.level; $("#sizeRange").value = String(radiusOf(base.size));
   form.elements.variant.value = VARIANTS.includes(base.variant) ? base.variant : "classic";
   $("#setMusic").checked = Sound.music; $("#setSfx").checked = Sound.sfx; paintVol();
+  $("#setProgress").checked = progressionOn();
+  form.elements.mstyle.value = Sound.style; $("#musicNote").textContent = MUSIC_NOTE[Sound.style];
   $("#setHints").checked = SET.hints; $("#setOneTap").checked = SET.oneTap; $("#setUndo").checked = SET.undo; $("#setUi").checked = Sound.uiOn;
   paintRoster(); renderRecord(); selectTab("play"); menuDlg.showModal(); dlgBody.scrollTop = 0; paintProgress();
   Sound.ui("open");
@@ -3752,10 +4129,10 @@ document.addEventListener("keydown", (e) => {
   else if (k === "n" || k === "N") openMenu();
   else if (k === "+" || k === "=") setZoom(zoom * 1.4);
   else if (k === "-" || k === "_") setZoom(zoom / 1.4);
-  else if (k === "0") setZoom(1);
+  else if (k === "0" || k === "o" || k === "O") setZoom(1);
   else if (k === "f" || k === "F") toggleFocus();
   else if (k === "Escape" && app.classList.contains("focus") && !document.fullscreenElement) setFocus(false);
-  else if (k === " " && animating && skipNow) { e.preventDefault(); skipNow(); }
+  else if (k === " ") { e.preventDefault(); if (e.repeat) { ffHold = true; if (skipNow) skipNow(); return; } fastForward(); return; }
   else return;
   Sound.ui("click");
 });
@@ -3856,7 +4233,7 @@ function paintAgain() {
 }
 $("#winReplay").addEventListener("click", replayFinal);
 form.addEventListener("change", (e) => {
-  if (!e.target.name || e.target.name === "recf") return;
+  if (!e.target.name || e.target.name === "recf" || e.target.name === "mstyle") return;
   if (e.target.name === "mode") { closePalette(); $("#roster").dataset.key = ""; }
   paintRoster();
   if (e.target.name !== "mode") pushCfg();
@@ -3864,6 +4241,7 @@ form.addEventListener("change", (e) => {
 $("#sizeRange").addEventListener("input", (e) => {
   const r = e.target, minR = +(r.dataset.min || 2);
   if (+r.value < minR) r.value = minR;
+  if (+r.value > +(r.dataset.max || 12)) { r.value = r.dataset.max; flash(lockHint(+r.dataset.max < 8 ? "r:8" : "r:12"), 2600); }
   paintRoster(); pushCfg();
 });
 $("#rticks").addEventListener("click", (e) => { const b = e.target.closest("button[data-r]"); if (!b || b.disabled) return; $("#sizeRange").value = b.dataset.r; paintRoster(); pushCfg(); Sound.ui("tab"); });
@@ -3884,6 +4262,8 @@ $("#tutorialBtn").addEventListener("click", () => { menuDlg.close(); startLesson
 $("#setMusic").addEventListener("change", (e) => { Sound.unlock(); Sound.setMusic(e.target.checked); paintSound(); });
 $("#setSfx").addEventListener("change", (e) => { Sound.unlock(); Sound.setSfx(e.target.checked); paintSound(); });
 $("#setUi").addEventListener("change", (e) => { Sound.setUi(e.target.checked); });
+const MUSIC_NOTE = { gen: "Composed live from your loop: its motif, its chords and its tempo, following the game.", adaptive: "Your loop, its bars rearranged live to follow the game.", loop: "Your loop exactly as written." };
+$("#musicStyle").addEventListener("change", (e) => { Sound.unlock(); Sound.setStyle(e.target.value); $("#musicNote").textContent = MUSIC_NOTE[e.target.value]; Sound.ui("tab"); });
 
 /* ---------- Hover shine ---------- */
 let litEl = null, shineRaf = 0, shineEv = null;
@@ -3927,6 +4307,7 @@ document.addEventListener("change", (e) => {
 menuDlg.querySelector(".tabs").addEventListener("click", (e) => { if (e.target.closest(".tab")) Sound.ui("tab"); });
 const saveSet = () => { save("sf2-settings", SET); thKey = ""; preview = null; render(); };
 $("#setHints").addEventListener("change", (e) => { SET.hints = e.target.checked; saveSet(); });
+$("#setProgress").addEventListener("change", (e) => { SET.progression = e.target.checked; save("sf2-settings", SET); paintRoster(); });
 $("#setOneTap").addEventListener("change", (e) => { SET.oneTap = e.target.checked; saveSet(); });
 $("#setUndo").addEventListener("change", (e) => { SET.undo = e.target.checked; saveSet(); });
 // clearing the record asks twice
@@ -3937,6 +4318,12 @@ $("#resetRecord").addEventListener("click", (e) => {
   clearTimeout(resetArm); resetArm = 0; b.textContent = "Reset";
   ["sf2-record", "sf2-log", "sf2-tours", "sf2-tour-record"].forEach((k) => save(k, k === "sf2-record" ? {} : null));
   renderRecord();
+});
+$("#record").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-rp]");
+  if (!b) return;
+  if (NET.inRoom()) { flash("Leave the online room to watch replays", 1800); return; }
+  Sound.ui("open"); startReplay(loadReplays()[+b.dataset.rp], true);
 });
 $("#recFilter").addEventListener("change", (e) => { recFilter = e.target.value; renderRecord(); Sound.ui("tab"); });
 function buildLegend() {
@@ -4110,7 +4497,7 @@ let skyT; addEventListener("resize", () => { clearTimeout(skyT); skyT = setTimeo
 /* ---------- Boot ---------- */
 function restore(saved, hist) {
   const cfg = saved.CFG;
-  if (!cfg || !(radiusOf(cfg.size) >= 2 && radiusOf(cfg.size) <= 10) || !["solo", "pass", "tutorial"].includes(cfg.mode)) return false;
+  if (!cfg || !(radiusOf(cfg.size) >= 2 && radiusOf(cfg.size) <= 12) || !["solo", "pass", "tutorial"].includes(cfg.mode)) return false;
   if (cfg.mode === "tutorial") { if (!saved.TU || !LESSONS[saved.TU.k]) return false; startLesson(saved.TU.k); return true; }
   const testB = SF.makeBoard(radiusOf(cfg.size), cfg.voids);
   if (!saved.S || !Array.isArray(saved.S.units) || saved.S.units.length !== testB.N || !Array.isArray(saved.S.rem)) return false;
@@ -4126,6 +4513,8 @@ function restore(saved, hist) {
   if (cfg.format === "knockout" && TOUR) { const M = SF.bracketMatch(TOUR.t); GAME.slots = M.a === 0 || M.b === 0 ? [0, M.a === 0 ? M.b : M.a] : [M.a, M.b]; }
   S = saved.S; view = snapOf(S); TU = null;
   lastMove = saved.lastMove || null;
+  GAME.moves = Array.isArray(saved.moves) ? saved.moves : []; GAME.undos = saved.undos || 0;
+  GAME.partial = !!saved.partial || GAME.moves.length !== S.moves;
   history = Array.isArray(hist) ? hist : [];
   render();
   if (S.draw) {
@@ -4133,7 +4522,7 @@ function restore(saved, hist) {
     $("#winTitle").textContent = "The field is covered";
     $("#winLog").innerHTML = `<span>T+<b>${S.moves}M</b> years</span><span>No star collapsed</span>`;
     $("#win").style.setProperty("--c", "var(--muted)");
-    $("#winReplay").hidden = true;
+    $("#winReplay").hidden = true; $("#winFull").hidden = !replayRecord();
     showWin();
   } else if (S.winner >= 0) {
     const w = S.winner;
@@ -4141,7 +4530,7 @@ function restore(saved, hist) {
     $("#winLog").innerHTML = `<span>T+<b>${S.moves}M</b> years</span>`;
     setAccent(w);
     $("#win").style.setProperty("--c", `var(--p${w})`);
-    $("#winReplay").hidden = true;
+    $("#winReplay").hidden = true; $("#winFull").hidden = !replayRecord();
     if (GL) requestAnimationFrame(() => beginLens(w));
     showWin();
   } else maybeAI();
@@ -4210,6 +4599,7 @@ function tourFinished() {
   rec.played++; if (TOUR.t.champion === 0) rec.won++;
   save("sf2-tour-record", rec); TOUR.counted = true; saveTour();
   logTour("solo", TOUR.t.size, TOUR.cfg.level, TOUR.t.champion === 0 ? "Champion" : TOUR.out || "Final", TOUR.entrants[TOUR.t.champion].name);
+  checkAch(false);
 }
 // a finished match of yours: record it, then the result card says how far you got
 function tourAfterGame() {
@@ -4252,6 +4642,27 @@ function renderTour() {
 $("#tour").addEventListener("click", (e) => { if (e.target.closest("#skipMatch")) { Sound.ui("click"); skipWatch(); } });
 
 /* ---------- Online lobby: who's in the room ---------- */
+// the room's running tally: titles, then wins, then fewest losses
+function boardRows(r) {
+  const S0 = r && r.scores ? Object.entries(r.scores) : [];
+  return S0.map(([k, x]) => ({ k, ...x, me: k === NET.pid, color: (r.seats.find((s) => (s.kind === "human" ? s.pid === k : `ai:${s.name}` === k)) || {}).color }))
+    .filter((x) => x.w + x.l + x.d > 0).sort((a, b) => b.titles - a.titles || b.w - a.w || a.l - b.l);
+}
+function boardHtml(rows, max) {
+  return rows.slice(0, max || 8).map((x, i) => `<div class="lb-row" style="--c:${x.color != null ? hex6(x.color) : "var(--muted)"}"><span class="n">${i + 1}</span><i></i><span>${x.name}${x.me ? "<small>you</small>" : x.ai ? "<small>AI</small>" : ""}</span><b>${x.w}–${x.l}${x.d ? `–${x.d}` : ""}</b><em>${x.titles ? `${x.titles}★` : ""}</em></div>`).join("");
+}
+function paintBoards() {
+  const r = NET.room, rows = NET.inRoom() && r ? boardRows(r) : [];
+  const rb = $("#roomBoard"), sb = $("#sideBoard");
+  rb.hidden = !rows.length; sb.hidden = !rows.length || CFG.mode !== "online";
+  if (!rows.length) return;
+  const games = Math.max(...rows.map((x) => x.w + x.l + x.d));
+  const head = `<div class="lb-h"><span>Room leaderboard</span><span>W–L${rows.some((x) => x.titles) ? " · ★ titles" : ""}</span></div>`;
+  rb.innerHTML = head + boardHtml(rows);
+  sb.innerHTML = head + boardHtml(rows, 6);
+  const rr = $("#roomRow");
+  if (rr) rr.innerHTML = `Room <b>${rows.slice(0, 4).map((x) => `${x.name} ${x.w}`).join(" · ")}</b>`;
+}
 function paintPlayers() {
   const el = $("#players"), r = NET.room;
   if (!r) { el.innerHTML = ""; return; }
@@ -4283,6 +4694,248 @@ function paintPlayers() {
   if (teams) el.innerHTML = [...Array(teams).keys()].map((tm) => `<div class="team-h"><span>Team ${TEAM_NAMES[tm]}</span>${joinBtn(tm)}</div>` + r.seats.map((s, q) => (q % teams === tm ? row(s, q) : "")).join("")).join("");
   else el.innerHTML = r.seats.map(row).join("");
 }
+
+/* ---------- Replays: any recorded game from its first move, at the speed you pick ---------- */
+const REPLAY_SPEEDS = [0.5, 1, 2, 4, 8];
+let RP = null;
+const loadReplays = () => { const l = load("sf2-replays"); return Array.isArray(l) ? l : []; };
+// what a replay needs: the field, the rules, who sat where, and every move in order
+function replayRecord() {
+  if (!S || !B || !GAME.moves || GAME.moves.length !== S.moves || GAME.partial) return null;
+  return {
+    at: Date.now(), mode: CFG.mode, fmt: KO() ? "knockout" : "single", v: CFG.variant || "classic", R: B.R, voids: CFG.voids || null,
+    n: S.n, limit: S.limit || 0, race: !!S.race, teams: S.team ? Math.max(...S.team) + 1 : 0,
+    seats: [...Array(S.n).keys()].map((q) => ({ name: NAMES[q][0], color: Math.max(0, PALETTE.indexOf(HEX[q])) })),
+    moves: GAME.moves.slice(), winner: S.winner, draw: !!S.draw,
+  };
+}
+function saveReplay(rec) {
+  if (!rec) return;
+  const l = loadReplays();
+  l.push(rec);
+  save("sf2-replays", l.slice(-12));
+}
+// start: the game on the field now (from its result), or a saved one from the Record tab
+function startReplay(rec, past) {
+  if (!rec || !rec.moves.length || busy) return;
+  if (menuDlg.open) menuDlg.close();
+  winEl.hidden = true; winEl.classList.remove("peek"); field.style.opacity = ""; if (GL) GL.resetEnding(); Sound.stopEnding();
+  setAccent(null);
+  if (past) {
+    applySeats(rec.seats);
+    enterMode({ mode: "pass", format: "single", n: rec.n, level: "medium", size: rec.R, variant: rec.v, teams: rec.teams, voids: rec.voids || undefined });
+  }
+  RP = { rec, past, k: 0, speed: RP ? RP.speed : 1, playing: true, wake: null, end: past ? null : { S, lastMove, finalMove } };
+  replayReset();
+  $("#replayBar").hidden = false;
+  app.classList.add("replaying");
+  paintReplay();
+  replayLoop();
+}
+function replayReset() {
+  const r = RP.rec;
+  S = SF.newState(B, r.n, r.limit, r.race, r.teams); view = snapOf(S);
+  RP.k = 0; lastMove = null; preview = null; busy = true;
+  render();
+}
+const replayNap = (ms) => new Promise((res) => { const t = setTimeout(res, ms); RP.wake = () => { clearTimeout(t); res(); }; });
+async function replayLoop() {
+  const me = RP;
+  while (RP === me) {
+    if (!me.playing || me.k >= me.rec.moves.length) {
+      if (me.k >= me.rec.moves.length) { me.playing = false; paintReplay(); }
+      await new Promise((res) => { me.wake = res; });
+      continue;
+    }
+    await replayStep(me);
+    if (RP !== me) return;
+    if (me.playing) await replayNap(Math.max(40, 520 / me.speed));
+  }
+}
+async function replayStep(me) {
+  const i = me.rec.moves[me.k];
+  if (!SF.legal(B, S, i, S.turn)) { flash("This replay can't continue", 1600); exitReplay(); return; }
+  const res = SF.apply(B, S, i, true);
+  await playMove(S, i, res, 1 / me.speed, `Replay · move ${me.k + 1}`);
+  if (RP !== me) return;
+  const p = S.turn;
+  S = res.state; view = snapOf(S); me.k++;
+  lastMove = { i, p, flips: [] };
+  render(); paintReplay();
+}
+function paintReplay() {
+  if (!RP) return;
+  const n = RP.rec.moves.length;
+  $("#rpPlay").textContent = RP.k >= n ? "Again" : RP.playing ? "Pause" : "Play";
+  $("#rpSpeed").textContent = `${RP.speed < 1 ? "½" : RP.speed}×`;
+  $("#rpPos").textContent = `Move ${RP.k} / ${n}`;
+  $("#rpStep").disabled = RP.playing || RP.k >= n;
+  $("#replayBar").style.setProperty("--p", `${(RP.k / n) * 100}%`);
+}
+function exitReplay() {
+  if (!RP) return;
+  const me = RP; RP = null;
+  if (me.wake) me.wake();
+  if (skipNow) skipNow();
+  $("#replayBar").hidden = true; app.classList.remove("replaying");
+  busy = false; animating = false; animMsg = null;
+  if (me.past) {
+    // back to the game that was on the field before
+    seatKey = ""; applyRoster();
+    if (!restore(load("sf2-game") || {}, null)) newGame({ ...DEFAULT_CFG, ...(load("sf2-prefs") || {}) });
+    return;
+  }
+  S = me.end.S; view = snapOf(S); lastMove = me.end.lastMove; finalMove = me.end.finalMove;
+  render();
+  if (over(S)) {
+    if (S.winner >= 0) { setAccent(S.winner); if (GL) beginLens(S.winner); setTimeout(() => { if (!RP && over(S) && !busy) showWin(); }, RM.matches ? 600 : 2200); }
+    else showWin();
+  }
+}
+$("#rpPlay").addEventListener("click", () => {
+  if (!RP) return;
+  if (RP.k >= RP.rec.moves.length) { replayReset(); RP.playing = true; }
+  else RP.playing = !RP.playing;
+  paintReplay(); if (RP.wake) RP.wake(); Sound.ui("click");
+});
+$("#rpStep").addEventListener("click", async () => {
+  if (!RP || RP.playing || RP.k >= RP.rec.moves.length || animating) return;
+  Sound.ui("click"); await replayStep(RP);
+});
+$("#rpSpeed").addEventListener("click", () => {
+  if (!RP) return;
+  RP.speed = REPLAY_SPEEDS[(REPLAY_SPEEDS.indexOf(RP.speed) + 1) % REPLAY_SPEEDS.length];
+  paintReplay(); Sound.ui("tab");
+});
+$("#rpExit").addEventListener("click", () => { Sound.ui("close"); exitReplay(); });
+$("#winFull").addEventListener("click", () => startReplay(replayRecord(), false));
+
+/* ---------- Achievements and unlocks: the rules, levels and fields open up as you play ---------- */
+const lostWins = (L) => L.filter((g) => g.res === "win");
+const aiWins = (L, lv) => L.filter((g) => g.res === "win" && g.lv && (!lv || g.lv === lv));
+const LV_RANK = { easy: 0, medium: 1, hard: 2, expert: 3 };
+const ACH = [
+  { id: "first", name: "First light", desc: "Win a game against the AI", unlocks: ["lv:medium", "n:3", "v:race"], test: (L) => aiWins(L).length > 0 },
+  { id: "seq", name: "Main sequence", desc: "Win 3 games against Medium", unlocks: ["lv:hard", "n:4"], test: (L) => aiWins(L, "medium").length >= 3, prog: (L) => [aiWins(L, "medium").length, 3] },
+  { id: "giant", name: "Red giant", desc: "Win against Hard", unlocks: ["lv:expert", "n:5", "n:6"], test: (L) => aiWins(L, "hard").length > 0 },
+  { id: "cascade10", name: "Chain reaction", desc: "Set off a chain of 10 novae", unlocks: ["v:blitz"], test: (L) => L.some((g) => g.chain >= 10) },
+  { id: "regular", name: "Regular", desc: "Finish 10 games", unlocks: ["v:epoch"], test: (L) => L.length >= 10, prog: (L) => [L.length, 10] },
+  { id: "wide", name: "Wide field", desc: "Win on a field of radius 4 or more", unlocks: ["r:8", "v:belt"], test: (L) => lostWins(L).some((g) => g.R >= 4) },
+  { id: "deep", name: "Deep field", desc: "Win on a field of radius 7 or more", unlocks: ["r:12"], test: (L) => lostWins(L).some((g) => g.R >= 7) },
+  { id: "binary", name: "Binary system", desc: "Win a game with four or more stars", unlocks: ["teams"], test: (L) => lostWins(L).some((g) => g.n >= 4) },
+  { id: "contender", name: "Contender", desc: "Win 5 games", unlocks: ["ko"], test: (L) => lostWins(L).length >= 5, prog: (L) => [lostWins(L).length, 5] },
+  { id: "champion", name: "Champion", desc: "Win a knockout tournament", unlocks: ["ko8"], test: (L, T) => T.some((t) => t.finish === "Champion") },
+  { id: "grand", name: "Grand champion", desc: "Win an 8-star knockout", test: (L, T) => T.some((t) => t.finish === "Champion" && t.size === 8) },
+  { id: "singularity", name: "Singularity", desc: "Beat Expert", test: (L) => aiWins(L, "expert").length > 0 },
+  { id: "clean", name: "Steady hand", desc: "Beat Medium or harder without an undo", test: (L) => L.some((g) => g.res === "win" && g.mode === "solo" && LV_RANK[g.lv] >= 1 && g.undos === 0) },
+  { id: "cascade20", name: "Cascade", desc: "Set off a chain of 20 novae", test: (L) => L.some((g) => g.chain >= 20) },
+  { id: "remnant", name: "Remnant", desc: "Leave a neutron star behind", test: (L) => L.some((g) => g.rem) },
+  { id: "swift", name: "Swift collapse", desc: "Win before T+40M years", test: (L) => lostWins(L).some((g) => g.moves < 40 && g.v !== "epoch") },
+  { id: "comeback", name: "Comeback", desc: "Win after falling under 15% of the matter", test: (L) => lostWins(L).some((g) => g.low != null && g.low < 0.15) },
+  { id: "allied", name: "Allied", desc: "Win a team game", test: (L) => lostWins(L).some((g) => g.teams) },
+  { id: "rules", name: "Every rule", desc: "Win under all five rule sets", test: (L) => VARIANTS.every((v) => lostWins(L).some((g) => g.v === v)), prog: (L) => [VARIANTS.filter((v) => lostWins(L).some((g) => g.v === v)).length, 5] },
+  { id: "streak", name: "Hot streak", desc: "Win 5 in a row against the AI", test: (L) => { let r = 0; return L.filter((g) => g.lv && g.res !== "na").some((g) => (r = g.res === "win" ? r + 1 : 0) >= 5); } },
+  { id: "veteran", name: "Veteran", desc: "Win 25 games", test: (L) => lostWins(L).length >= 25, prog: (L) => [lostWins(L).length, 25] },
+  { id: "contact", name: "First contact", desc: "Win an online game", test: (L) => L.some((g) => g.mode === "online" && g.res === "win") },
+  { id: "local", name: "Local group", desc: "Finish a pass-and-play game", test: (L) => L.some((g) => g.mode === "pass") },
+  { id: "cadet", name: "Cadet", desc: "Finish the tutorial", test: () => !!load("sf2-tutorial-done") },
+];
+const UNLOCK_NAMES = { "lv:medium": "Medium AI", "lv:hard": "Hard AI", "lv:expert": "Expert AI", "n:3": "3 stars", "n:4": "4 stars", "n:5": "5 stars", "n:6": "6 stars",
+  "v:race": "Race", "v:blitz": "Blitz", "v:epoch": "Epoch", "v:belt": "Belt", "r:8": "fields up to radius 8", "r:12": "fields up to radius 12", teams: "Teams", ko: "Knockout", ko8: "8-star knockouts" };
+const OPEN = new Set(["lv:easy", "n:2", "v:classic"]);
+let ACHV = load("sf2-ach") || {};
+const progressionOn = () => SET.progression !== false;
+const unlockedBy = (key) => ACH.find((a) => (a.unlocks || []).includes(key));
+// is this option open to you yet?
+function isOpen(key) {
+  if (!progressionOn() || OPEN.has(key)) return true;
+  const a = unlockedBy(key);
+  return !a || !!ACHV[a.id];
+}
+const maxRadius = () => (isOpen("r:12") ? 12 : isOpen("r:8") ? 8 : 5);
+function lockHint(key) {
+  const a = unlockedBy(key);
+  if (!a) return "";
+  const p = a.prog ? a.prog(achLog(), loadTours()) : null;
+  return `${UNLOCK_NAMES[key] || key} unlocks with “${a.name}”: ${a.desc[0].toLowerCase() + a.desc.slice(1)}${p ? ` (${Math.min(p[0], p[1])}/${p[1]})` : ""}.`;
+}
+// keep a configuration inside what you've unlocked
+function clampCfg(c) {
+  if (!progressionOn() || c.mode === "online" || c.mode === "tutorial") return c;
+  c = { ...c };
+  const lvs = ["easy", "medium", "hard", "expert"];
+  while (lvs.indexOf(c.level) > 0 && !isOpen(`lv:${c.level}`)) c.level = lvs[lvs.indexOf(c.level) - 1];
+  if (!isOpen(`v:${c.variant || "classic"}`)) c.variant = "classic";
+  if (c.format === "knockout" && !isOpen("ko")) c.format = "single";
+  if (c.format === "knockout") { if (c.n === 8 && !isOpen("ko8")) c.n = 4; }
+  else while (c.n > 2 && !isOpen(`n:${c.n}`)) c.n--;
+  if (c.teams && !isOpen("teams")) c.teams = 0;
+  if (radiusOf(c.size) > maxRadius()) c.size = maxRadius();
+  return c;
+}
+// award anything newly earned; quiet when catching up on games played before achievements existed
+// wins already in the solo record from before games were logged still count
+function legacyLog() {
+  const rec = load("sf2-record") || {}, out = [];
+  if (loadLog().some((g) => g.mode === "solo")) return out;
+  ["easy", "medium", "hard", "expert"].forEach((lv) => { const r = rec[lv] || {}; for (let k = 0; k < Math.min(r.w || 0, 5); k++) out.push({ mode: "solo", fmt: "single", v: "classic", lv, n: 2, R: 3, res: "win", moves: 999, chain: r.chain || 0 }); });
+  return out;
+}
+const achLog = () => legacyLog().concat(loadLog());
+function checkAch(quiet) {
+  const L = achLog(), T = loadTours(), fresh = [];
+  for (const a of ACH) if (!ACHV[a.id]) { let ok = false; try { ok = a.test(L, T); } catch (e) {} if (ok) { ACHV[a.id] = Date.now(); fresh.push(a); } }
+  if (!fresh.length) return;
+  save("sf2-ach", ACHV);
+  if (!quiet) fresh.forEach((a) => achToast(a));
+}
+const achQueue = [];
+let achBusy = false;
+function achToast(a) { achQueue.push(a); if (!achBusy) achNext(); }
+function achNext() {
+  const a = achQueue.shift(), el = $("#achv");
+  if (!a) { achBusy = false; el.classList.remove("on"); return; }
+  achBusy = true;
+  const un = (a.unlocks || []).filter((k) => progressionOn()).map((k) => UNLOCK_NAMES[k]);
+  el.innerHTML = `<span class="eyebrow">Achievement</span><b>${a.name}</b><small>${a.desc}${un.length ? ` · Unlocked ${andList(un)}` : ""}</small>`;
+  el.classList.add("on"); Sound.ui("confirm");
+  setTimeout(() => { el.classList.remove("on"); setTimeout(achNext, 450); }, un.length ? 4200 : 3200);
+}
+// on load: anything you've already earned is awarded quietly
+checkAch(true);
+// the achievements gallery in the Record tab
+function achGallery() {
+  const L = achLog(), T = loadTours(), got = ACH.filter((a) => ACHV[a.id]).length;
+  return `<figure class="chart"><figcaption>Achievements<small>${got} of ${ACH.length}</small></figcaption><div class="achs">${ACH.map((a) => {
+    const on = !!ACHV[a.id], p = !on && a.prog ? a.prog(L, T) : null, un = (a.unlocks || []).map((k) => UNLOCK_NAMES[k]);
+    return `<div class="ach${on ? " on" : ""}" title="${a.desc}${un.length ? ` · unlocks ${andList(un)}` : ""}"><i aria-hidden="true"></i><span><b>${a.name}</b><small>${a.desc}${p ? ` · ${Math.min(p[0], p[1])}/${p[1]}` : ""}</small>${un.length ? `<em>${on ? "Unlocked" : "Unlocks"} ${andList(un)}</em>` : ""}</span></div>`;
+  }).join("")}</div></figure>`;
+}
+// lock the options in the menu that you haven't earned yet
+function paintLocks() {
+  const online = form.elements.mode.value === "online", room = online && NET.inRoom() && !NET.isHost();
+  const lockOf = { level: (v) => `lv:${v}`, variant: (v) => `v:${v}`, players: (v) => `n:${v}`, teams: (v) => (+v ? "teams" : null), format: (v) => (v === "knockout" ? "ko" : null), entrants: (v) => (+v === 8 ? "ko8" : null) };
+  for (const [name, key] of Object.entries(lockOf)) form.querySelectorAll(`input[name="${name}"]`).forEach((el) => {
+    const k = key(el.value), locked = !!k && !room && !isOpen(k), lab = form.querySelector(`label[for="${el.id}"]`);
+    if (lab) { lab.classList.toggle("locked", locked); lab.dataset.lock = locked ? k : ""; }
+    if (locked) el.disabled = true;
+  });
+  // the field slider stops at your widest unlocked field
+  const mr = maxRadius(), range = $("#sizeRange");
+  if (!room && +range.value > mr) { range.value = mr; }
+  $("#rticks").querySelectorAll("button").forEach((b) => { const lock = !room && +b.dataset.r > mr; b.classList.toggle("locked", lock); if (lock) b.disabled = true; b.dataset.lock = lock ? (mr < 8 ? "r:8" : "r:12") : ""; });
+  range.dataset.max = mr;
+  // a line saying what opens next
+  const next = Object.keys(UNLOCK_NAMES).find((k) => !isOpen(k));
+  const unl = Object.keys(UNLOCK_NAMES).filter((k) => isOpen(k)).length;
+  $("#unlockNote").hidden = !progressionOn() || room;
+  $("#unlockNote").textContent = next ? `${unl} of ${Object.keys(UNLOCK_NAMES).length} unlocked. Next: ${lockHint(next)}` : "Everything is unlocked.";
+}
+form.addEventListener("click", (e) => {
+  const l = e.target.closest("[data-lock]");
+  if (!l || !l.dataset.lock) return;
+  e.preventDefault(); flash(lockHint(l.dataset.lock), 3200); Sound.deny();
+}, true);
 
 /* ---------- Online play ---------- */
 let profileT = 0, cfgT = 0, seatKey = "";
@@ -4381,6 +5034,7 @@ function paintOnline() {
   w.hidden = !watch.length;
   w.textContent = watch.length ? `Watching: ${watch.join(", ")}` : "";
   paintPlayers();
+  paintBoards();
 }
 function paintSeats() {
   const ro = $("#roster");
@@ -4454,6 +5108,7 @@ NET.onRoom = (prev) => {
   if (menuDlg.open) paintRoster();
   if (!winEl.hidden) paintAgain();
   if (CFG.mode === "online" && S && !busy) { renderMass(); renderSide(); }
+  paintBoards();
 };
 // an online tournament you played in goes into your record once it has a champion
 function logOnlineTour(r) {
@@ -4466,6 +5121,7 @@ function logOnlineTour(r) {
   let finish = "Champion";
   if (t.champion !== e) t.rounds.forEach((rd, i) => rd.forEach((M) => { if ((M.a === e || M.b === e) && M.w >= 0 && M.w !== e) finish = SF.roundName(t, i); }));
   logTour("online", t.size, r.cfg.level, finish, r.seats[t.champion].name);
+  checkAch(false);
 }
 function syncGame() {
   const r = NET.room, seats = r.gseats || r.seats;
@@ -4489,6 +5145,8 @@ function syncGame() {
 function loadSnap(r) {
   NET.pendingSnap = null;
   S = JSON.parse(JSON.stringify(r.S)); view = snapOf(S); NET.applied = S.moves;
+  // joining part-way: the moves before now are unknown, so this game can't be replayed from the start
+  if (S.moves !== GAME.moves.length) GAME.partial = true;
   NET.queue = NET.queue.filter((m) => m.g === r.gameNo && m.n >= S.moves);
   lastMove = r.last ? { i: r.last.i, p: r.last.p, flips: [] } : null;
   preview = null; history = []; finalMove = null;
