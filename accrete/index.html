@@ -615,7 +615,8 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 .rp-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .rp-head .btn { height: 28px; padding: 0 10px; font-size: 12px; --cut: 5px; }
 .rp-scrub { flex: 1 0 100%; order: 10; margin: 4px 2px 0; }
-.replay { width: min(400px, calc(100% - 24px)); box-sizing: border-box; }
+/* centred on the board, not the whole stage: the side panels push the board's centre over on desktop */
+.replay { left: calc(var(--fl) + (100% - var(--fl) - var(--fr)) / 2) !important; width: min(400px, calc(100% - var(--fl) - var(--fr) - 24px)); max-width: calc(100% - var(--fl) - var(--fr) - 24px) !important; box-sizing: border-box; }
 .rp-t { display: grid; min-width: 0; gap: 1px; }
 .rp-t small { font: 400 12px var(--font); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rp-row .btn.icon { width: 32px; height: 32px; }
