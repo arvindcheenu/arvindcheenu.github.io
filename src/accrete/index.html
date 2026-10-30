@@ -275,6 +275,31 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .sheet > .dlg:not(.split) { overflow: auto; }
 .sheet > .dlg { flex: 1; min-width: 0; max-height: calc(100dvh - 50px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto; box-sizing: border-box; }
 .sheet.hud::before { background: var(--panel-solid); }
+@media (max-width: 560px) {
+  #menuDlg, #rulesDlg { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; }
+  #menuDlg .sheet, #rulesDlg .sheet { --cut: 0px; height: 100dvh; max-height: 100dvh; box-shadow: none; }
+  #menuDlg .sheet > .dlg, #rulesDlg .sheet > .dlg { max-height: 100dvh; }
+  #menuDlg .dlg.split > .dlg-head { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
+  #menuDlg .dlg-foot { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+  #rulesDlg .sheet > .dlg { padding-top: calc(20px + env(safe-area-inset-top, 0px)); padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+  #menuDlg[open], #rulesDlg[open] { animation: sheetUp .3s cubic-bezier(.2, .8, .3, 1); }
+  #menuDlg .dlg-body { padding-left: 16px; padding-right: 16px; }
+  #menuDlg .dlg.split > .dlg-head { padding-left: 16px; padding-right: 12px; }
+  #menuDlg .dlg.split > .tabs { margin: 0 16px; }
+}
+@keyframes sheetUp { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #menuDlg[open], #rulesDlg[open] { animation: none; } }
+/* a count of new badges, on the menu button and the tabs that lead to them */
+.nbub { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box; border-radius: 8px; background: #ff5d5d; color: #fff; font: 700 10px/1 var(--hud-font); letter-spacing: 0; box-shadow: 0 0 0 2px var(--panel-solid), 0 0 10px rgb(255 93 93 / .6); }
+.nbub[hidden] { display: none; }
+#menuBtn .nbub { position: absolute; top: 3px; right: 3px; min-width: 14px; height: 14px; font-size: 9px; z-index: 2; }
+#menuBtn.ping .nbub { animation: bubPing .7s cubic-bezier(.2, .8, .3, 1) 2; }
+@keyframes bubPing { 50% { transform: scale(1.45); } }
+.subtabs .nbub { margin-left: 6px; vertical-align: 1px; }
+.tab { position: relative; }
+.tab .nbub { position: absolute; top: 2px; left: calc(50% + 26px); min-width: 14px; height: 14px; font-size: 9px; }
+.ach.new { border-color: color-mix(in oklab, #ff5d5d 55%, var(--line)); }
+.ach.new .tier::after { content: "New"; margin-left: 8px; padding: 1px 5px; background: #ff5d5d; color: #fff; letter-spacing: .08em; }
 .dlg { display: grid; gap: 18px; padding: 20px; }
 .dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .dlg-brand { display: flex; align-items: center; gap: 10px; }
@@ -408,7 +433,15 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 @media (max-width: 899px) { .ml .pct { display: none; } }
 .links { display: flex; gap: 8px; flex-wrap: wrap; }
 .sep { height: 1px; background: var(--line); }
-.settings { display: grid; gap: 12px; }
+.settings { display: grid; gap: 8px; }
+.set-h { margin: 10px 2px 0; font: 600 11.5px var(--hud-font); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.set-h:first-child { margin-top: 0; }
+.set-group { display: grid; border: 1px solid var(--line); background: var(--bg); }
+.set-group > * { padding: 12px 14px; }
+.set-group > * + * { border-top: 1px solid var(--line); }
+.set-group .data-field > span { font: 600 13px var(--hud-font); letter-spacing: .06em; text-transform: uppercase; }
+.set-note { padding-top: 0 !important; border-top: 0 !important; margin-top: -4px; }
+.set-group .seg label { white-space: nowrap; }
 .switch { display: flex; align-items: center; gap: 12px; cursor: var(--cur-pointer, pointer); }
 .switch span { flex: 1; min-width: 0; font: 600 13px var(--hud-font); letter-spacing: .06em; text-transform: uppercase; }
 .switch small { display: block; color: var(--muted); font: 400 13.5px var(--font); letter-spacing: 0; text-transform: none; margin-top: 2px; }
@@ -577,10 +610,10 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 .rp-head .btn { height: 28px; padding: 0 10px; font-size: 12px; --cut: 5px; }
 .rp-scrub { flex: 1 0 100%; order: 10; margin: 4px 2px 0; }
 .replay { width: min(400px, calc(100% - 24px)); box-sizing: border-box; }
-@media (max-width: 479px) {
-  .rp-row { grid-template-columns: 10px minmax(0, 1fr); }
-  .rp-row .rp-acts { grid-column: 2; justify-content: flex-end; }
-}
+.rp-t { display: grid; min-width: 0; gap: 1px; }
+.rp-t small { font: 400 12px var(--font); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-row .btn.icon { width: 32px; height: 32px; }
+.rp-row .btn.icon.primary { color: #031018; }
 .room-foot { flex-wrap: wrap; }
 .btn.danger { background: #ff6b6b; color: #1a0404; }
 .btn.danger::before { background: var(--sheen), #ff6b6b; }
@@ -596,8 +629,13 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 /* replay controls */
 .replay { --cut: 10px; position: absolute; left: 50%; bottom: calc(var(--fb) + 14px); transform: translateX(-50%); z-index: 6; display: flex; align-items: center; gap: 6px; padding: 8px 10px 10px; pointer-events: auto; max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: center; }
 .replay[hidden] { display: none; }
-.replay .btn { height: 30px; padding: 0 10px; font-size: 12px; --cut: 5px; }
-.rp-pos { font: 600 12.5px var(--hud-font); color: var(--fg); letter-spacing: .06em; min-width: 104px; text-align: center; font-variant-numeric: tabular-nums; }
+.replay .btn { height: 32px; padding: 0 10px; font-size: 12px; --cut: 5px; }
+.replay .btn.icon { width: 36px; padding: 0; }
+.replay .btn svg { width: 15px; height: 15px; }
+.replay #rpPlay svg { display: none; }
+.replay #rpPlay[data-s="pause"] .i-pause, .replay #rpPlay[data-s="play"] .i-play, .replay #rpPlay[data-s="again"] .i-again { display: block; }
+.replay #rpSpeed { min-width: 44px; }
+.rp-pos { font: 600 12.5px var(--hud-font); color: var(--fg); letter-spacing: .06em; min-width: 96px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rp-bar { position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--hud); box-shadow: 0 0 8px var(--hud); transition: width .3s; }
 #app.replaying .zoom { display: none; }
 .record table { margin-top: 2px; }
@@ -885,10 +923,10 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
       <div class="replay hud" id="replayBar" hidden>
         <span class="rp-pos" id="rpPos">Move 0 / 0</span>
-        <button class="btn" type="button" id="rpPlay">Pause</button>
-        <button class="btn" type="button" id="rpStep">Step</button>
+        <button class="btn icon" type="button" id="rpPlay" aria-label="Pause" title="Pause"><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3h2.5v10H4.5zM9 3h2.5v10H9z" fill="currentColor"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z" fill="currentColor"/></svg><svg class="i-again" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8a4.5 4.5 0 1 0 1.4-3.3M3.5 2.5v2.8h2.8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        <button class="btn icon" type="button" id="rpStep" aria-label="Next move" title="Next move"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3l6.5 5-6.5 5zM11 3h2v10h-2z" fill="currentColor"/></svg></button>
         <button class="btn" type="button" id="rpSpeed" title="Replay speed">1×</button>
-        <button class="btn ghost" type="button" id="rpExit">Exit</button>
+        <button class="btn icon ghost" type="button" id="rpExit" aria-label="Exit replay" title="Exit replay"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
         <input class="range rp-scrub" type="range" id="rpScrub" min="0" max="0" value="0" step="1" aria-label="Replay position">
         <i class="rp-bar" aria-hidden="true"></i>
       </div>
@@ -953,7 +991,7 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
         <span>Mode</span>
         <div class="seg">
           <input type="radio" name="mode" id="mdSolo" value="solo"><label for="mdSolo">Solo vs AI</label>
-          <input type="radio" name="mode" id="mdPass" value="pass"><label for="mdPass">Pass and play</label>
+          <input type="radio" name="mode" id="mdPass" value="pass"><label for="mdPass">Pass &amp; play</label>
           <input type="radio" name="mode" id="mdNet" value="online"><label for="mdNet">Online</label>
         </div>
         <p class="vnote unlock-note" id="unlockNote"></p>
@@ -1042,31 +1080,45 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
     </section>
     <section class="tabpanel" role="tabpanel" id="panelSettings" data-panel="settings" aria-labelledby="tabSettings" hidden>
       <div class="settings">
+        <h3 class="set-h">Play</h3>
+        <div class="set-group">
         <label class="switch" for="setHints"><span>Hints<small>Threat outlines and the cells a move would capture</small></span><input type="checkbox" id="setHints" role="switch"></label>
         <label class="switch" for="setOneTap"><span>One-tap placement<small>Place on the first tap, without a preview</small></span><input type="checkbox" id="setOneTap" role="switch"></label>
         <label class="switch" for="setUndo"><span>Undo<small>Show the undo button</small></span><input type="checkbox" id="setUndo" role="switch"></label>
         <label class="switch" for="setProgress"><span>Progression<small>Earn badges to unlock levels, rules and fields. Turning it off opens everything, but clears your badges, records and replays.</small></span><input type="checkbox" id="setProgress" role="switch"></label>
+        </div>
+        <h3 class="set-h">Sound</h3>
+        <div class="set-group">
         <div class="switch audio-row"><span><label for="setMusic">Music</label><input class="range vol" type="range" id="volMusic" min="0" max="100" step="1" aria-label="Music volume"></span><input type="checkbox" id="setMusic" role="switch" aria-label="Music"></div>
         <div class="switch audio-row"><span><label for="setSfx">Sound effects</label><input class="range vol" type="range" id="volSfx" min="0" max="100" step="1" aria-label="Sound effects volume"></span><input type="checkbox" id="setSfx" role="switch" aria-label="Sound effects"></div>
         <label class="switch" for="setUi"><span>Interface sounds<small>Hover and click sounds on controls</small></span><input type="checkbox" id="setUi" role="switch"></label>
-        <div class="field data-field"><span>Keep replays</span>
+        </div>
+        <h3 class="set-h">Replays</h3>
+        <div class="set-group">
+        <div class="field data-field set-row"><span>Keep the last</span>
           <div class="seg" id="rpKeep">
-            <input type="radio" name="rpkeep" id="rk10" value="10"><label for="rk10">Last 10</label>
+            <input type="radio" name="rpkeep" id="rk10" value="10"><label for="rk10">10</label>
             <input type="radio" name="rpkeep" id="rk25" value="25"><label for="rk25">25</label>
             <input type="radio" name="rpkeep" id="rk50" value="50"><label for="rk50">50</label>
             <input type="radio" name="rpkeep" id="rk100" value="100"><label for="rk100">100</label>
           </div>
-          <div class="seg" id="rpDays">
-            <input type="radio" name="rpdays" id="rd1" value="1"><label for="rd1">1 day</label>
-            <input type="radio" name="rpdays" id="rd7" value="7"><label for="rd7">1 week</label>
-            <input type="radio" name="rpdays" id="rd30" value="30"><label for="rd30">1 month</label>
-            <input type="radio" name="rpdays" id="rd0" value="0"><label for="rd0">Never expire</label>
-          </div>
-          <p class="vnote" id="rpNote"></p>
         </div>
-        <div class="field data-field"><span>Your save</span>
+        <div class="field data-field set-row"><span>Expire after</span>
+          <div class="seg" id="rpDays">
+            <input type="radio" name="rpdays" id="rd1" value="1"><label for="rd1">Day</label>
+            <input type="radio" name="rpdays" id="rd7" value="7"><label for="rd7">Week</label>
+            <input type="radio" name="rpdays" id="rd30" value="30"><label for="rd30">Month</label>
+            <input type="radio" name="rpdays" id="rd0" value="0"><label for="rd0">Never</label>
+          </div>
+        </div>
+        <p class="vnote set-note" id="rpNote"></p>
+        </div>
+        <h3 class="set-h">Your save</h3>
+        <div class="set-group">
+        <div class="data-field set-row">
           <div class="links"><button class="btn" type="button" id="exportSave">Export save</button><button class="btn" type="button" id="importFile">Import file</button></div>
           <p class="vnote">One file with your record, badges, replays and settings, so clearing the browser doesn't lose them. Import a save to restore it, or a replay or room someone sent you.</p>
+        </div>
         </div>
       </div>
     </section>
@@ -3646,7 +3698,8 @@ function renderReplays() {
   const PIN = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2h8v12l-4-3-4 3z" fill="currentColor"/></svg>';
   const UP = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11V2.5M4.5 6L8 2.5 11.5 6M2.5 10v3.5h11V10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
   const DEL = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
-  $("#recGames").innerHTML = `<figure class="chart">${head}<div class="rp-list">${rps.map(([g, idx]) => `<div class="rp-row${g.imported ? " imported" : ""}"><i class="k r-${!g.imported && (g.res === "win" || g.res === "loss") ? g.res : "draw"}"></i><span><b>${out(g)}</b> · ${g.imported ? "Imported · " : ""}${what(g)} · ${tM(g.moves.length)} · ${new Date(g.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span><span class="rp-acts"><button class="btn icon ghost" type="button" data-pin="${idx}" aria-pressed="${!!g.pin}" title="${g.pin ? "Kept: never expires" : "Keep this replay"}" aria-label="Keep">${PIN}</button><button class="btn icon ghost" type="button" data-exp="${idx}" title="Export this replay" aria-label="Export">${UP}</button><button class="btn icon ghost" type="button" data-del="${idx}" title="Delete this replay" aria-label="Delete">${DEL}</button><button class="btn" type="button" data-rp="${idx}">Replay</button></span></div>`).join("")}</div><p class="vnote">${rpDays() ? `Replays expire after ${{ 1: "a day", 7: "a week", 30: "a month" }[rpDays()]}` : "Replays don't expire"}; the last ${rpKeep()} are kept. Pinned ones stay. Change this in Settings.</p></figure>`;
+  const PLAY = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z" fill="currentColor"/></svg>';
+  $("#recGames").innerHTML = `<figure class="chart">${head}<div class="rp-list">${rps.map(([g, idx]) => `<div class="rp-row${g.imported ? " imported" : ""}"><i class="k r-${!g.imported && (g.res === "win" || g.res === "loss") ? g.res : "draw"}"></i><span class="rp-t"><b>${out(g)}</b><small>${g.imported ? "Imported · " : ""}${what(g)} · ${tM(g.moves.length)} · ${new Date(g.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</small></span><span class="rp-acts"><button class="btn icon ghost" type="button" data-pin="${idx}" aria-pressed="${!!g.pin}" title="${g.pin ? "Kept: never expires" : "Keep this replay"}" aria-label="${g.pin ? "Unpin" : "Pin"}">${PIN}</button><button class="btn icon ghost" type="button" data-exp="${idx}" title="Export this replay" aria-label="Export">${UP}</button><button class="btn icon ghost" type="button" data-del="${idx}" title="Delete this replay" aria-label="Delete">${DEL}</button><button class="btn icon primary" type="button" data-rp="${idx}" title="Watch" aria-label="Watch">${PLAY}</button></span></div>`).join("")}</div><p class="vnote">${rpDays() ? `Replays expire after ${{ 1: "a day", 7: "a week", 30: "a month" }[rpDays()]}` : "Replays don't expire"}; the last ${rpKeep()} are kept. Pinned ones stay. Change this in Settings.</p></figure>`;
 }
 function renderRecord() {
   const log = loadLog(), tours = loadTours(), f = recFilter, rec = loadRecord();
@@ -3723,7 +3776,7 @@ function renderRecord() {
     return `<tr><td>${cap(l)}</td><td>${r.w}–${r.l}</td><td>${r.streak}</td><td>${r.bestStreak}</td><td>${r.fastest ? tM(r.fastest) : "–"}</td><td>${r.chain || "–"}</td></tr>`;
   }).join("")}</tbody></table></figure>` : "";
   $("#recAch").innerHTML = achGallery();
-  $("#achCount").textContent = `${ACH.filter((a) => ACHV[a.id]).length}/${ACH.length}`;
+  paintAchBubbles();
   renderReplays();
   $("#record").innerHTML = `<div class="tiles">${tiles}</div>
     ${empty ? `<p class="vnote rec-empty">No ${f === "all" ? "" : { solo: "solo ", pass: "pass-and-play ", online: "online ", knockout: "knockout " }[f]}games yet. Finished games show up here.</p>` : (f !== "pass" && mine.length ? legend : "") + charts.join("")}
@@ -4802,7 +4855,7 @@ menuDlg.addEventListener("close", () => { if (askDone) askDone(false); });
 function wipeRecords(badges) {
   ["sf2-log", "sf2-tours", "sf2-tour-record", "sf2-replays"].forEach((k) => save(k, null));
   save("sf2-record", {});
-  if (badges) { ACHV = {}; save("sf2-ach", {}); save("sf2-tutorial-done", false); save("sf2-watched", 0); save("sf2-flags", null); }
+  if (badges) { ACHV = {}; save("sf2-ach", {}); save("sf2-tutorial-done", false); save("sf2-watched", 0); save("sf2-flags", null); save("sf2-ach-new", null); paintAchBubbles(); }
   renderRecord(); paintRoster();
 }
 $("#resetRecord").addEventListener("click", async () => {
@@ -4819,6 +4872,8 @@ $("#recTabs").addEventListener("click", (e) => {
   $("#recTabs").querySelectorAll("[data-rt]").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
   document.querySelectorAll(".rec-pane").forEach((p) => { p.hidden = p.dataset.pane !== b.dataset.rt; });
   dlgBody.scrollTop = 0; Sound.ui("tab");
+  // looking at the badges clears the bubble; the new ones stay marked until you leave
+  if (b.dataset.rt === "ach" && achNew().length) { $("#recAch").innerHTML = achGallery(); save("sf2-ach-new", []); paintAchBubbles(); }
 });
 $("#panelRecord").addEventListener("click", (e) => {
   const b = e.target.closest("[data-rp]");
@@ -5280,7 +5335,8 @@ async function replayStep(me) {
 function paintReplay() {
   if (!RP) return;
   const n = RP.rec.moves.length;
-  $("#rpPlay").textContent = RP.k >= n ? "Again" : RP.playing ? "Pause" : "Play";
+  const st = RP.k >= n ? "again" : RP.playing ? "pause" : "play", pb = $("#rpPlay"), lab = { again: "Play again", pause: "Pause", play: "Play" }[st];
+  pb.dataset.s = st; pb.setAttribute("aria-label", lab); pb.title = lab;
   $("#rpSpeed").textContent = `${RP.speed < 1 ? "½" : RP.speed}×`;
   $("#rpPos").textContent = `Move ${RP.k} / ${n}`;
   $("#rpStep").disabled = RP.playing || RP.k >= n;
@@ -5668,7 +5724,26 @@ function checkAch(quiet) {
   for (const a of ACH) if (!ACHV[a.id]) { let ok = false; try { ok = a.test(L, T); } catch (e) {} if (ok) { ACHV[a.id] = Date.now(); fresh.push(a); } }
   if (!fresh.length) return;
   save("sf2-ach", ACHV);
-  if (!quiet) fresh.forEach((a) => achToast(a));
+  // every new badge waits behind a bubble until you look; only one that opens something new interrupts the game
+  save("sf2-ach-new", achNew().concat(fresh.map((a) => a.id)));
+  paintAchBubbles();
+  if (quiet) return;
+  const big = fresh.filter((a) => (a.unlocks || []).length);
+  big.forEach((a) => achToast(a));
+  if (!big.length) { Sound.ui("confirm"); const mb = $("#menuBtn"); mb.classList.remove("ping"); void mb.offsetWidth; mb.classList.add("ping"); }
+}
+const achNew = () => { const l = load("sf2-ach-new"); return Array.isArray(l) ? l.filter((id) => ACHV[id]) : []; };
+function setBubble(el, n) {
+  if (!el) return;
+  let b = el.querySelector(":scope > .nbub");
+  if (!b) { b = document.createElement("span"); b.className = "nbub"; b.setAttribute("aria-hidden", "true"); el.appendChild(b); }
+  b.hidden = !n; b.textContent = n > 99 ? "99+" : String(n);
+}
+function paintAchBubbles() {
+  const n = achNew().length;
+  setBubble($("#menuBtn"), n); setBubble($("#tabRecord"), n);
+  const c = $("#achCount"); c.textContent = n > 99 ? "99+" : n ? String(n) : ""; c.className = n ? "nbub" : "";
+  $("#menuBtn").setAttribute("aria-label", n ? `Menu, ${n} new badge${n === 1 ? "" : "s"}` : "Menu");
 }
 const achQueue = [];
 let achBusy = false;
@@ -5686,6 +5761,7 @@ function achNext() {
 }
 // on load: anything you've already earned is awarded quietly
 checkAch(true);
+paintAchBubbles();
 // Badge classes, named for the spectral classes of stars: M (red, the first steps) to O (blue-white, the rarest)
 const TIERS = { M: ["Class M", "#ff8466"], K: ["Class K", "#ffb45e"], G: ["Class G", "#ffe17d"], O: ["Class O", "#8fd4ff"] };
 const TIER = { first: "M", local: "M", cadet: "M", regular: "M", remnant: "M", allied: "M", cascade10: "M", nightshift: "M", archivist: "M",
@@ -5767,14 +5843,15 @@ $("#recAch").addEventListener("click", (e) => { const b = e.target.closest("[dat
 // the badges in the Record tab: earned first (newest first), then the closest to earning
 function achGallery() {
   const L = achLog(), T = loadTours(), got = ACH.filter((a) => ACHV[a.id]).length;
-  const rows = ACH.map((a, i) => { const on = !!ACHV[a.id], p = !on && a.prog ? a.prog(L, T) : null; return { a, i, on, p, frac: p ? Math.min(1, p[0] / p[1]) : 0 }; });
-  rows.sort((x, y) => (y.on - x.on) || (x.on ? (ACHV[y.a.id] || 0) - (ACHV[x.a.id] || 0) : (y.frac - x.frac) || (x.i - y.i)));
+  const fresh = new Set(achNew());
+  const rows = ACH.map((a, i) => { const on = !!ACHV[a.id], p = !on && a.prog ? a.prog(L, T) : null; return { a, i, on, p, frac: p ? Math.min(1, p[0] / p[1]) : 0, nu: fresh.has(a.id) }; });
+  rows.sort((x, y) => (y.nu - x.nu) || (y.on - x.on) || (x.on ? (ACHV[y.a.id] || 0) - (ACHV[x.a.id] || 0) : (y.frac - x.frac) || (x.i - y.i)));
   const tiers = Object.keys(TIERS).map((k) => { const all = ACH.filter((a) => tierOf(a) === k); return `<span class="tier-chip" style="--tc:${TIERS[k][1]}"><i></i>${TIERS[k][0]} <b>${all.filter((a) => ACHV[a.id]).length}/${all.length}</b></span>`; }).join("");
   const shown = rows.filter((r) => (achFilter === "earned" ? r.on : achFilter === "todo" ? !r.on : true));
   const chips = [["all", `All ${ACH.length}`], ["earned", `Earned ${got}`], ["todo", `To earn ${ACH.length - got}`]].map(([k, l]) => `<button type="button" class="btn ghost${achFilter === k ? " on" : ""}" data-af="${k}" aria-pressed="${achFilter === k}">${l}</button>`).join("");
-  return `<figure class="chart"><figcaption>Badges<small>${got} of ${ACH.length} earned · flick a medal to spin it</small></figcaption><div class="badge-meter" aria-hidden="true"><i style="--w:${((got / ACH.length) * 100).toFixed(1)}%"></i></div><div class="tier-row">${tiers}</div><div class="ach-filter">${chips}</div><div class="achs">${shown.map(({ a, on, p, frac }) => {
+  return `<figure class="chart"><figcaption>Badges<small>${got} of ${ACH.length} earned · flick a medal to spin it</small></figcaption><div class="badge-meter" aria-hidden="true"><i style="--w:${((got / ACH.length) * 100).toFixed(1)}%"></i></div><div class="tier-row">${tiers}</div><div class="ach-filter">${chips}</div><div class="achs">${shown.map(({ a, on, p, frac, nu }) => {
     const [tn, tc] = TIERS[tierOf(a)], un = (a.unlocks || []).map((k) => UNLOCK_NAMES[k]);
-    return `<div class="ach${on ? " on" : ""}" style="--tc:${tc}" title="${a.name}: ${a.desc}${on ? " (earned)" : ""}">${medal(a, on, frac)}<span><small class="tier">${tn}${on ? "" : " · locked"}</small><b>${a.name}</b><small>${a.desc}</small>${p ? `<span class="ach-bar"><i style="--w:${(frac * 100).toFixed(1)}%"></i><em>${Math.min(p[0], p[1])}/${p[1]}</em></span>` : ""}${un.length ? `<em class="ach-un">${on ? "Unlocked" : "Unlocks"} ${andList(un)}</em>` : ""}</span></div>`;
+    return `<div class="ach${on ? " on" : ""}${nu ? " new" : ""}" style="--tc:${tc}" title="${a.name}: ${a.desc}${on ? " (earned)" : ""}">${medal(a, on, frac)}<span><small class="tier">${tn}${on ? "" : " · locked"}</small><b>${a.name}</b><small>${a.desc}</small>${p ? `<span class="ach-bar"><i style="--w:${(frac * 100).toFixed(1)}%"></i><em>${Math.min(p[0], p[1])}/${p[1]}</em></span>` : ""}${un.length ? `<em class="ach-un">${on ? "Unlocked" : "Unlocks"} ${andList(un)}</em>` : ""}</span></div>`;
   }).join("")}</div></figure>`;
 }
 // flick a medal: it follows the drag, keeps spinning with the flick's speed, and settles on a face; a tap gives it a turn
