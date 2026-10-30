@@ -417,7 +417,6 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .dlg.split > .tabs { flex: none; margin: 0 20px; }
 .dlg-body { background: var(--panel-solid); flex: 1 1 auto; min-height: 0; min-width: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 18px 20px 20px; scrollbar-width: none; transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 /* while the list scrolls, rows sliding under a still pointer don't light up */
-@media (hover: hover) and (pointer: fine) { dialog.scrolling .dlg-body { pointer-events: none; } }
 dialog.scrolling .dlg-body *::after { transition: none !important; }
 .dlg-body::-webkit-scrollbar { display: none; }
 .dlg-foot { position: relative; flex: none; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--panel-solid); }
@@ -4383,14 +4382,44 @@ function zoomMax() {
   const base = wrap.getBoundingClientRect().width / zoom, d = Math.min(window.devicePixelRatio || 1, 2);
   return Math.max(1, Math.min(4, (B ? 1 + B.R * 0.45 : 4)));
 }
-function setZoom(z, ax, ay) {
-  if (RP) z = 1;
-  z = Math.max(1, Math.min(zoomMax(), z));
-  if (Math.abs(z - zoom) < 0.001) return;
-  if (!winEl.hidden) return;
-  const r = $(".brackets").getBoundingClientRect(), wr = wrap.getBoundingClientRect();
-  const px = ax == null ? r.left + r.width / 2 : ax, py = ay == null ? r.top + r.height / 2 : ay;
-  const fx = (px - wr.left) / wr.width, fy = (py - wr.top) / wr.height;
+// Zoom and pan feel live: during a pinch, a wheel or an animated step the board is scaled on the GPU (a transform,
+// no relayout); the board is laid out and redrawn at its new size once, when the gesture settles.
+let live = null, zoomAnim = 0, commitT = 0, glide = 0;
+function liveXY(L) {
+  const s = L.z / zoom;
+  return [L.px - L.r.left - L.fx * L.r.width * s, L.py - L.r.top - L.fy * L.r.height * s, s];
+}
+function startLive(px, py) {
+  if (live) return live;
+  const r = wrap.getBoundingClientRect();
+  live = { z: zoom, fx: (px - r.left) / r.width, fy: (py - r.top) / r.height, px, py, r };
+  wrap.style.transformOrigin = "0 0"; wrap.style.willChange = "transform";
+  return live;
+}
+// keep the point under (px, py) where it is while the scale changes around it
+function reanchor(px, py) {
+  const L = live, [tx, ty, s] = liveXY(L);
+  L.fx = (px - L.r.left - tx) / (L.r.width * s); L.fy = (py - L.r.top - ty) / (L.r.height * s); L.px = px; L.py = py;
+}
+function showLive() {
+  const [tx, ty, s] = liveXY(live);
+  wrap.style.transform = `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) scale(${s.toFixed(4)})`;
+  $("#zoomLvl").textContent = `${Math.max(1, live.z).toFixed(1)}×`;
+}
+const zoomLimit = (z) => Math.max(1, Math.min(zoomMax(), z));
+// past the limits the board gives a little, like a rubber band, and springs back on release
+const rubber = (z) => { const lo = 1, hi = zoomMax(); return z < lo ? lo - (lo - z) * 0.35 : z > hi ? hi + (z - hi) * 0.35 : z; };
+function commitLive() {
+  clearTimeout(commitT); commitT = 0;
+  if (!live) return;
+  const L = live, z = zoomLimit(L.z);
+  if (Math.abs(z - L.z) > 0.002 && !RM.matches) { animateZoom(z, L.px, L.py, 200); return; }
+  live = null;
+  wrap.style.transform = ""; wrap.style.willChange = ""; wrap.style.transformOrigin = "";
+  applyZoom(z, L.fx, L.fy, L.px, L.py);
+}
+// the committed zoom: the board is laid out at this size, scrolled so the anchor stays under the finger
+function applyZoom(z, fx, fy, px, py) {
   zoom = z; wrap.style.setProperty("--zoom", z.toFixed(3));
   const nw = wrap.getBoundingClientRect();
   vp.scrollLeft += nw.left + fx * nw.width - px;
@@ -4399,29 +4428,116 @@ function setZoom(z, ax, ay) {
   $("#zoomOut").disabled = z <= 1.001; $("#zoomFit").disabled = z <= 1.001;
   app.classList.toggle("zoomed", z > 1.001);
 }
-function resetZoom() { zoom = 1; app.classList.remove("zoomed"); wrap.style.setProperty("--zoom", "1"); vp.scrollLeft = 0; vp.scrollTop = 0; $("#zoomLvl").textContent = "1.0×"; $("#zoomOut").disabled = true; $("#zoomFit").disabled = true; }
-$("#zoomIn").addEventListener("click", () => setZoom(zoom * 1.4));
-$("#zoomOut").addEventListener("click", () => setZoom(zoom / 1.4));
+function animateZoom(z, px, py, dur) {
+  cancelAnimationFrame(zoomAnim);
+  const L = startLive(px, py);
+  reanchor(px, py);
+  const z0 = L.z, t0 = performance.now(), d = dur || 280;
+  const step = (now) => {
+    const k = Math.min(1, (now - t0) / d), e = 1 - Math.pow(1 - k, 3);
+    L.z = z0 + (z - z0) * e; showLive();
+    if (k < 1) zoomAnim = requestAnimationFrame(step);
+    else { zoomAnim = 0; L.z = z; commitLive(); }
+  };
+  zoomAnim = requestAnimationFrame(step);
+}
+function setZoom(z, ax, ay) {
+  if (RP) z = 1;
+  if (!winEl.hidden) return;
+  z = zoomLimit(z);
+  const cur = live ? live.z : zoom;
+  if (Math.abs(z - cur) < 0.001) return;
+  const r = $(".brackets").getBoundingClientRect();
+  const px = ax == null ? r.left + r.width / 2 : ax, py = ay == null ? r.top + r.height / 2 : ay;
+  stopGlide();
+  if (RM.matches) { const w0 = wrap.getBoundingClientRect(); live = null; wrap.style.transform = ""; applyZoom(z, (px - w0.left) / w0.width, (py - w0.top) / w0.height, px, py); return; }
+  animateZoom(z, px, py);
+}
+function resetZoom() {
+  cancelAnimationFrame(zoomAnim); zoomAnim = 0; clearTimeout(commitT); live = null; stopGlide();
+  wrap.style.transform = ""; wrap.style.willChange = ""; wrap.style.transformOrigin = "";
+  zoom = 1; app.classList.remove("zoomed"); wrap.style.setProperty("--zoom", "1"); vp.scrollLeft = 0; vp.scrollTop = 0; $("#zoomLvl").textContent = "1.0×"; $("#zoomOut").disabled = true; $("#zoomFit").disabled = true;
+}
+$("#zoomIn").addEventListener("click", () => setZoom((live ? live.z : zoom) * 1.4));
+$("#zoomOut").addEventListener("click", () => setZoom((live ? live.z : zoom) / 1.4));
 $("#zoomFit").addEventListener("click", () => setZoom(1));
-vp.addEventListener("wheel", (e) => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); setZoom(zoom * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY); } }, { passive: false });
+// trackpad pinch and ctrl-scroll zoom around the pointer, live, and settle a moment after the last step
+vp.addEventListener("wheel", (e) => {
+  if (!(e.ctrlKey || e.metaKey)) { stopGlide(); return; }
+  e.preventDefault();
+  if (RP || !winEl.hidden) return;
+  cancelAnimationFrame(zoomAnim); zoomAnim = 0; stopGlide();
+  const L = startLive(e.clientX, e.clientY);
+  reanchor(e.clientX, e.clientY);
+  const raw = (L.raw == null ? L.z : L.raw) * Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.05 : 0.0085));
+  L.raw = Math.max(0.6, Math.min(zoomMax() * 1.6, raw)); L.z = rubber(L.raw);
+  showLive();
+  clearTimeout(commitT); commitT = setTimeout(commitLive, 140);
+}, { passive: false });
+// panning glides on after a flick, slowing like it has weight
+function stopGlide() { cancelAnimationFrame(glide); glide = 0; }
+function startGlide(vx, vy) {
+  stopGlide();
+  if (RM.matches || Math.hypot(vx, vy) < 0.05) return;
+  let last = performance.now();
+  const step = (now) => {
+    const dt = Math.min(40, now - last); last = now;
+    const l0 = vp.scrollLeft, t0 = vp.scrollTop;
+    vp.scrollLeft -= vx * dt; vp.scrollTop -= vy * dt;
+    // stop on the edges as well as when slow
+    if (vp.scrollLeft === l0) vx = 0;
+    if (vp.scrollTop === t0) vy = 0;
+    const f = Math.pow(0.9955, dt); vx *= f; vy *= f;
+    if (Math.hypot(vx, vy) > 0.02) glide = requestAnimationFrame(step); else glide = 0;
+  };
+  glide = requestAnimationFrame(step);
+}
 const pts = new Map();
 let pinch = null, drag = null, suppressTap = false;
 vp.addEventListener("pointerdown", (e) => {
   pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  if (pts.size === 1) { suppressTap = false; drag = { x: e.clientX, y: e.clientY, sl: vp.scrollLeft, st: vp.scrollTop, panning: false }; }
-  else if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, z: zoom }; drag = null; suppressTap = true; }
+  stopGlide();
+  if (pts.size === 1) { suppressTap = false; drag = { x: e.clientX, y: e.clientY, sl: vp.scrollLeft, st: vp.scrollTop, panning: false, trail: [{ x: e.clientX, y: e.clientY, t: performance.now() }] }; }
+  else if (pts.size === 2 && !RP && winEl.hidden) {
+    const [a, b] = [...pts.values()], mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    cancelAnimationFrame(zoomAnim); zoomAnim = 0; clearTimeout(commitT);
+    const L = startLive(mx, my); reanchor(mx, my);
+    pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, z: L.z }; drag = null; suppressTap = true;
+  }
 });
 vp.addEventListener("pointermove", (e) => {
   if (!pts.has(e.pointerId)) return;
   pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  if (pinch && pts.size >= 2) { const [a, b] = [...pts.values()]; setZoom((pinch.z * Math.hypot(a.x - b.x, a.y - b.y)) / pinch.d, (a.x + b.x) / 2, (a.y + b.y) / 2); return; }
-  if (drag && zoom > 1.001) {
+  if (pinch && pts.size >= 2 && live) {
+    // the two fingers zoom and pan at once: the point between them stays between them
+    const [a, b] = [...pts.values()];
+    live.z = rubber(pinch.z * Math.hypot(a.x - b.x, a.y - b.y) / pinch.d);
+    live.px = (a.x + b.x) / 2; live.py = (a.y + b.y) / 2;
+    showLive();
+    return;
+  }
+  if (drag && zoom > 1.001 && !live) {
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    if (!drag.panning && Math.hypot(dx, dy) > 8) drag.panning = true;
-    if (drag.panning) { vp.scrollLeft = drag.sl - dx; vp.scrollTop = drag.st - dy; suppressTap = true; vp.classList.add("dragging"); }
+    if (!drag.panning && Math.hypot(dx, dy) > 8) { drag.panning = true; drag.x = e.clientX; drag.y = e.clientY; drag.sl = vp.scrollLeft; drag.st = vp.scrollTop; }
+    if (drag.panning) {
+      vp.scrollLeft = drag.sl - (e.clientX - drag.x); vp.scrollTop = drag.st - (e.clientY - drag.y); suppressTap = true; vp.classList.add("dragging");
+      const now = performance.now();
+      drag.trail.push({ x: e.clientX, y: e.clientY, t: now });
+      while (drag.trail.length > 2 && now - drag.trail[0].t > 90) drag.trail.shift();
+    }
   }
 });
-const endPointer = (e) => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (!pts.size) { drag = null; vp.classList.remove("dragging"); } };
+const endPointer = (e) => {
+  pts.delete(e.pointerId);
+  if (pinch && pts.size < 2) { pinch = null; commitLive(); }
+  if (!pts.size) {
+    if (drag && drag.panning && e.type === "pointerup") {
+      const tr = drag.trail, a = tr[0], b = { x: e.clientX, y: e.clientY, t: performance.now() }, dt = b.t - a.t;
+      if (dt > 0 && dt < 160) startGlide((b.x - a.x) / dt, (b.y - a.y) / dt);
+    }
+    drag = null; vp.classList.remove("dragging");
+  }
+};
 vp.addEventListener("pointerup", endPointer);
 vp.addEventListener("pointercancel", endPointer);
 wrap.addEventListener("click", (e) => { if (suppressTap) { suppressTap = false; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
@@ -4637,8 +4753,8 @@ document.addEventListener("keydown", (e) => {
   else if (k === "m" || k === "M") { toggleAud("music"); return; }
   else if (k === "s" || k === "S") { toggleAud("sfx"); return; }
   else if (k === "n" || k === "N") openMenu();
-  else if (k === "+" || k === "=") setZoom(zoom * 1.4);
-  else if (k === "-" || k === "_") setZoom(zoom / 1.4);
+  else if (k === "+" || k === "=") setZoom((live ? live.z : zoom) * 1.4);
+  else if (k === "-" || k === "_") setZoom((live ? live.z : zoom) / 1.4);
   else if (k === "0" || k === "o" || k === "O") setZoom(1);
   else if (k === "f" || k === "F") toggleFocus();
   else if (k === "Escape" && app.classList.contains("focus") && !document.fullscreenElement) setFocus(false);
