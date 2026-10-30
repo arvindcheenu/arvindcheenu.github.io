@@ -16,6 +16,10 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta property="og:title" content="Accrete"><meta property="og:image" content="icons/icon-512.png">
 <style>@font-face{font-family:'Orbitron';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/orbitron-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Orbitron';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/orbitron-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Exo 2';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/exo-2-latin-400-normal.woff2) format('woff2')}@font-face{font-family:'Exo 2';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/exo-2-latin-500-normal.woff2) format('woff2')}@font-face{font-family:'Exo 2';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/exo-2-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Exo 2';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/exo-2-latin-700-normal.woff2) format('woff2')}</style>
+<script>
+// installed app: portrait only. Android follows the manifest; iPhone shows a turn-upright screen when held sideways
+if (navigator.standalone || matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches) document.documentElement.classList.add("app");
+</script>
 <title>Accrete</title>
 </head>
 <body>
@@ -72,8 +76,17 @@ body {
 .splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash-in { display: grid; justify-items: center; gap: 18px; transition: transform 1.1s cubic-bezier(.3, .6, .2, 1), filter .9s; }
 .splash.out .splash-in { transform: scale(1.08); filter: blur(6px); }
-.splash-logo { width: clamp(96px, 18vmin, 144px); height: auto; aspect-ratio: 1; color: var(--p0); filter: drop-shadow(0 0 22px color-mix(in oklab, var(--p0) 40%, transparent));
+/* the mark is drawn inline and every effect sits on its wrapper: Safari can drop an animated, filtered <use> */
+.splash-logo svg { display: block; width: 100%; height: 100%; }
+.splash-logo { width: clamp(96px, 18vmin, 144px); height: clamp(96px, 18vmin, 144px); color: var(--p0, #f6c544); will-change: transform, opacity; filter: drop-shadow(0 0 22px color-mix(in oklab, var(--p0) 40%, transparent));
   animation: sp-logo 1.9s .15s cubic-bezier(.2, .8, .2, 1) backwards, sp-glow 3.2s 2s ease-in-out infinite; }
+.rotate { display: none; }
+@media (orientation: landscape) and (max-height: 540px) and (pointer: coarse) {
+  html.app .rotate { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #030405; color: var(--p0, #f6c544); text-align: center; }
+  html.app .rotate p { margin: 14px 0 0; font: 600 13px var(--hud-font); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  html.app .rotate svg { animation: turn-up 2.4s cubic-bezier(.5, 0, .2, 1) infinite; }
+}
+@keyframes turn-up { 0%, 20% { transform: rotate(-90deg); } 60%, 100% { transform: rotate(0deg); } }
 @keyframes sp-logo { from { opacity: 0; transform: rotate(-200deg) scale(.45); filter: blur(10px); } 60% { opacity: 1; } }
 @keyframes sp-glow { 50% { filter: drop-shadow(0 0 32px color-mix(in oklab, var(--p0) 60%, transparent)); } }
 .splash-name { margin: 0; font: 700 clamp(20px, 3.4vmin, 28px) var(--logo); letter-spacing: .42em; text-indent: .42em; text-transform: uppercase; color: var(--fg); opacity: 0; animation: sp-name 1.2s .9s cubic-bezier(.2, .7, .2, 1) forwards; }
@@ -377,10 +390,12 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .dlg.split > .tabs { flex: none; margin: 0 20px; }
 .dlg-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 20px 20px; scrollbar-width: none; }
 .dlg-body::-webkit-scrollbar { display: none; }
-.dlg-foot { flex: none; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--panel-solid); }
-.dlg-foot[hidden] { display: none; }
-/* scroll progress: a hairline along the bottom of the tabs, under the tab marker */
-.dlg-progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.dlg-foot { position: relative; flex: none; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--panel-solid); }
+/* off the Play tab the footer is only its top edge, which still carries the scroll progress */
+.dlg-foot.bare { padding: 0; }
+.dlg-foot.bare .btn { display: none; }
+/* scroll progress: it fills the footer's top edge as the body scrolls */
+.dlg-progress { position: absolute; left: 0; right: 0; top: -1px; height: 2px; pointer-events: none; opacity: 0; transition: opacity .2s; }
 .dlg-progress.on { opacity: 1; }
 .dlg-progress i { position: absolute; inset: 0 auto 0 0; width: calc(var(--sp, 0) * 100%); background: color-mix(in oklab, var(--hud) 70%, #fff); box-shadow: 0 0 8px color-mix(in oklab, var(--hud) 60%, transparent); }
 .dlg-progress i::after { content: ""; position: absolute; right: -2px; top: -1.5px; width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px var(--hud); }
@@ -614,9 +629,10 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 <div class="stars" id="stars" aria-hidden="true"></div>
 <div class="glow" id="glow" aria-hidden="true"></div>
 <div class="crt" aria-hidden="true"></div>
+<div class="rotate" aria-hidden="true"><div><svg viewBox="0 0 664 664" width="64" height="64"><path d="M93.9018 188.427C90.2499 190.537 88.0002 194.436 88.0002 198.655L88 466.345C88.0002 470.564 90.2498 474.464 93.9015 476.573L325.598 610.418C329.25 612.527 333.75 612.527 337.401 610.418L569.098 476.573C572.75 474.463 575 470.564 575 466.345L575 198.655C575 194.436 572.75 190.537 569.098 188.427L337.402 54.582C333.75 52.4725 329.251 52.4728 325.599 54.5821L93.9018 188.427ZM209.005 311.739C176.661 367.792 195.48 439.386 251.238 471.596C331.779 518.122 434.767 490.511 481.267 409.925C527.767 329.339 500.172 226.294 419.631 179.767C350.331 139.735 290.886 134.038 238.323 144.044C233.695 144.925 230.349 136.877 234.429 134.521L328.351 80.264C330.299 79.1388 332.699 79.1388 334.646 80.264L548.246 203.655C550.194 204.78 551.394 206.859 551.394 209.11L551.392 455.889C551.392 458.14 550.192 460.219 548.245 461.344L334.647 584.735C332.7 585.86 330.3 585.86 328.352 584.735L114.753 461.344C112.805 460.219 111.605 458.14 111.605 455.89L111.606 274.393C111.606 244.891 124.828 216.943 147.633 198.241C152.977 193.859 158.781 190.032 164.933 186.883C195.193 171.395 198.977 170.769 241.853 162.607C289.903 153.46 344.752 158.331 410.188 196.132C481.697 237.44 506.197 328.929 464.912 400.477C423.627 472.026 332.189 496.54 260.681 455.232C214.068 428.305 198.165 368.315 225.36 321.187C236.071 302.623 251.854 288.855 269.899 280.632C276.054 277.826 280.668 286.932 276.785 292.474C275.55 294.235 274.383 296.065 273.288 297.963L272.821 298.785C253.268 333.682 265.345 377.923 300.074 397.985C335.075 418.204 379.831 406.205 400.039 371.184L400.507 370.362C420.059 335.465 407.982 291.224 373.254 271.162C371.649 270.236 370.024 269.376 368.381 268.584L368.483 268.407C312.726 236.197 241.348 255.687 209.005 311.739Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></svg><p>Turn your phone upright</p></div></div>
 <div class="splash" id="splash" role="presentation">
   <div class="splash-in">
-    <svg class="splash-logo" viewBox="0 0 664 664" aria-hidden="true"><use href="#logoMark"/></svg>
+    <div class="splash-logo"><svg viewBox="0 0 664 664" width="144" height="144" aria-hidden="true"><path d="M93.9018 188.427C90.2499 190.537 88.0002 194.436 88.0002 198.655L88 466.345C88.0002 470.564 90.2498 474.464 93.9015 476.573L325.598 610.418C329.25 612.527 333.75 612.527 337.401 610.418L569.098 476.573C572.75 474.463 575 470.564 575 466.345L575 198.655C575 194.436 572.75 190.537 569.098 188.427L337.402 54.582C333.75 52.4725 329.251 52.4728 325.599 54.5821L93.9018 188.427ZM209.005 311.739C176.661 367.792 195.48 439.386 251.238 471.596C331.779 518.122 434.767 490.511 481.267 409.925C527.767 329.339 500.172 226.294 419.631 179.767C350.331 139.735 290.886 134.038 238.323 144.044C233.695 144.925 230.349 136.877 234.429 134.521L328.351 80.264C330.299 79.1388 332.699 79.1388 334.646 80.264L548.246 203.655C550.194 204.78 551.394 206.859 551.394 209.11L551.392 455.889C551.392 458.14 550.192 460.219 548.245 461.344L334.647 584.735C332.7 585.86 330.3 585.86 328.352 584.735L114.753 461.344C112.805 460.219 111.605 458.14 111.605 455.89L111.606 274.393C111.606 244.891 124.828 216.943 147.633 198.241C152.977 193.859 158.781 190.032 164.933 186.883C195.193 171.395 198.977 170.769 241.853 162.607C289.903 153.46 344.752 158.331 410.188 196.132C481.697 237.44 506.197 328.929 464.912 400.477C423.627 472.026 332.189 496.54 260.681 455.232C214.068 428.305 198.165 368.315 225.36 321.187C236.071 302.623 251.854 288.855 269.899 280.632C276.054 277.826 280.668 286.932 276.785 292.474C275.55 294.235 274.383 296.065 273.288 297.963L272.821 298.785C253.268 333.682 265.345 377.923 300.074 397.985C335.075 418.204 379.831 406.205 400.039 371.184L400.507 370.362C420.059 335.465 407.982 291.224 373.254 271.162C371.649 270.236 370.024 269.376 368.381 268.584L368.483 268.407C312.726 236.197 241.348 255.687 209.005 311.739Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></svg></div>
     <h1 class="splash-name">Accrete</h1>
     <p class="splash-hint">Tap anywhere to begin</p>
   </div>
@@ -733,7 +749,6 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
       <button class="tab" type="button" role="tab" id="tabSettings" data-tab="settings" aria-selected="false" aria-controls="panelSettings">Settings</button>
       <button class="tab" type="button" role="tab" id="tabRecord" data-tab="record" aria-selected="false" aria-controls="panelRecord">Record</button>
       <button class="tab" type="button" role="tab" id="tabHelp" data-tab="help" aria-selected="false" aria-controls="panelHelp">Help</button>
-      <span class="dlg-progress" aria-hidden="true"><i id="dlgProgress"></i></span>
     </div>
     <div class="dlg-body" id="dlgBody">
     <section class="tabpanel" role="tabpanel" id="panelPlay" data-panel="play" aria-labelledby="tabPlay">
@@ -856,7 +871,7 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
       <p class="copy">© 2026 Arvind Srinivasan</p>
     </section>
     </div>
-    <div class="dlg-foot actions start-bar" id="dlgFoot"><button class="btn primary" type="submit">Start game</button></div>
+    <div class="dlg-foot actions start-bar" id="dlgFoot"><span class="dlg-progress" aria-hidden="true"><i id="dlgProgress"></i></span><button class="btn primary" type="submit">Start game</button></div>
   </form>
   </div>
 </dialog>
@@ -1279,7 +1294,8 @@ const Sound = (() => {
     return buf;
   }
   function init() {
-    if (ac) { if (ac.state === "suspended") ac.resume().catch(() => {}); return true; }
+    // iOS also parks the context as "interrupted" (calls, other apps); any tap wakes it, and retries music that failed
+    if (ac) { if (ac.state !== "running") ac.resume().catch(() => {}); if (mus && !mus.ready && !loopBusy) loadLoop(); return true; }
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return false;
     try { ac = new AC({ sampleRate: 48000, latencyHint: "interactive" }); } catch (e) { try { ac = new AC(); } catch (e2) { return false; } }
@@ -1326,9 +1342,16 @@ const Sound = (() => {
     return best;
   }
   // Opus (WebM, then Ogg), then MP3; the loop region is exactly the original length, so the wrap is sample-accurate
+  // Safari decodes MP3 reliably and Opus unevenly, so Apple devices start with the MP3
+  let loopBusy = false;
   async function loadLoop() {
+    if (loopBusy) return;
+    loopBusy = true;
+    try { await loadLoopFrom(/Apple/.test(navigator.vendor || "") ? ["mp3", "webm", "ogg"] : ["webm", "ogg", "mp3"]); } finally { loopBusy = false; }
+  }
+  async function loadLoopFrom(kinds) {
     const want = Math.round(LOOP.frames * ac.sampleRate / LOOP.rate);
-    for (const f of ["sounds/gameloop.webm", "sounds/gameloop.ogg", "sounds/gameloop.mp3"]) {
+    for (const f of kinds.map((k) => `sounds/gameloop.${k}`)) {
       try {
         const buf = await decode(await (await fetch(f)).arrayBuffer());
         if (buf.length < want - 2) continue;
@@ -3575,7 +3598,7 @@ function selectTab(name) {
   menuDlg.querySelectorAll(".tab").forEach((b) => { const on = b.dataset.tab === name; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; });
   menuDlg.querySelectorAll(".tabpanel").forEach((p) => { p.hidden = p.dataset.panel !== name; });
   // the start button belongs to the Play tab
-  $("#dlgFoot").hidden = name !== "play";
+  $("#dlgFoot").classList.toggle("bare", name !== "play");
   dlgBody.scrollTop = 0;
   requestAnimationFrame(paintProgress);
   requestAnimationFrame(() => {
