@@ -379,7 +379,9 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .match span { display: flex; align-items: center; gap: 5px; min-width: 0; font: 500 12px var(--hud-font); color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .match span i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
 .match span.lost { color: var(--muted); text-decoration: line-through; text-decoration-color: rgb(255 255 255 / .25); }
-.match span.won { font-weight: 700; }
+.match span.won { font-weight: 700; color: color-mix(in oklab, var(--c) 75%, #fff); }
+.tour-h .btn { height: 26px; padding: 0 10px; font-size: 12px; --cut: 5px; margin-left: auto; }
+.tour-h { flex-wrap: wrap; }
 .match span.tbd { color: var(--muted); }
 .match span.tbd i { background: none; box-shadow: inset 0 0 0 1px var(--line-2); }
 @media (max-width: 899px), (max-height: 539px) { .tour .round:not(.now) { display: none; } .tour .rounds { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .tour .round.now { display: contents; } }
@@ -418,7 +420,40 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
 .switch input.vol { width: 100%; height: 22px; background: transparent; border: 0; flex: auto; }
 .switch input.vol::after { content: none; }
 .audio-row.off input.vol { opacity: .4; }
-.record { overflow-x: auto; }
+.record { display: grid; gap: 16px; }
+/* records dashboard */
+.rec-filter label { font-size: 12.5px; padding: 7px 2px; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.tile { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); background: var(--bg); }
+.tile span { font: 600 12px var(--hud-font); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.tile b { font: 700 22px var(--hud-font); color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile small { font: 500 12px var(--hud-font); color: var(--muted); font-variant-numeric: tabular-nums; }
+.chart { margin: 0; display: grid; gap: 7px; }
+.chart figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font: 600 12px var(--hud-font); letter-spacing: .1em; text-transform: uppercase; color: var(--fg); }
+.chart figcaption small { font-weight: 500; letter-spacing: .04em; text-transform: none; color: var(--muted); }
+.legend-row { display: flex; gap: 14px; font: 500 12px var(--hud-font); color: var(--muted); }
+.legend-row span { display: inline-flex; align-items: center; gap: 6px; }
+.k { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.r-win { background: #2f98c4; }
+.r-loss { background: #d0604f; }
+.r-draw { background: #59667a; }
+.strip { display: grid; grid-template-columns: repeat(20, minmax(0, 1fr)); gap: 2px; }
+.strip .cell { aspect-ratio: 1; border-radius: 2px; }
+.strip .cell.r-loss { background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / .16) 0 1.5px, transparent 1.5px 4px); }
+.hrow { display: grid; grid-template-columns: 92px minmax(0, 1fr) 46px; align-items: center; gap: 8px; font: 500 12.5px var(--hud-font); }
+.hrow > span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hrow > b { font-weight: 600; color: var(--fg); text-align: right; font-variant-numeric: tabular-nums; }
+.track { display: flex; gap: 2px; height: 10px; background: rgb(255 255 255 / .04); }
+.bs { height: 100%; }
+.bs:last-child { border-radius: 0 3px 3px 0; }
+.bs.r-one { background: color-mix(in oklab, var(--hud) 75%, #000); }
+.hist { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 2px; align-items: end; height: 64px; border-bottom: 1px solid var(--line); }
+.hist .col { height: 100%; display: flex; align-items: flex-end; }
+.hist .col i { width: 100%; border-radius: 3px 3px 0 0; background: color-mix(in oklab, var(--hud) 75%, #000); }
+.hist-x { display: flex; justify-content: space-between; font: 500 12px var(--hud-font); color: var(--muted); }
+.rec-since, .rec-empty { margin: 0; }
+.record table { margin-top: 2px; }
+.record .chart table { overflow-x: auto; }
 .record table { width: 100%; border-collapse: collapse; font: 400 12.5px var(--hud-font); font-variant-numeric: tabular-nums; }
 .record th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 0 8px 6px 0; white-space: nowrap; }
 .record td { padding: 5px 8px 5px 0; border-top: 1px solid var(--line); white-space: nowrap; }
@@ -852,7 +887,14 @@ dialog::backdrop { background: rgb(2 4 8 / .78); backdrop-filter: blur(3px); }
       </div>
     </section>
     <section class="tabpanel" role="tabpanel" id="panelRecord" data-panel="record" aria-labelledby="tabRecord" hidden>
-      <div class="dlg-head"><span class="eyebrow">Solo record</span><button class="btn ghost" type="button" id="resetRecord">Reset</button></div>
+      <div class="dlg-head"><span class="eyebrow">Your record</span><button class="btn ghost" type="button" id="resetRecord">Reset</button></div>
+      <div class="seg rec-filter" id="recFilter" role="radiogroup" aria-label="Which games">
+        <input type="radio" name="recf" id="rfA" value="all" checked><label for="rfA">All</label>
+        <input type="radio" name="recf" id="rfS" value="solo"><label for="rfS">Solo</label>
+        <input type="radio" name="recf" id="rfP" value="pass"><label for="rfP">Pass</label>
+        <input type="radio" name="recf" id="rfO" value="online"><label for="rfO">Online</label>
+        <input type="radio" name="recf" id="rfK" value="knockout"><label for="rfK">Knockout</label>
+      </div>
       <div class="record" id="record"></div>
     </section>
     <section class="tabpanel" role="tabpanel" id="panelHelp" data-panel="help" aria-labelledby="tabHelp" hidden>
@@ -1272,8 +1314,11 @@ const smooth = (v) => { v = clamp01(v); return v * v * (3 - 2 * v); };
 /* ---------- Sound: recorded effects joined by a shared room and a chain bed ---------- */
 const Sound = (() => {
   const FILES = { rock: 5, ignite: 3, rumble: 2, hum: 2, supernova: 1, crunch: 3, implode: 1, deny: 1, perseus: 1 };
-  // supernova.wav sits on F (+39 cents); this rate brings it to D. Chains climb the D major pentatonic.
-  const NOVA_D = Math.pow(2, -3.39 / 12), PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+  // supernova.wav sits on F (+39 cents); this rate brings it to D. Chains climb the loop's own notes: D, F#, G, A.
+  const NOVA_D = Math.pow(2, -3.39 / 12), PENTA = [0, 4, 5, 7, 12, 16, 17, 19, 24, 28, 29];
+  // The loop's core motif (bar 1, answered in bars 5-7), in semitones from D5. Each placement plays the next note.
+  const MOTIF = [4, 0, -5, 5, 0, 7, 4, 5], D5 = 587.33;
+  let motifAt = 0;
   const semi = (s) => Math.pow(2, s / 12);
   const prefs = Object.assign({ music: true, sfx: true, ui: true, musicVol: 0.5, sfxVol: 0.9 }, load("sf2-audio") || {});
   if (prefs.musicVol === 0.6 && !prefs.volSet) prefs.musicVol = 0.5;
@@ -1431,6 +1476,21 @@ const Sound = (() => {
     return v;
   }
   // A low bed under chain reactions: swells with each wave, releases after the last
+  // A soft tuned voice for placements: a sine with a little triangle on top, a quick attack and a bell-like fall
+  function tone(semi, gain, pan, bright, delay) {
+    if (!ac) return;
+    const t = ac.currentTime + 0.004 + (delay || 0), f = D5 * Math.pow(2, semi / 12);
+    let dest = sfxBus;
+    if (pan && ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = Math.max(-0.8, Math.min(0.8, pan)); p.connect(sfxBus); dest = p; }
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1800 + 2600 * bright; lp.connect(dest);
+    [["sine", 1, 1, 1.4], ["triangle", 2, 0.16 + 0.22 * bright, 0.6], ["sine", 3, 0.05 * bright, 0.35]].forEach(([type, m, a, d]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.value = f * m;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(gain * a, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g); g.connect(lp); o.start(t); o.stop(t + d + 0.05);
+    });
+  }
   function buildBed() {
     const src = ac.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
     const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 140; lp.Q.value = 0.7;
@@ -1506,14 +1566,19 @@ const Sound = (() => {
     mood() {},
     place(stage, atCap, pan) {
       if (!ok()) return;
-      if (stage === 1) play("rock", { rate: jitter(1), gain: 0.75, pan });
-      else if (stage === 2) play("ignite", { rate: jitter(1.3), gain: 0.32, pan });
-      else if (stage === 3) play("ignite", { rate: jitter(1), gain: 0.45, pan });
+      // the melody: the next note of the loop's motif, an octave down for young bodies, brighter as a body grows
+      const semi = MOTIF[motifAt++ % MOTIF.length] + (stage <= 2 ? -12 : 0), bright = Math.min(1, (stage - 1) / 6);
+      tone(semi, 0.16 + 0.03 * Math.min(stage, 5), pan, bright);
+      if (atCap) tone(semi + 12, 0.07, pan, 1, 0.07);
+      // the body's own texture, quieter so the note leads
+      if (stage === 1) play("rock", { rate: jitter(1), gain: 0.5, pan });
+      else if (stage === 2) play("ignite", { rate: jitter(1.3), gain: 0.22, pan });
+      else if (stage === 3) play("ignite", { rate: jitter(1), gain: 0.3, pan });
       else if (stage <= 6) {
-        play("rumble", { rate: jitter([0, 0, 0, 0, 1.1, 0.92, 0.78][stage]), gain: 0.45 + stage * 0.04, pan });
-        play("ignite", { rate: jitter(0.75), gain: 0.16, pan });
-      } else { play("ignite", { rate: jitter(1.45), gain: 0.4, pan }); play("rumble", { rate: jitter(1.25), gain: 0.4, pan }); }
-      if (atCap) play("hum", { rate: 1.25 - Math.min(stage, 7) * 0.07, gain: 0.22, delay: 0.06, pan });
+        play("rumble", { rate: jitter([0, 0, 0, 0, 1.1, 0.92, 0.78][stage]), gain: 0.32 + stage * 0.03, pan });
+        play("ignite", { rate: jitter(0.75), gain: 0.11, pan });
+      } else { play("ignite", { rate: jitter(1.45), gain: 0.28, pan }); play("rumble", { rate: jitter(1.25), gain: 0.28, pan }); }
+      if (atCap) play("hum", { rate: 1.25 - Math.min(stage, 7) * 0.07, gain: 0.15, delay: 0.06, pan });
     },
     wave(w, caps, remnants, pan) {
       if (!ok()) return;
@@ -1525,7 +1590,12 @@ const Sound = (() => {
       if (big < 4) play("crunch", { rate: jitter(1.1), gain: 0.22, pan });
       if (remnants) play("hum", { rate: 1.8, gain: 0.24, delay: 0.12, pan });
     },
-    resolve(waves) { if (ac) release(waves >= 6 ? 2.4 : 1.4); },
+    // after a chain the line comes home: the motif restarts and a low D settles the run
+    resolve(waves) {
+      if (!ac) return;
+      release(waves >= 6 ? 2.4 : 1.4);
+      if (waves > 0 && prefs.sfx) { tone(-12, 0.14, 0, 0.3, 0.05); tone(-5, 0.07, 0, 0.3, 0.05); motifAt = 0; }
+    },
     deny() { if (ok()) play("deny", { gain: 0.6 }); },
     stopEnding() {
       const was = ending;
@@ -2167,9 +2237,9 @@ const hexOff = () => (FLAT ? 0 : -30);
 if (matchMedia("(hover: hover) and (pointer: fine)").matches) pointerKind = "mouse";
 
 const over = (s) => !!s && (s.winner >= 0 || !!s.draw);
-const isAI = (p) => (CFG.mode === "solo" ? p !== 0 : CFG.mode === "online" ? NET.seatKind(p) === "ai" : false);
+const isAI = (p) => (CFG.mode === "solo" ? CFG.watch || p !== 0 : CFG.mode === "online" ? NET.seatKind(p) === "ai" : false);
 // the seat this page plays: seat 0 against the AI, your own seat online
-const isMe = (p) => (CFG.mode === "solo" && p === 0) || (CFG.mode === "online" && NET.mine(p));
+const isMe = (p) => (CFG.mode === "solo" && p === 0 && !CFG.watch) || (CFG.mode === "online" && NET.mine(p));
 const snapOf = (s) => ({ units: s.units.slice(), owner: s.owner.slice(), rem: s.rem.slice() });
 const panOf = (i) => Math.max(-1, Math.min(1, cx(i) / (W / 2))) * 0.75;
 const LESSONS = SF_DATA.lessons;
@@ -2779,7 +2849,7 @@ function tagFor(q) {
     return (k === "ai" ? '<span class="tag">AI</span>' : NET.online(q) ? "" : '<span class="tag away">Away</span>') + team;
   }
   if (CFG.mode === "pass") return team;
-  if (q === 0) return '<span class="tag you">You</span>' + team;
+  if (q === 0 && !CFG.watch) return '<span class="tag you">You</span>' + team;
   return (CFG.mode === "solo" ? '<span class="tag">AI</span>' : "") + team;
 }
 
@@ -2816,12 +2886,104 @@ function scoreGame() {
   }
   return out;
 }
+/* ---------- Records: every finished game on this device, for the Record tab ---------- */
+const loadLog = () => { const l = load("sf2-log"); return Array.isArray(l) ? l : []; };
+const loadTours = () => { const l = load("sf2-tours"); return Array.isArray(l) ? l : []; };
+let recFilter = "all";
+function logGame() {
+  if (!S || !B || CFG.mode === "tutorial" || CFG.watch || GAME.logged) return;
+  GAME.logged = true;
+  // an online game is logged once even if the page reloads and sees its end again
+  const key = CFG.mode === "online" ? `${NET.code}|${NET.game}` : null;
+  if (key && load("sf2-log-last") === key) return;
+  const me = CFG.mode === "solo" ? 0 : CFG.mode === "online" ? NET.mySeat() : -1;
+  const res = me >= 0 ? (S.draw ? "draw" : SF.mate(S, S.winner, me) ? "win" : "loss") : S.draw ? "draw" : "na";
+  const chains = GAME.chain.filter((x) => x != null);
+  const vsAI = CFG.mode === "solo" || (CFG.mode === "online" && [...Array(S.n).keys()].some((q) => NET.seatKind(q) === "ai"));
+  const ko = GAME.ko ? GAME.ko.round : null;
+  const log = loadLog();
+  log.push({ at: Date.now(), mode: CFG.mode, fmt: KO() ? "knockout" : "single", v: CFG.variant || "classic", lv: vsAI ? CFG.level : null, n: S.n, R: B.R,
+    teams: S.team ? Math.max(...S.team) + 1 : 0, res, who: S.winner >= 0 ? NAMES[S.winner][0] : null, moves: S.moves,
+    chain: me >= 0 ? GAME.chain[me] || 0 : chains.length ? Math.max(...chains) : 0, round: ko });
+  while (log.length > 800) log.shift();
+  save("sf2-log", log);
+  if (key) save("sf2-log-last", key);
+}
+function logTour(mode, size, lv, finish, champion) {
+  const l = loadTours();
+  l.push({ at: Date.now(), mode, size, lv, finish, champion });
+  save("sf2-tours", l.slice(-300));
+}
 function renderRecord() {
-  const rec = loadRecord();
-  $("#record").innerHTML = `<table><thead><tr><th>Level</th><th>W–L</th><th>Streak</th><th>Best</th><th>Fastest</th><th>Chain</th></tr></thead><tbody>${RECORD_LEVELS.map((l) => {
+  const log = loadLog(), tours = loadTours(), f = recFilter, rec = loadRecord();
+  const inF = (g) => (f === "all" ? true : f === "knockout" ? g.fmt === "knockout" : g.mode === f && g.fmt !== "knockout");
+  const games = log.filter(inF), mine = games.filter((g) => g.res === "win" || g.res === "loss" || g.res === "draw");
+  const W = mine.filter((g) => g.res === "win").length, L = mine.filter((g) => g.res === "loss").length, D = mine.length - W - L;
+  const pct = (a, b) => (b ? `${Math.round((a / b) * 100)}%` : "–");
+  let run = 0, best = 0;
+  mine.forEach((g) => { run = g.res === "win" ? run + 1 : 0; best = Math.max(best, run); });
+  const chainMax = games.reduce((m, g) => Math.max(m, g.chain || 0), 0);
+  const tile = (label, value, sub) => `<div class="tile"><span>${label}</span><b>${value}</b>${sub ? `<small>${sub}</small>` : ""}</div>`;
+  const esc = (s) => String(s).replace(/[<>&"]/g, "");
+  const cap = (s) => s[0].toUpperCase() + s.slice(1);
+  let tiles;
+  if (f === "knockout") {
+    const T = tours.length, titles = tours.filter((t) => t.finish === "Champion").length;
+    const order = ["Champion", "Final", "Semifinal", "Quarterfinal"], bestFin = order.find((o) => tours.some((t) => t.finish === o)) || "–";
+    tiles = tile("Tournaments", T) + tile("Titles", titles, T ? pct(titles, T) : "") + tile("Best finish", bestFin) + tile("Match wins", pct(W, mine.length), mine.length ? `${W}–${L}` : "");
+  } else if (f === "pass") {
+    const by = {};
+    games.forEach((g) => { if (g.who) by[g.who] = (by[g.who] || 0) + 1; });
+    const top = Object.entries(by).sort((a, b) => b[1] - a[1])[0];
+    tiles = tile("Games", games.length) + tile("Most wins", top ? esc(top[0]) : "–", top ? `${top[1]} wins` : "") + tile("Longest game", games.length ? tM(Math.max(...games.map((g) => g.moves))) : "–") + tile("Biggest chain", chainMax || "–");
+  } else {
+    tiles = tile("Games", games.length) + tile("Win rate", pct(W, mine.length), mine.length ? `${W}–${L}${D ? `–${D}` : ""}` : "") + tile("Best streak", best || "–") + tile("Biggest chain", chainMax || "–");
+  }
+  const legend = `<div class="legend-row"><span><i class="k r-win"></i>Win</span><span><i class="k r-loss"></i>Loss</span><span><i class="k r-draw"></i>Draw</span></div>`;
+  const charts = [];
+  // recent results, oldest to newest
+  if (f === "pass") {
+    const by = {};
+    games.forEach((g) => { if (g.who) by[g.who] = (by[g.who] || 0) + 1; });
+    const rows = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 6), mx = Math.max(1, ...rows.map((r) => r[1]));
+    if (rows.length) charts.push(`<figure class="chart"><figcaption>Wins by star</figcaption>${rows.map(([n, c]) => `<div class="hrow" title="${esc(n)}: ${c} win${c === 1 ? "" : "s"}"><span>${esc(n)}</span><div class="track"><i class="bs r-one" style="width:${(c / mx) * 100}%"></i></div><b>${c}</b></div>`).join("")}</figure>`);
+  } else if (mine.length) {
+    const last = mine.slice(-40);
+    charts.push(`<figure class="chart"><figcaption>Last ${last.length} game${last.length === 1 ? "" : "s"}<small>oldest to newest</small></figcaption><div class="strip">${last.map((g) => `<i class="cell r-${g.res}" title="${cap(g.res)} · ${g.lv ? cap(g.lv) + " · " : ""}${cap(g.v)} · ${tM(g.moves)}${g.round ? " · " + g.round : ""}"></i>`).join("")}</div></figure>`);
+  }
+  // wins and losses by AI level, and by rules
+  const split = (title, keys, keyOf, label) => {
+    const rows = keys.map((k) => { const gs = mine.filter((g) => keyOf(g) === k); return [k, gs.filter((g) => g.res === "win").length, gs.filter((g) => g.res === "loss").length, gs.filter((g) => g.res === "draw").length]; }).filter((r) => r[1] + r[2] + r[3]);
+    if (!rows.length) return;
+    const mx = Math.max(...rows.map((r) => r[1] + r[2] + r[3]));
+    charts.push(`<figure class="chart"><figcaption>${title}</figcaption>${rows.map(([k, w, l, d]) => `<div class="hrow" title="${label(k)}: ${w} won, ${l} lost${d ? `, ${d} drawn` : ""}"><span>${label(k)}</span><div class="track">${w ? `<i class="bs r-win" style="width:${(w / mx) * 100}%"></i>` : ""}${l ? `<i class="bs r-loss" style="width:${(l / mx) * 100}%"></i>` : ""}${d ? `<i class="bs r-draw" style="width:${(d / mx) * 100}%"></i>` : ""}</div><b>${w}–${l}</b></div>`).join("")}</figure>`);
+  };
+  if (f !== "pass") {
+    split("By AI level", RECORD_LEVELS, (g) => g.lv, cap);
+    split("By rules", VARIANTS, (g) => g.v, cap);
+  }
+  // how long games run
+  if (games.length >= 3) {
+    const mv = games.map((g) => g.moves), hi = Math.max(...mv), bins = 8, w = Math.max(1, Math.ceil((hi + 1) / bins));
+    const counts = Array(bins).fill(0); mv.forEach((m) => { counts[Math.min(bins - 1, Math.floor(m / w))]++; });
+    const mx = Math.max(...counts);
+    charts.push(`<figure class="chart"><figcaption>Game length<small>T+ million years</small></figcaption><div class="hist">${counts.map((c, i) => `<div class="col" title="T+${i * w}–${(i + 1) * w - 1}M: ${c} game${c === 1 ? "" : "s"}"><i style="height:${mx ? Math.max(c ? 6 : 0, (c / mx) * 100) : 0}%"></i></div>`).join("")}</div><div class="hist-x"><span>0</span><span>${Math.round((bins * w) / 2)}M</span><span>${bins * w}M</span></div></figure>`);
+  }
+  if (f === "knockout" || (f === "all" && tours.length)) {
+    const order = ["Champion", "Final", "Semifinal", "Quarterfinal"], rows = order.map((o) => [o, tours.filter((t) => t.finish === o).length]).filter((r) => r[1] || r[0] !== "Quarterfinal");
+    const mx = Math.max(1, ...rows.map((r) => r[1]));
+    if (tours.length) charts.push(`<figure class="chart"><figcaption>Knockout finishes</figcaption>${rows.map(([o, c]) => `<div class="hrow" title="${o}: ${c}"><span>${o === "Champion" ? "Champion" : `Out in ${o.toLowerCase()}`}</span><div class="track"><i class="bs r-one" style="width:${(c / mx) * 100}%"></i></div><b>${c}</b></div>`).join("")}</figure>`);
+  }
+  const since = log.length ? new Date(log[0].at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null;
+  const empty = !games.length && !(f === "knockout" && tours.length);
+  const table = f === "all" || f === "solo" ? `<figure class="chart"><figcaption>Solo by AI level<small>all time</small></figcaption><table><thead><tr><th>Level</th><th>W–L</th><th>Streak</th><th>Best</th><th>Fastest</th><th>Chain</th></tr></thead><tbody>${RECORD_LEVELS.map((l) => {
     const r = rec[l];
-    return `<tr><td>${l[0].toUpperCase() + l.slice(1)}</td><td>${r.w}–${r.l}</td><td>${r.streak}</td><td>${r.bestStreak}</td><td>${r.fastest ? tM(r.fastest) : "–"}</td><td>${r.chain || "–"}</td></tr>`;
-  }).join("")}</tbody></table>`;
+    return `<tr><td>${cap(l)}</td><td>${r.w}–${r.l}</td><td>${r.streak}</td><td>${r.bestStreak}</td><td>${r.fastest ? tM(r.fastest) : "–"}</td><td>${r.chain || "–"}</td></tr>`;
+  }).join("")}</tbody></table></figure>` : "";
+  $("#record").innerHTML = `<div class="tiles">${tiles}</div>
+    ${empty ? `<p class="vnote rec-empty">No ${f === "all" ? "" : { solo: "solo ", pass: "pass-and-play ", online: "online ", knockout: "knockout " }[f]}games yet. Finished games show up here.</p>` : (f !== "pass" && mine.length ? legend : "") + charts.join("")}
+    ${table}
+    ${since ? `<p class="vnote rec-since">Charts count games since ${since}, on this device.</p>` : ""}`;
 }
 
 function renderMass() {
@@ -3089,7 +3251,30 @@ async function commit(i, remote) {
 
 function maybeAI() {
   if (CFG.mode === "online") { NET.after(); return; }
+  if (CFG.watch && watchSkip && !over(S)) { finishWatch(); return; }
   runAI();
+}
+let watchSkip = false;
+function skipWatch() {
+  if (!CFG.watch || over(S)) return;
+  watchSkip = true;
+  if (animating && skipNow) skipNow();
+  else if (!busy) finishWatch();
+}
+// the rest of a watched match, played out off screen in slices
+function finishWatch() {
+  const gen = ++gameGen;
+  busy = true; thinking = false; preview = null; render();
+  let s = S;
+  const step = () => {
+    if (gen !== gameGen) return;
+    for (let k = 0; k < 30 && s.winner < 0 && !s.draw && s.moves < 4000; k++) s = SF.apply(B, s, SF.choose(B, s, "medium"), false).state;
+    if (s.winner < 0 && !s.draw && s.moves < 4000) { setTimeout(step, 0); return; }
+    S = s; view = snapOf(S); lastMove = null; finalMove = null; busy = false; watchSkip = false;
+    render(); persist();
+    endGame();
+  };
+  step();
 }
 function runAI() {
   if (over(S) || !isAI(S.turn)) return;
@@ -3105,8 +3290,8 @@ function runAI() {
       if (gen !== gameGen) return;
       busy = false; preview = null;
       commit(m);
-    }, RM.matches ? 120 : S.n > 3 ? 260 : 420);
-  }, RM.matches ? 150 : S.n > 3 ? 380 : 650);
+    }, RM.matches ? 120 : CFG.watch ? 160 : S.n > 3 ? 260 : 420);
+  }, RM.matches ? 150 : CFG.watch ? 220 : S.n > 3 ? 380 : 650);
 }
 
 function canUndo() {
@@ -3240,6 +3425,7 @@ function leaveEnding(release) {
 }
 
 function endDraw() {
+  logGame();
   const vsAI = CFG.mode === "solo";
   if (vsAI) { const rec = loadRecord(), r = rec[CFG.level]; r.streak = 0; save("sf2-record", rec); }
   const chains = GAME.chain.filter((x) => x != null);
@@ -3257,6 +3443,8 @@ function endDraw() {
 }
 function endGame() {
   if (S.draw) { endDraw(); return; }
+  if (KO() && CFG.mode === "solo" && !CFG.watch) GAME.ko = GAME.ko || tourAfterGame();
+  logGame();
   $("#winEyebrow").textContent = "Collapse";
   const w = S.winner;
   Sound.win();
@@ -3635,8 +3823,9 @@ function koResult(w, meWon) {
   if (CFG.mode === "solo") {
     const k = GAME.ko || (GAME.ko = tourAfterGame());
     if (!k) return null;
-    const title = k.won ? (k.champion ? "You win the tournament" : `You win the ${k.round.toLowerCase()}`) : `${k.opp} knocks you out`;
-    return { round: k.round, title, rows: k.won ? [] : [`Out in the <b>${k.round.toLowerCase()}</b>`] };
+    const what = k.champion ? "the tournament" : `the ${k.round.toLowerCase()}`;
+    const title = !k.mine ? `${k.wName} wins ${what}` : k.won ? `You win ${what}` : `${k.wName} knocks you out`;
+    return { round: k.round, title, rows: k.mine && !k.won ? [`Out in the <b>${k.round.toLowerCase()}</b>`] : [] };
   }
   const r = NET.room, t = r && r.tour, gs = r && r.gseats;
   if (!t || !gs) return null;
@@ -3659,8 +3848,7 @@ function paintAgain() {
     const t = on ? NET.room && NET.room.tour : TOUR && TOUR.t;
     if (S && S.draw) label = "Replay match";
     else if (t && t.champion >= 0) label = "New tournament";
-    else if (!on && TOUR && !tourAlive()) label = "Finish tournament";
-    else label = "Next match";
+    else label = !on && TOUR && !tourAlive() ? "Watch next match" : "Next match";
   }
   const wait = on && !NET.isHost();
   b.textContent = wait ? "Host starts next" : label;
@@ -3668,7 +3856,7 @@ function paintAgain() {
 }
 $("#winReplay").addEventListener("click", replayFinal);
 form.addEventListener("change", (e) => {
-  if (!e.target.name) return;
+  if (!e.target.name || e.target.name === "recf") return;
   if (e.target.name === "mode") { closePalette(); $("#roster").dataset.key = ""; }
   paintRoster();
   if (e.target.name !== "mode") pushCfg();
@@ -3741,7 +3929,16 @@ const saveSet = () => { save("sf2-settings", SET); thKey = ""; preview = null; r
 $("#setHints").addEventListener("change", (e) => { SET.hints = e.target.checked; saveSet(); });
 $("#setOneTap").addEventListener("change", (e) => { SET.oneTap = e.target.checked; saveSet(); });
 $("#setUndo").addEventListener("change", (e) => { SET.undo = e.target.checked; saveSet(); });
-$("#resetRecord").addEventListener("click", () => { save("sf2-record", {}); renderRecord(); });
+// clearing the record asks twice
+let resetArm = 0;
+$("#resetRecord").addEventListener("click", (e) => {
+  const b = e.currentTarget;
+  if (!resetArm) { b.textContent = "Tap again to clear"; resetArm = setTimeout(() => { resetArm = 0; b.textContent = "Reset"; }, 3000); return; }
+  clearTimeout(resetArm); resetArm = 0; b.textContent = "Reset";
+  ["sf2-record", "sf2-log", "sf2-tours", "sf2-tour-record"].forEach((k) => save(k, k === "sf2-record" ? {} : null));
+  renderRecord();
+});
+$("#recFilter").addEventListener("change", (e) => { recFilter = e.target.value; renderRecord(); Sound.ui("tab"); });
 function buildLegend() {
   const items = [["Rock", "1 unit"], ["Protostar", "2"], ["Star", "3"], ["Giant", "4"], ["Supergiant", "5–7"], ["Neutron star", "remnant"], ["Black hole", "winner"], ["Swallowed", "out"]];
   $("#legend").innerHTML = items.map(([n, u]) => `<figure><canvas data-s="${n}"></canvas><figcaption>${n}<br>${u}</figcaption></figure>`).join("");
@@ -3922,9 +4119,11 @@ function restore(saved, hist) {
     if (!M) return false;
     // a match that had finished was already counted: carry on with the bracket
     if (saved.S.winner >= 0 || saved.S.draw) { setTimeout(tourNext, 0); return true; }
-    applySeats([TOUR.entrants[0], TOUR.entrants[M.a === 0 ? M.b : M.a]]);
+    const mine = M.a === 0 || M.b === 0;
+    applySeats(mine ? [TOUR.entrants[0], TOUR.entrants[M.a === 0 ? M.b : M.a]] : [TOUR.entrants[M.a], TOUR.entrants[M.b]]);
   }
   enterMode(cfg);
+  if (cfg.format === "knockout" && TOUR) { const M = SF.bracketMatch(TOUR.t); GAME.slots = M.a === 0 || M.b === 0 ? [0, M.a === 0 ? M.b : M.a] : [M.a, M.b]; }
   S = saved.S; view = snapOf(S); TU = null;
   lastMove = saved.lastMove || null;
   history = Array.isArray(hist) ? hist : [];
@@ -3986,72 +4185,44 @@ function startTournament(c) {
 let tourBusy = false;
 async function tourNext() {
   if (!TOUR || tourBusy) return;
-  tourBusy = true;
-  try {
-    for (;;) {
-      const M = SF.bracketMatch(TOUR.t);
-      if (!M) { tourFinished(); return; }
-      if (M.a === 0 || M.b === 0) { playTourMatch(M); return; }
-      renderTour();
-      const w = await simMatch(M);
-      if (!TOUR) return;
-      SF.bracketReport(TOUR.t, w); saveTour(); renderTour();
-      flash(`${TOUR.entrants[w].name} beat ${TOUR.entrants[w === M.a ? M.b : M.a].name}`, 1300);
-      await sleep(RM.matches ? 250 : 1000);
-    }
-  } finally { tourBusy = false; }
-}
-// two AI stars play a quick game; it runs in slices so the page stays responsive
-function simMatch(M) {
-  const c = TOUR.cfg, R = radiusOf(c.size);
-  return new Promise((done) => {
-    const b = SF.makeBoard(R, c.variant === "belt" ? SF.makeVoids(R) : undefined);
-    let s = SF.newState(b, 2, c.variant === "epoch" ? epochRounds(b.N) * 2 : 0, c.variant === "race");
-    const step = () => {
-      for (let k = 0; k < 24; k++) {
-        if (s.winner >= 0 || s.draw || s.moves > 4000) {
-          if (s.draw || s.winner < 0) { s = SF.newState(b, 2, s.limit, s.race); break; }
-          done(s.winner === 0 ? M.a : M.b); return;
-        }
-        s = SF.apply(b, s, SF.choose(b, s, "medium"), false).state;
-      }
-      setTimeout(step, 0);
-    };
-    step();
-  });
+  const M = SF.bracketMatch(TOUR.t);
+  if (!M) { tourFinished(); return; }
+  playTourMatch(M);
 }
 function playTourMatch(M) {
-  const opp = M.a === 0 ? M.b : M.a, e = TOUR.entrants[opp], c = TOUR.cfg, R = radiusOf(c.size);
-  applySeats([TOUR.entrants[0], e]);
-  enterMode({ mode: "solo", format: "knockout", n: 2, level: e.level || c.level, size: c.size, variant: c.variant, teams: 0, voids: c.variant === "belt" ? SF.makeVoids(R) : undefined });
+  const c = TOUR.cfg, R = radiusOf(c.size), mine = M.a === 0 || M.b === 0;
+  const s0 = mine ? 0 : M.a, s1 = mine ? (M.a === 0 ? M.b : M.a) : M.b;
+  const e0 = TOUR.entrants[s0], e1 = TOUR.entrants[s1];
+  applySeats([e0, e1]);
+  enterMode({ mode: "solo", format: "knockout", watch: !mine, n: 2, level: e1.level || c.level, size: c.size, variant: c.variant, teams: 0, voids: c.variant === "belt" ? SF.makeVoids(R) : undefined });
+  GAME.slots = [s0, s1];
   S = SF.newState(B, 2, c.variant === "epoch" ? epochRounds(B.N) * 2 : 0, c.variant === "race"); view = snapOf(S); TU = null;
+  watchSkip = false;
   if (menuDlg.open) menuDlg.close();
   render(); persist();
-  flash(`${SF.roundName(TOUR.t, TOUR.t.r)} · you vs ${e.name}`, 1800);
+  flash(`${SF.roundName(TOUR.t, TOUR.t.r)} · ${mine ? `you vs ${e1.name}` : `${e0.name} vs ${e1.name}`}`, 1800);
   maybeAI();
 }
 function tourFinished() {
   renderTour();
-  const ch = TOUR.entrants[TOUR.t.champion];
-  if (!ch) return;
+  if (!TOUR || TOUR.t.champion < 0 || TOUR.counted) return;
   const rec = load("sf2-tour-record") || { played: 0, won: 0 };
-  if (!TOUR.counted) { rec.played++; if (ch.you) rec.won++; save("sf2-tour-record", rec); TOUR.counted = true; saveTour(); }
-  if (!winEl.hidden) {
-    $("#winEyebrow").textContent = "Knockout · Champion";
-    $("#winTitle").textContent = ch.you ? "You win the tournament" : `${ch.name} wins the tournament`;
-    $("#winLog").innerHTML = `<span>Tournaments won <b>${rec.won} of ${rec.played}</b></span>`;
-    paintAgain();
-  } else flash(`${ch.name} wins the tournament`, 2600);
+  rec.played++; if (TOUR.t.champion === 0) rec.won++;
+  save("sf2-tour-record", rec); TOUR.counted = true; saveTour();
+  logTour("solo", TOUR.t.size, TOUR.cfg.level, TOUR.t.champion === 0 ? "Champion" : TOUR.out || "Final", TOUR.entrants[TOUR.t.champion].name);
 }
 // a finished match of yours: record it, then the result card says how far you got
 function tourAfterGame() {
   if (!TOUR || S.draw) return null;
   const M = SF.bracketMatch(TOUR.t);
   if (!M) return null;
-  const round = SF.roundName(TOUR.t, TOUR.t.r), oppSlot = M.a === 0 ? M.b : M.a;
-  const won = S.winner === 0;
-  SF.bracketReport(TOUR.t, won ? 0 : oppSlot); saveTour(); renderTour();
-  return { round, won, champion: TOUR.t.champion === 0, opp: TOUR.entrants[oppSlot].name };
+  const slots = GAME.slots || [0, M.a === 0 ? M.b : M.a];
+  const round = SF.roundName(TOUR.t, TOUR.t.r), w = slots[S.winner === 0 ? 0 : 1], l = slots[S.winner === 0 ? 1 : 0];
+  if (l === 0) TOUR.out = round;
+  SF.bracketReport(TOUR.t, w); saveTour();
+  if (TOUR.t.champion >= 0) tourFinished();
+  renderTour();
+  return { round, mine: slots[0] === 0, won: w === 0, champion: TOUR.t.champion >= 0, wName: TOUR.entrants[w].name, lName: TOUR.entrants[l].name };
 }
 function tourSource() {
   if (!KO()) return null;
@@ -4063,7 +4234,7 @@ function renderTour() {
   const el = $("#tour"), src = tourSource();
   if (!src) { if (!el.hidden) { el.hidden = true; el.innerHTML = ""; tourKey = ""; } return; }
   const { t, ents } = src, cur = SF.bracketMatch(t);
-  const key = JSON.stringify([t, ents]);
+  const key = JSON.stringify([t, ents, CFG.watch && S && !over(S)]);
   if (key === tourKey) return;
   tourKey = key;
   const line = (slot, M) => {
@@ -4072,10 +4243,13 @@ function renderTour() {
     return `<span class="${cls}" style="--c:${hex6(e.color)}"><i></i>${e.name}${e.you ? " · you" : ""}</span>`;
   };
   const nowR = t.champion >= 0 ? t.rounds.length - 1 : t.r;
-  el.innerHTML = `<div class="tour-h"><span>Knockout</span><b>${t.champion >= 0 ? `Champion · ${ents[t.champion].name}` : `${SF.roundName(t, t.r)} · match ${t.m + 1} of ${t.rounds[t.r].length}`}</b></div>
+  const watching = CFG.mode === "solo" && CFG.watch && S && !over(S);
+  el.innerHTML = `<div class="tour-h"><span>Knockout</span><b>${t.champion >= 0 ? `Champion · ${ents[t.champion].name}` : `${SF.roundName(t, t.r)} · match ${t.m + 1} of ${t.rounds[t.r].length}`}</b>${watching ? '<button class="btn" type="button" id="skipMatch">Skip match</button>' : ""}</div>
     <div class="rounds">${t.rounds.map((rd, r) => `<div class="round${r === nowR ? " now" : ""}">${rd.map((M) => `<div class="match${M === cur ? " now" : ""}">${line(M.a, M)}${line(M.b, M)}</div>`).join("")}</div>`).join("")}</div>`;
   el.hidden = false;
 }
+
+$("#tour").addEventListener("click", (e) => { if (e.target.closest("#skipMatch")) { Sound.ui("click"); skipWatch(); } });
 
 /* ---------- Online lobby: who's in the room ---------- */
 function paintPlayers() {
@@ -4276,10 +4450,23 @@ NET.onRoom = (prev) => {
   if (menuDlg.open && form.elements.mode.value === "online" && !NET.isHost()) setFormCfg(r.cfg);
   if (r.phase === "play") syncGame();
   else if (!menuDlg.open) openMenu();
+  logOnlineTour(r);
   if (menuDlg.open) paintRoster();
   if (!winEl.hidden) paintAgain();
   if (CFG.mode === "online" && S && !busy) { renderMass(); renderSide(); }
 };
+// an online tournament you played in goes into your record once it has a champion
+function logOnlineTour(r) {
+  const t = r.tour;
+  if (!t || t.champion < 0) return;
+  const e = r.seats.findIndex((s) => s.kind === "human" && s.pid === NET.pid);
+  const key = `${r.code}|tour|${r.gameNo}`;
+  if (e < 0 || load("sf2-tour-last") === key) return;
+  save("sf2-tour-last", key);
+  let finish = "Champion";
+  if (t.champion !== e) t.rounds.forEach((rd, i) => rd.forEach((M) => { if ((M.a === e || M.b === e) && M.w >= 0 && M.w !== e) finish = SF.roundName(t, i); }));
+  logTour("online", t.size, r.cfg.level, finish, r.seats[t.champion].name);
+}
 function syncGame() {
   const r = NET.room, seats = r.gseats || r.seats;
   if (CFG.mode !== "online" || NET.game !== r.gameNo || !S) {
