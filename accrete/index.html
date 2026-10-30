@@ -1098,6 +1098,8 @@ dialog.scrolling .dlg-body *::after { transition: none !important; }
 <script src="three.min.js"></script>
 <script>
 const SF_DATA = {"lessons":[{"id":"seed","goal":"place","u":"0000000000000000000","o":"...................","r":"0000000000000000000","m":0,"played":[false,false]},{"id":"gravity","goal":"seed","u":"0000000010100000000","o":"........1.0........","r":"0000000000000000000","m":0,"played":[true,true]},{"id":"supernova","goal":"nova","u":"0000000001100012000","o":".........11...10...","r":"0000000000000000000","m":0,"played":[true,true]},{"id":"chain","goal":"chain","u":"0100353012220000000","o":".1..100.1110.......","r":"0000000000000000000","m":0,"played":[true,true]},{"id":"remnant","goal":"remnant","u":"0000110026100010000","o":"....10..101...1....","r":"0000000000000000000","m":0,"played":[true,true]},{"id":"threat","goal":"strike","u":"0000000012510251000","o":"........1100.110...","r":"0000000000000000000","m":0,"played":[true,true],"src":14},{"id":"survive","goal":"survive","played":[true,true],"u":"1022413043511332221","o":"1.11110.10001100110","r":"0000000000000000000","m":40}]};
+</script>
+<script id="engineSrc">
 /* Accrete rules engine. Pure functions, shared by the page, the move preview and the AI. */
 const SF = (function () {
   "use strict";
@@ -1167,7 +1169,7 @@ const SF = (function () {
   function newState(b, n, limit, race, teams) {
     const s = {
       n, limit: limit || 0, race: !!race, draw: false, units: new Array(b.N).fill(0), owner: new Array(b.N).fill(-1), rem: new Array(b.N).fill(false),
-      played: new Array(n).fill(false), out: new Array(n).fill(false), turn: 0, moves: 0, winner: -1,
+      played: new Array(n).fill(false), out: new Array(n).fill(false), turn: 0, moves: 0, winner: -1, [REST]: true,
     };
     if (teams >= 2 && n % teams === 0 && n > teams) s.team = Array.from({ length: n }, (_, q) => q % teams);
     return s;
@@ -1178,7 +1180,7 @@ const SF = (function () {
   function clone(s) {
     return {
       n: s.n, limit: s.limit || 0, race: !!s.race, draw: !!s.draw, units: s.units.slice(), owner: s.owner.slice(), rem: s.rem.slice(),
-      played: s.played.slice(), out: s.out.slice(), turn: s.turn, moves: s.moves, winner: s.winner, ...(s.team ? { team: s.team } : {}),
+      played: s.played.slice(), out: s.out.slice(), turn: s.turn, moves: s.moves, winner: s.winner, [REST]: !!s[REST], ...(s.team ? { team: s.team } : {}),
     };
   }
   function teamMass(s, p) {
@@ -1223,17 +1225,32 @@ const SF = (function () {
 
   function snap(s) { return { units: s.units.slice(), owner: s.owner.slice(), rem: s.rem.slice() }; }
 
+  // States known to be at rest (no cell at its limit) carry this mark. Only the cell just placed on can go off first
+  // in those, so apply() needn't scan the whole field for the first wave. A symbol key never reaches JSON or postMessage.
+  const REST = Symbol("rest");
+  function settled(b, s) {
+    if (s[REST]) return true;
+    for (let k = 0; k < b.N; k++) if (s.units[k] >= b.crit[k]) return false;
+    return true;
+  }
+
   // Place one unit at i for the player to move. Returns the new state and what happened.
   function apply(b, s0, i, record) {
+    const rest = settled(b, s0);
     const s = clone(s0), p = s.turn;
     const before = s0.owner;
     s.units[i]++; s.owner[i] = p; s.rem[i] = false; s.played[p] = true; s.moves++;
     const waves = [];
-    let novae = 0, remnants = 0, biggest = 0, guard = 0;
+    let novae = 0, remnants = 0, biggest = 0, guard = 0, calm = false;
+    // Only cells that gained matter, or just went off, can go off in the next wave; candidates are kept in field order
+    // so each wave is exactly what a full scan would find.
+    let cand = rest ? [i] : null;
+    let mark = null;
     for (;;) {
       const boom = [];
-      for (let k = 0; k < b.N; k++) if (s.units[k] >= b.crit[k]) boom.push(k);
-      if (!boom.length) break;
+      if (cand) { for (let z = 0; z < cand.length; z++) { const k = cand[z]; if (s.units[k] >= b.crit[k]) boom.push(k); } }
+      else for (let k = 0; k < b.N; k++) if (s.units[k] >= b.crit[k]) boom.push(k);
+      if (!boom.length) { calm = true; break; }
       novae += boom.length;
       // each blast throws matter in its own color; matter landing on an ally's body feeds that body instead of taking it
       const from = boom.map((k) => s.owner[k]);
@@ -1247,6 +1264,12 @@ const SF = (function () {
       boom.forEach((k, z) => { const e = from[z]; for (const j of b.nb[k]) { s.units[j]++; if (!(s.team && s.owner[j] >= 0 && mate(s, s.owner[j], e))) s.owner[j] = e; s.rem[j] = false; } });
       if (record) waves.push({ boom, mid, end: snap(s) });
       else waves.push(null);
+      const next = [];
+      if (!mark) mark = new Uint8Array(b.N);
+      for (const k of boom) { if (!mark[k]) { mark[k] = 1; next.push(k); } for (const j of b.nb[k]) if (!mark[j]) { mark[j] = 1; next.push(j); } }
+      next.sort((x, y) => x - y);
+      for (const k of next) mark[k] = 0;
+      cand = next;
       if (s.played.every(Boolean)) {
         let solo = true;
         for (let k = 0; k < b.N; k++) if (s.owner[k] !== -1 && !mate(s, s.owner[k], p)) { solo = false; break; }
@@ -1254,17 +1277,25 @@ const SF = (function () {
       }
       if (++guard > 600) break;
     }
-    for (let q = 0; q < s.n; q++) if (s.played[q] && !s.out[q] && mass(s, q) === 0) s.out[q] = true;
+    s[REST] = calm;
+    // one pass for every star's mass, what was captured, and whether the field is covered
+    const ms = new Array(s.n).fill(0);
+    let captured = 0, covered = true, m0 = 0;
+    for (let k = 0; k < b.N; k++) {
+      const o = s.owner[k];
+      if (o >= 0) ms[o] += s.units[k]; else covered = false;
+      if (before[k] !== -1 && before[k] !== p && o === p) captured++;
+      if (before[k] === p) m0 += s0.units[k];
+    }
+    for (let q = 0; q < s.n; q++) if (s.played[q] && !s.out[q] && ms[q] === 0) s.out[q] = true;
     const alive = [];
     for (let q = 0; q < s.n; q++) if (!s.out[q]) alive.push(q);
     const oneSide = alive.length >= 1 && alive.every((q) => mate(s, q, alive[0]));
     if (s.played.every(Boolean) && oneSide) s.winner = alive.includes(p) ? p : alive[0];
     else if (s.limit && s.moves >= s.limit) s.winner = leader(b, s, alive);
-    else if (s.race && s.played.every(Boolean) && s.owner.every((o) => o >= 0)) s.draw = true;
+    else if (s.race && s.played.every(Boolean) && covered) s.draw = true;
     else { let t = p; do { t = (t + 1) % s.n; } while (s.out[t]); s.turn = t; }
-    let captured = 0;
-    for (let k = 0; k < b.N; k++) if (before[k] !== -1 && before[k] !== p && s.owner[k] === p) captured++;
-    return { state: s, player: p, waves, novae, remnants, biggest, captured, gain: mass(s, p) - mass(s0, p) };
+    return { state: s, player: p, waves, novae, remnants, biggest, captured, gain: ms[p] - m0 };
   }
 
   // Epoch result: most mass, then most cells, then the earliest seat
@@ -1285,11 +1316,12 @@ const SF = (function () {
     if (s.winner >= 0) return mate(s, s.winner, p) ? 1e6 : -1e6;
     if (s.out[p] && !s.team) return -1e6;
     if (s.draw) return -400;
-    let mine = 0, theirs = 0, cellsMine = 0, exposed = 0;
+    let mine = 0, theirs = 0, cellsMine = 0, exposed = 0, deep = 0;
     for (let i = 0; i < b.N; i++) {
       const o = s.owner[i];
       if (o === -1) continue;
       if (mate(s, o, p)) {
+        deep += b.depth[i];
         // an ally's matter counts almost as much as your own
         const w = o === p ? 1 : 0.85;
         mine += s.units[i] * w; cellsMine += w;
@@ -1300,7 +1332,7 @@ const SF = (function () {
       } else theirs += s.units[i];
     }
     if (s.out[p]) mine -= 40;
-    return mine - theirs + 0.25 * cellsMine - 0.6 * exposed + 0.15 * b.depth.reduce((a, d, i) => a + (mate(s, s.owner[i], p) ? d : 0), 0);
+    return mine - theirs + 0.25 * cellsMine - 0.6 * exposed + 0.15 * deep;
   }
 
   function rankMoves(b, s, p) {
@@ -2324,6 +2356,8 @@ const LOOK = {
 const INR = 0.95 * SQ3 / 2;
 
 const OCT = { value: 5 };
+// bumped on every field redraw: the GL layer re-uploads the field as a texture only when it has changed
+let FIELD_VER = 0;
 const GL = (() => {
   if (!window.THREE) return null;
   let renderer;
@@ -2338,7 +2372,9 @@ const GL = (() => {
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-6, 6, 6, -6, 0.1, 40);
   camera.position.z = 10;
-  const sphereGeo = new THREE.SphereGeometry(1, 40, 28);
+  // spheres in three levels of detail, picked from how large a body can be on screen: each keeps its outline within a third of a pixel
+  const GEOS = [[20, 14], [28, 20], [40, 28]].map(([a, b]) => new THREE.SphereGeometry(1, a, b));
+  let sphereGeo = GEOS[2], warpVer = -1, texVer = -1;
   const planeGeo = new THREE.PlaneGeometry(1, 1);
   let cells = [], hover = -1, size = [12, 11], maxD = 1;
   const effects = [], pool = [];
@@ -2395,6 +2431,8 @@ const GL = (() => {
     if (!r.width || !r.height) return;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, QDPR[quality], 2048 / Math.max(r.width, r.height)));
     renderer.setSize(r.width, r.height, false);
+    const rpx = (renderer.domElement.width / size[0]) * 0.75, geo = GEOS[rpx <= 18 ? 0 : rpx <= 40 ? 1 : 2];
+    if (geo !== sphereGeo) { sphereGeo = geo; cells.forEach((v) => { v.body.geometry = geo; }); }
   }
 
   function build(B, W, H, X, Y) {
@@ -2421,10 +2459,11 @@ const GL = (() => {
       glow.renderOrder = 0; aux.renderOrder = 0; body.renderOrder = 1;
       glow.position.set(x, y, -1); aux.position.set(x, y, -1); body.position.set(x, y, 0);
       glow.scale.setScalar(0.001); aux.scale.setScalar(0.001); body.scale.setScalar(0.0001);
+      glow.visible = aux.visible = body.visible = false;
       body.rotation.set(0.35 + Math.random() * 0.3, Math.random() * 6, 0.2);
       scene.add(glow); scene.add(aux); scene.add(body);
       cells.push({ x, y, glow, aux, body, stage: 1, on: false, target: new THREE.Color(0xffffff),
-        r: 0, gs: 0, gStr: 0, rays: 0, as: 0, aStr: 0, hot: 0, hotT: 0, hov: 0, kick: 0, pulse: Math.random() * 6 });
+        r: 0, gs: 0, gStr: 0, rays: 0, as: 0, aStr: 0, hot: 0, hotT: 0, hov: 0, kick: 0, pulse: Math.random() * 6, vis: false });
     }
     resize();
   }
@@ -2436,7 +2475,7 @@ const GL = (() => {
     if (on && (!v.on || st !== v.stage)) v.kick = 1;
     if (on && v.stage !== st) v.aux.material.uniforms.uMode.value = LOOK[st][4] || 1;
     v.on = on; v.stage = st;
-    if (on) v.target.setHex(HEX[owner]);
+    if (on) { v.target.setHex(HEX[owner]); if (!v.vis) { v.vis = true; v.body.visible = true; } }
     v.hotT = hot ? 1 : 0;
   }
   function setHover(i) { hover = i; }
@@ -2534,7 +2573,7 @@ const GL = (() => {
     let E = ending ? clamp01((now - ending.start) / ending.dur) : 0;
     if (ending && ending.release) {
       E = ending.from * (1 - E);
-      if (tex) tex.needsUpdate = true;
+      if (tex && texVer !== FIELD_VER) { texVer = FIELD_VER; tex.needsUpdate = true; }
       if (now - ending.start >= ending.dur) { const done = ending.done; resetEnding(); if (done) done(); }
     }
     const wnow = performance.now();
@@ -2547,7 +2586,7 @@ const GL = (() => {
         const tt = Math.min(1, (wnow - w.start) / w.dur);
         u[k].set(w.x, w.y, (1 - Math.pow(1 - tt, 2.4)) * w.reach, w.amp * Math.pow(1 - tt, 1.4));
       }
-      warpTex.needsUpdate = true;
+      if (warpVer !== FIELD_VER) { warpVer = FIELD_VER; warpTex.needsUpdate = true; }
       if (!warp.visible) { warp.visible = true; field.style.transition = "none"; field.style.opacity = "0"; }
     } else if (warp.visible) { warp.visible = false; if (!ending) field.style.opacity = ""; requestAnimationFrame(() => { field.style.transition = ""; }); }
     if (ending) {
@@ -2562,6 +2601,12 @@ const GL = (() => {
     }
     for (let i = 0; i < cells.length; i++) {
       const v = cells[i], L = LOOK[v.stage];
+      // an empty cell whose body has faded out costs nothing: hidden, and skipped until something lands on it
+      if (!v.on && v.r < 2e-3 && v.gs < 2e-3 && v.as < 2e-3 && v.gStr < 2e-3 && v.aStr < 2e-3) {
+        if (v.vis) { v.vis = false; v.body.visible = v.glow.visible = v.aux.visible = false; v.r = v.gs = v.gStr = v.rays = v.as = v.aStr = 0; v.kick = 0; v.hov = 0; }
+        continue;
+      }
+      if (!v.vis) { v.vis = true; v.body.visible = true; }
       const isHover = i === hover && v.on;
       v.hov += ((isHover ? 1 : 0) - v.hov) * k;
       v.hot += (v.hotT - v.hot) * k;
@@ -2598,9 +2643,11 @@ const GL = (() => {
       v.body.rotation.y += dt * L[6] * calm;
       if (v.stage === 1) v.body.rotation.x += dt * 0.5 * calm;
       v.glow.scale.setScalar(Math.max(0.001, v.gs * s));
+      v.glow.visible = v.gs * s > 2e-3 && v.gStr > 1e-3;
       gu.uStrength.value = v.gStr * (1 + 0.35 * v.hov + 0.3 * v.hot * (0.5 + 0.5 * Math.sin(t * 9 + v.pulse)) * calm);
       gu.uRays.value = v.rays;
       v.aux.scale.setScalar(Math.max(0.001, v.as * s));
+      v.aux.visible = v.as * s > 2e-3 && v.aStr > 1e-3;
       au.uStrength.value = v.aStr * (1 + 0.3 * v.hot);
     }
     for (let i = effects.length - 1; i >= 0; i--) {
@@ -2775,9 +2822,17 @@ const NET = (() => {
 
 /* ---------- Stage icons: each star shown as what it currently is ---------- */
 const ICON_STAGE = { Dust: 0, Rock: 1, Protostar: 2, Star: 3, Giant: 4, Supergiant: 5, "Neutron star": 8, "Black hole": 9, Swallowed: -1 };
+// Icons keep their size from a ResizeObserver rather than measuring on every draw (a measurement forces a layout);
+// when one changes size, the icons are drawn again.
+const iconRO = typeof ResizeObserver === "function" ? new ResizeObserver((es) => {
+  let again = false;
+  es.forEach((e) => { const wv = Math.round(e.contentRect.width); if (wv && e.target._cw !== wv) { if (e.target._cw) again = true; e.target._cw = wv; } });
+  if (again) { sideIconKey = ""; fsIconKey = ""; $("#mlabels").querySelectorAll("canvas").forEach((c) => { c._k = ""; }); if (S && B) render(); }
+}) : null;
 function drawIcon(cv, p, stage) {
   if (!cv) return;
-  const d = Math.min(window.devicePixelRatio || 1, 2), css = cv.clientWidth || 24;
+  if (iconRO && !cv._obs) { cv._obs = true; iconRO.observe(cv); }
+  const d = Math.min(window.devicePixelRatio || 1, 2), css = cv._cw || cv.clientWidth || 24;
   cv.width = Math.round(css * d); cv.height = Math.round(css * d);
   const x = cv.getContext("2d"); x.setTransform((css * d) / 24, 0, 0, (css * d) / 24, 0, 0);
   const c = 12, [r, g, b] = RGB[p], col = (a) => `rgba(${r},${g},${b},${a})`;
@@ -2827,7 +2882,7 @@ function setAccent(p) {
   const root = document.documentElement;
   if (p == null) { root.style.removeProperty("--hud"); HUD_RGB = HUD_DEFAULT; }
   else { root.style.setProperty("--hud", `var(--p${p})`); HUD_RGB = RGB[p]; }
-  wellCache = null;
+  wellCache = null; fieldBase = null;
   try { uiCursors(p == null ? HUD_HEX : hexOf(p)); } catch (e) {}
 }
 
@@ -2840,7 +2895,7 @@ function sizeField() {
   const dpr = window.devicePixelRatio || 1;
   const d = hiRes ? Math.min(dpr * 2, 3, 4096 / Math.max(r.width, r.height)) : Math.min(dpr, 2, 2600 / Math.max(r.width, r.height));
   field.width = Math.round(r.width * d); field.height = Math.round(r.height * d);
-  wellCache = null;
+  wellCache = null; fieldBase = null;
   if (GL) GL.resize();
   drawField();
 }
@@ -2857,9 +2912,10 @@ function hexPath(ctx, px, py, s) {
 }
 
 // The gravity well: a rubber-sheet grid pulled toward the center, cached per size
-let wellCache = null;
+let wellCache = null, fieldBase = null;
+const bodySprites = new Map();
 function wellLayer(w, h, k) {
-  const key = `${w}x${h}|${B.R}|${FLAT}`;
+  const key = `${w}x${h}|${B.R}|${FLAT}|${(B.voids || []).join(";")}|${B.N}`;
   if (wellCache && wellCache.key === key) return wellCache.c;
   const c = document.createElement("canvas"); c.width = w; c.height = h;
   const x = c.getContext("2d"), ox = w / 2, oy = h / 2;
@@ -2881,6 +2937,27 @@ function wellLayer(w, h, k) {
   const g = x.createRadialGradient(ox, oy, 0, ox, oy, Math.min(w, h) * 0.5);
   g.addColorStop(0, gridA(0.08)); g.addColorStop(1, gridA(0));
   x.fillStyle = g; x.fillRect(0, 0, w, h);
+  // the field's cells as they look empty: drawn once per size, not on every frame
+  const lw = Math.max(1, k * 0.025);
+  x.lineWidth = lw;
+  for (let i = 0; i < B.N; i++) {
+    const px = ox + cx(i) * k, py = oy + cy(i) * k, depth = B.depth[i] / B.R;
+    hexPath(x, px, py, 0.955 * k);
+    x.fillStyle = `hsla(220, 4%, ${6 + depth * 7}%, 0.6)`; x.fill();
+    x.strokeStyle = gridA(0.07 + depth * 0.07); x.stroke();
+  }
+  // asteroid belt: dead cells drawn as rubble
+  (B.voidXY || []).forEach(([vx, vy], n) => {
+    const px = ox + (FLAT ? vy : vx) * k, py = oy + (FLAT ? vx : vy) * k;
+    hexPath(x, px, py, 0.955 * k);
+    x.fillStyle = "rgba(2,4,8,0.55)"; x.fill();
+    x.setLineDash([k * 0.06, k * 0.08]); x.lineWidth = lw; x.strokeStyle = gridA(0.12); x.stroke(); x.setLineDash([]);
+    for (let r = 0; r < 4; r++) {
+      const a = n * 2.4 + r * 1.9, d = k * (0.12 + 0.13 * ((n * 7 + r * 3) % 4) / 3), s = k * (0.045 + 0.03 * ((n + r) % 3));
+      x.beginPath(); x.arc(px + Math.cos(a) * d, py + Math.sin(a) * d, s, 0, Math.PI * 2);
+      x.fillStyle = `rgba(120,128,140,${0.35 + 0.1 * (r % 2)})`; x.fill();
+    }
+  });
   wellCache = { key, c };
   return c;
 }
@@ -2904,79 +2981,148 @@ function drawRing(x, px, py, k, cap, u, o, rem, tint, plus) {
 function drawField() {
   if (!B || !view) return;
   const c = field, x = fctx, w = c.width, h = c.height;
-  x.clearRect(0, 0, w, h);
   const k = w / W, ox = w / 2, oy = h / 2;
   const p = S.turn;
   const quiet = !animating && !thinking && !over(S);
   const showReach = quiet && S.played[p] && canPlay();
   const th = quiet ? TH : null;
   const targets = quiet && TU && !TU.done && !TU.fail ? TU.targets : null;
+  const lm = !animating && !preview ? lastMove : null;
   let flips = null;
   if (preview && hintsOn()) {
     flips = new Set();
     const st = preview.res.state;
     for (let i = 0; i < B.N; i++) if (st.owner[i] === p && S.owner[i] !== p) flips.add(i);
   }
-  const lm = !animating && !preview ? lastMove : null;
   const lmFlips = lm ? new Set(lm.flips) : null;
+  const lw = Math.max(1, k * 0.025);
+  // what each cell shows, packed into one number
+  const sig = new Int32Array(B.N), reachA = new Uint8Array(B.N), ringA = new Uint8Array(B.N);
+  for (let i = 0; i < B.N; i++) {
+    const o = view.owner[i], u = view.units[i];
+    const reach = showReach && SF.reachable(B, S, i, p);
+    const isPrev = !!(preview && preview.i === i);
+    const flip = !!(flips && flips.has(i)), danger = !!(th && th.endangered.has(i));
+    const lmK = lm ? (lm.i === i ? 1 : lmFlips.has(i) ? 2 : 0) : 0;
+    const ring = o >= 0 || reach || isPrev || !!(targets && targets.has(i));
+    reachA[i] = reach ? 1 : 0; ringA[i] = ring ? 1 : 0;
+    let v = (o + 1) * 32 + Math.min(u, 31);
+    v = v * 2 + (view.rem[i] ? 1 : 0); v = v * 2 + (reach ? 1 : 0); v = v * 2 + (flip ? 1 : 0); v = v * 2 + (danger ? 1 : 0);
+    v = v * 3 + lmK; v = v * 2 + (isPrev ? 1 : 0); v = v * 2 + (ring ? 1 : 0);
+    v = v * 9 + (reach || isPrev || flip || lmK ? (lmK ? lm.p : p) + 1 : 0);
+    sig[i] = v;
+  }
+  const scene = [w, h, B, HEX.join(","), FLAT, !!GL];
+  let base = fieldBase, dirty = null, full = false;
+  if (!base || base.scene.some((r, n) => r !== scene[n])) {
+    if (!base || base.c.width !== w || base.c.height !== h) { const bc = document.createElement("canvas"); bc.width = w; bc.height = h; base = { c: bc, x: bc.getContext("2d") }; }
+    base.scene = scene; base.sig = null; base.live = null;
+    fieldBase = base;
+  }
+  if (!base.sig) full = true;
+  else {
+    dirty = [];
+    for (let i = 0; i < B.N; i++) if (sig[i] !== base.sig[i]) dirty.push(i);
+    if (dirty.length > B.N * 0.35) full = true;
+  }
+  const b = base.x;
+  const cell = (i) => {
+    const o = view.owner[i], u = view.units[i], reach = reachA[i], ring = ringA[i];
+    const isPrev = preview && preview.i === i;
+    const flip = flips && flips.has(i), danger = th && th.endangered.has(i);
+    const isLm = lm && lm.i === i, isLmF = !isLm && lmFlips && lmFlips.has(i);
+    // an empty, quiet cell is already drawn in the field layer
+    if (o < 0 && !reach && !flip && !danger && !isLm && !isLmF && !isPrev && !ring) return;
+    const px = ox + cx(i) * k, py = oy + cy(i) * k, cap = B.cap[i];
+    if (o >= 0 || reach || flip || danger) {
+      hexPath(b, px, py, 0.955 * k);
+      if (o >= 0) { b.fillStyle = rgba(o, 0.14); b.fill(); }
+      if (reach) { b.fillStyle = rgba(p, 0.11); b.fill(); }
+      if (flip) { b.fillStyle = rgba(p, 0.26); b.fill(); }
+      if (danger) { b.fillStyle = "rgba(255,93,93,0.10)"; b.fill(); }
+      if (o >= 0) { b.lineWidth = lw; b.strokeStyle = rgba(o, 0.42); b.stroke(); }
+      if (flip) { b.lineWidth = lw * 2; b.strokeStyle = rgba(p, 0.85); b.stroke(); }
+    }
+    if (isLm) { hexPath(b, px, py, 0.89 * k); b.lineWidth = lw * 2; b.strokeStyle = rgba(lm.p, 0.95); b.stroke(); }
+    else if (isLmF) { hexPath(b, px, py, 0.89 * k); b.lineWidth = lw * 1.1; b.strokeStyle = rgba(lm.p, 0.55); b.stroke(); }
+    if (isPrev) { hexPath(b, px, py, 0.9 * k); b.lineWidth = lw * 2.4; b.strokeStyle = "rgba(255,255,255,0.9)"; b.stroke(); }
+    if (ring) drawRing(b, px, py, k, cap, u, o, view.rem[i], reach || isPrev ? p : -1, isPrev && u < cap);
+    if (!GL && u > 0) drawBody2D(b, px, py, k, view.rem[i] ? 8 : Math.min(u, 7), o, u === cap);
+  };
+  const pad = 1.08 * k;
+  const rectOf = (i) => {
+    const px = ox + cx(i) * k, py = oy + cy(i) * k;
+    const x0 = Math.max(0, Math.floor(px - pad)), y0 = Math.max(0, Math.floor(py - pad)), x1 = Math.min(w, Math.ceil(px + pad)), y1 = Math.min(h, Math.ceil(py + pad));
+    return [x0, y0, x1 - x0, y1 - y0];
+  };
+  if (full) {
+    b.clearRect(0, 0, w, h);
+    b.drawImage(wellLayer(w, h, k), 0, 0);
+    for (let i = 0; i < B.N; i++) cell(i);
+  } else if (dirty.length) {
+    // repaint just the changed cells: clip to them, put the empty field back, and redraw every cell that reaches in
+    const rects = dirty.map(rectOf);
+    b.save(); b.beginPath();
+    rects.forEach((r) => b.rect(r[0], r[1], r[2], r[3]));
+    b.clip();
+    b.clearRect(0, 0, w, h);
+    b.drawImage(wellLayer(w, h, k), 0, 0);
+    // every cell whose drawing reaches into a repainted square is drawn again, in field order
+    const reachPx = (GL ? 1.0 : 1.25) * k + 2 * lw;
+    for (let i = 0; i < B.N; i++) {
+      const px = ox + cx(i) * k, py = oy + cy(i) * k;
+      for (let z = 0; z < rects.length; z++) {
+        const r = rects[z];
+        if (px + reachPx > r[0] && px - reachPx < r[0] + r[2] && py + reachPx > r[1] && py - reachPx < r[1] + r[3]) { cell(i); break; }
+      }
+    }
+    b.restore();
+  }
+  base.sig = sig; base.ring = ringA;
+  // the live layer: which cells it touches now
+  const live = new Set();
+  if (th) { th.endangered.forEach((i) => live.add(i)); th.sources.forEach((i) => live.add(i)); }
+  if (targets) targets.forEach((i) => { if (i >= 0 && i < B.N) live.add(i); });
+  if (hoverI >= 0 && hoverI < B.N) live.add(hoverI);
+  if (denyI >= 0 && denyI < B.N) live.add(denyI);
+  if (full || !base.live) { x.clearRect(0, 0, w, h); x.drawImage(base.c, 0, 0); }
+  else {
+    // only cells that changed, or that the live layer touched last time or touches now, are put back from the base
+    const put = new Set([...base.live, ...live, ...dirty]);
+    if (put.size > B.N * 0.35) { x.clearRect(0, 0, w, h); x.drawImage(base.c, 0, 0); }
+    else put.forEach((i) => { const [x0, y0, rw, rh] = rectOf(i); if (rw > 0 && rh > 0) { x.clearRect(x0, y0, rw, rh); x.drawImage(base.c, x0, y0, rw, rh, x0, y0, rw, rh); } });
+  }
+  base.live = live;
   const bp = Sound.beatPulse();
   const pulse = bp != null ? bp : 0.5 + 0.5 * Math.sin(performance.now() / 160);
-  x.drawImage(wellLayer(w, h, k), 0, 0);
-  const lw = Math.max(1, k * 0.025);
-  for (let i = 0; i < B.N; i++) {
-    const px = ox + cx(i) * k, py = oy + cy(i) * k, o = view.owner[i], u = view.units[i];
-    const depth = B.depth[i] / B.R, cap = B.cap[i];
-    const reach = showReach && SF.reachable(B, S, i, p);
-    const isPrev = preview && preview.i === i;
-    hexPath(x, px, py, 0.955 * k);
-    x.fillStyle = `hsla(220, 4%, ${6 + depth * 7}%, 0.6)`;
-    x.fill();
-    if (o >= 0) { x.fillStyle = rgba(o, 0.14); x.fill(); }
-    if (reach) { x.fillStyle = rgba(p, 0.11); x.fill(); }
-    if (flips && flips.has(i)) { x.fillStyle = rgba(p, 0.26); x.fill(); }
-    if (th && th.endangered.has(i)) { x.fillStyle = "rgba(255,93,93,0.10)"; x.fill(); }
-    x.lineWidth = lw;
-    x.strokeStyle = o >= 0 ? rgba(o, 0.42) : gridA(0.07 + depth * 0.07);
-    x.stroke();
-    if (flips && flips.has(i)) { x.lineWidth = lw * 2; x.strokeStyle = rgba(p, 0.85); x.stroke(); }
-
-    if (lm && lm.i === i) { hexPath(x, px, py, 0.89 * k); x.lineWidth = lw * 2; x.strokeStyle = rgba(lm.p, 0.95); x.stroke(); }
-    else if (lmFlips && lmFlips.has(i)) { hexPath(x, px, py, 0.89 * k); x.lineWidth = lw * 1.1; x.strokeStyle = rgba(lm.p, 0.55); x.stroke(); }
-
-    if (th && th.endangered.has(i)) {
+  const at = (i) => [ox + cx(i) * k, oy + cy(i) * k];
+  if (th) {
+    th.endangered.forEach((i) => {
+      const [px, py] = at(i);
       hexPath(x, px, py, 0.88 * k);
       x.setLineDash([k * 0.1, k * 0.07]); x.lineWidth = lw * (1.6 + 0.8 * pulse); x.strokeStyle = `rgba(255,93,93,${(0.6 + 0.38 * pulse).toFixed(3)})`; x.stroke(); x.setLineDash([]);
-    }
-    if (th && th.sources.has(i) && o >= 0) {
+    });
+    th.sources.forEach((i) => {
+      const o = view.owner[i];
+      if (o < 0) return;
+      const [px, py] = at(i);
       hexPath(x, px, py, 0.93 * k);
       x.lineWidth = lw * (2 + pulse * 1.4); x.strokeStyle = rgba(o, 0.45 + 0.5 * pulse); x.stroke();
-    }
-    if (targets && targets.has(i)) {
-      hexPath(x, px, py, 0.93 * k);
-      x.lineWidth = lw * (1.6 + pulse * 1.6); x.strokeStyle = `rgba(255,255,255,${0.3 + 0.55 * pulse})`; x.stroke();
-    }
-    if (isPrev) { hexPath(x, px, py, 0.9 * k); x.lineWidth = lw * 2.4; x.strokeStyle = "rgba(255,255,255,0.9)"; x.stroke(); }
-    else if (hoverI === i && !preview) { hexPath(x, px, py, 0.9 * k); x.lineWidth = lw * 1.6; x.strokeStyle = "rgba(255,255,255,0.35)"; x.stroke(); }
-    if (denyI === i) { hexPath(x, px, py, 0.9 * k); x.lineWidth = lw * 2.4; x.strokeStyle = "rgba(255,93,93,0.95)"; x.stroke(); }
-
-    // rings only where they matter: owned, reachable, previewed, hovered or a lesson target
-    if (o >= 0 || reach || isPrev || hoverI === i || (targets && targets.has(i)))
-      drawRing(x, px, py, k, cap, u, o, view.rem[i], reach || isPrev ? p : -1, isPrev && u < cap);
-
-    if (!GL && u > 0) drawBody2D(x, px, py, k, view.rem[i] ? 8 : Math.min(u, 7), o, u === cap);
+    });
   }
-  // asteroid belt: dead cells drawn as rubble
-  (B.voidXY || []).forEach(([vx, vy], n) => {
-    const px = ox + (FLAT ? vy : vx) * k, py = oy + (FLAT ? vx : vy) * k;
-    hexPath(x, px, py, 0.955 * k);
-    x.fillStyle = "rgba(2,4,8,0.55)"; x.fill();
-    x.setLineDash([k * 0.06, k * 0.08]); x.lineWidth = lw; x.strokeStyle = gridA(0.12); x.stroke(); x.setLineDash([]);
-    for (let r = 0; r < 4; r++) {
-      const a = n * 2.4 + r * 1.9, d = k * (0.12 + 0.13 * ((n * 7 + r * 3) % 4) / 3), s = k * (0.045 + 0.03 * ((n + r) % 3));
-      x.beginPath(); x.arc(px + Math.cos(a) * d, py + Math.sin(a) * d, s, 0, Math.PI * 2);
-      x.fillStyle = `rgba(120,128,140,${0.35 + 0.1 * (r % 2)})`; x.fill();
-    }
+  if (targets) targets.forEach((i) => {
+    if (i < 0 || i >= B.N) return;
+    const [px, py] = at(i);
+    hexPath(x, px, py, 0.93 * k);
+    x.lineWidth = lw * (1.6 + pulse * 1.6); x.strokeStyle = `rgba(255,255,255,${0.3 + 0.55 * pulse})`; x.stroke();
   });
+  if (hoverI >= 0 && hoverI < B.N) {
+    const [px, py] = at(hoverI);
+    if (!preview) { hexPath(x, px, py, 0.9 * k); x.lineWidth = lw * 1.6; x.strokeStyle = "rgba(255,255,255,0.35)"; x.stroke(); }
+    if (!ringA[hoverI]) drawRing(x, px, py, k, B.cap[hoverI], view.units[hoverI], view.owner[hoverI], view.rem[hoverI], -1, false);
+  }
+  if (denyI >= 0 && denyI < B.N) { const [px, py] = at(denyI); hexPath(x, px, py, 0.9 * k); x.lineWidth = lw * 2.4; x.strokeStyle = "rgba(255,93,93,0.95)"; x.stroke(); }
+  FIELD_VER++;
 }
 
 let pulseTimer = 0;
@@ -2991,21 +3137,31 @@ function ensurePulse() {
 }
 
 function drawBody2D(x, px, py, k, st, o, hot) {
-  const R = (LOOK[st][0] * INR) * k;
+  const R = (LOOK[st][0] * INR) * k, glow = LOOK[st][1] * 0.5 * k;
   const [r, g, b] = RGB[o];
-  const glow = LOOK[st][1] * 0.5 * k;
-  if (glow > 0) {
-    const gg = x.createRadialGradient(px, py, R * 0.5, px, py, glow);
-    gg.addColorStop(0, `rgba(${r},${g},${b},${0.35 * LOOK[st][2] * (hot ? 1.5 : 1)})`); gg.addColorStop(1, `rgba(${r},${g},${b},0)`);
-    x.fillStyle = gg; x.beginPath(); x.arc(px, py, glow, 0, Math.PI * 2); x.fill();
+  const key = `${st}|${r},${g},${b}|${hot ? 1 : 0}|${k.toFixed(2)}`;
+  let sp = bodySprites.get(key);
+  if (!sp) {
+    const half = Math.ceil(Math.max(R, glow)) + 2, cv = document.createElement("canvas");
+    cv.width = cv.height = half * 2;
+    const y = cv.getContext("2d"), c0 = half;
+    if (glow > 0) {
+      const gg = y.createRadialGradient(c0, c0, R * 0.5, c0, c0, glow);
+      gg.addColorStop(0, `rgba(${r},${g},${b},${0.35 * LOOK[st][2] * (hot ? 1.5 : 1)})`); gg.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      y.fillStyle = gg; y.beginPath(); y.arc(c0, c0, glow, 0, Math.PI * 2); y.fill();
+    }
+    const deep = st >= 4 && st <= 6 ? 0.18 * (st - 3) : 0;
+    const mix = (a, c, t) => Math.round(a + (c - a) * t);
+    const gr = y.createRadialGradient(c0 - R * 0.3, c0 - R * 0.3, R * 0.1, c0, c0, R);
+    if (st === 1) { gr.addColorStop(0, "#8f8a86"); gr.addColorStop(1, "#2a2826"); }
+    else if (st === 8 || st === 7) { gr.addColorStop(0, "#ffffff"); gr.addColorStop(1, `rgb(${mix(r, 210, 0.5)},${mix(g, 225, 0.5)},255)`); }
+    else { gr.addColorStop(0, `rgb(${mix(r, 255, 0.6 - deep)},${mix(g, 255, 0.6 - deep)},${mix(b, 255, 0.6 - deep)})`); gr.addColorStop(1, `rgb(${r * (0.55 - deep) | 0},${g * (0.55 - deep) | 0},${b * (0.55 - deep) | 0})`); }
+    y.fillStyle = gr; y.beginPath(); y.arc(c0, c0, R, 0, Math.PI * 2); y.fill();
+    if (bodySprites.size > 400) bodySprites.clear();
+    sp = { cv, half };
+    bodySprites.set(key, sp);
   }
-  const deep = st >= 4 && st <= 6 ? 0.18 * (st - 3) : 0;
-  const mix = (a, c, t) => Math.round(a + (c - a) * t);
-  const gr = x.createRadialGradient(px - R * 0.3, py - R * 0.3, R * 0.1, px, py, R);
-  if (st === 1) { gr.addColorStop(0, "#8f8a86"); gr.addColorStop(1, "#2a2826"); }
-  else if (st === 8 || st === 7) { gr.addColorStop(0, "#ffffff"); gr.addColorStop(1, `rgb(${mix(r, 210, 0.5)},${mix(g, 225, 0.5)},255)`); }
-  else { gr.addColorStop(0, `rgb(${mix(r, 255, 0.6 - deep)},${mix(g, 255, 0.6 - deep)},${mix(b, 255, 0.6 - deep)})`); gr.addColorStop(1, `rgb(${r * (0.55 - deep) | 0},${g * (0.55 - deep) | 0},${b * (0.55 - deep) | 0})`); }
-  x.fillStyle = gr; x.beginPath(); x.arc(px, py, R, 0, Math.PI * 2); x.fill();
+  x.drawImage(sp.cv, px - sp.half, py - sp.half);
 }
 
 /* ---------- Hit targets ---------- */
@@ -3125,7 +3281,7 @@ function applyRoster() {
     RGB[q] = [(HEX[q] >> 16) & 255, (HEX[q] >> 8) & 255, HEX[q] & 255];
     root.style.setProperty(`--p${q}`, hexOf(q));
   });
-  curKey = ""; skyColors = ""; thKey = ""; wellCache = null; sideIconKey = ""; fsIconKey = "";
+  curKey = ""; skyColors = ""; thKey = ""; wellCache = null; fieldBase = null; sideIconKey = ""; fsIconKey = "";
 }
 function saveRoster() {
   save("sf2-roster", ROSTER); applyRoster();
@@ -3479,12 +3635,19 @@ function renderMass() {
   ml.classList.toggle("tight", S.n > 4);
   const wins = CFG.mode === "tutorial" ? [] : matchWins();
   const showWins = wins.some((x) => x > 0);
-  ml.innerHTML = masses.map((m, q) => {
+  // cards are updated in place: the text only when it has changed, the icon only when the star's stage or colour has
+  const rows = masses.map((m, q) => {
     const cls = "ml hud" + (q === S.turn && !over(S) ? " turn" : "") + (S.out[q] ? " out" : "");
-    const share = tot ? Math.round((m / tot) * 100) : 0;
-    return `<div class="${cls}" style="--c:var(--p${q})"><canvas data-q="${q}" aria-hidden="true"></canvas><div class="ml-text"><div class="mrow"><span class="nm">${NAMES[q][0]}</span>${tagFor(q)}${showWins ? `<span class="wins" title="Match wins">W${wins[q] || 0}</span>` : ""}<span class="ms">${m}</span></div><small>${stageOf(q)}<span class="pct"> · ${share}%</span></small><span class="pbar" aria-hidden="true"><i style="--w:${share}%"></i></span></div></div>`;
-  }).join("");
-  ml.querySelectorAll("canvas").forEach((cv) => { const q = +cv.dataset.q; drawIcon(cv, q, stageOf(q)); });
+    const share = tot ? Math.round((m / tot) * 100) : 0, stage = stageOf(q);
+    return { cls, stage, text: `<div class="mrow"><span class="nm">${NAMES[q][0]}</span>${tagFor(q)}${showWins ? `<span class="wins" title="Match wins">W${wins[q] || 0}</span>` : ""}<span class="ms">${m}</span></div><small>${stage}<span class="pct"> · ${share}%</span></small><span class="pbar" aria-hidden="true"><i style="--w:${share}%"></i></span>` };
+  });
+  if (ml.children.length !== rows.length) ml.innerHTML = rows.map((r, q) => `<div class="${r.cls}" style="--c:var(--p${q})"><canvas data-q="${q}" aria-hidden="true"></canvas><div class="ml-text"></div></div>`).join("");
+  [...ml.children].forEach((el, q) => {
+    const r = rows[q], tx = el.lastElementChild, cv = el.firstElementChild, key = `${r.stage}|${hexOf(q)}`;
+    if (el.className !== r.cls) el.className = r.cls;
+    if (tx._h !== r.text) { tx._h = r.text; tx.innerHTML = r.text; }
+    if (cv._k !== key) { cv._k = key; drawIcon(cv, q, r.stage); }
+  });
   $("#telemetry").textContent = `${B.N} cells · ${S.n} stars`;
   $("#roTL").textContent = `Well depth ${B.R} · max ${Math.max(...B.cap)}`;
   $("#roTR").textContent = S.race ? `Covered ${S.owner.filter((o) => o >= 0).length} / ${B.N}` : S.limit ? `Round ${Math.min(Math.floor(S.moves / S.n) + 1, S.limit / S.n)} / ${S.limit / S.n}` : tMY(S.moves);
@@ -3772,13 +3935,48 @@ function finishWatch() {
   step();
 }
 // the AI thinks, shows its pick, then places; both pauses give way to Space
+// The AI thinks in a worker made from the engine's own source, so the field keeps animating while it decides.
+// Where workers can't start, it thinks on the page as before.
+const AIW = (() => {
+  let w = null, seq = 0, boardKey = "";
+  const pend = new Map();
+  function boot() {
+    if (w !== null) return w;
+    w = false;
+    try {
+      const src = document.getElementById("engineSrc").textContent;
+      const tail = "\nlet b = null;\nonmessage = (e) => { const d = e.data; if (d.board) b = SF.makeBoard(d.board.R, d.board.voids); let m = -1; try { m = SF.choose(b, d.s, d.level); } catch (err) { m = null; } postMessage({ id: d.id, m }); };";
+      const url = URL.createObjectURL(new Blob([src, tail], { type: "text/javascript" }));
+      w = new Worker(url);
+      w.onmessage = (e) => { const r = pend.get(e.data.id); if (r) { pend.delete(e.data.id); r(e.data.m); } };
+      w.onerror = (e) => { if (e && e.preventDefault) e.preventDefault(); try { w.terminate(); } catch (err) {} w = false; pend.forEach((r) => r(null)); pend.clear(); };
+    } catch (e) { w = false; }
+    return w;
+  }
+  return {
+    choose(b, s, level) {
+      const wk = boot();
+      if (!wk) return Promise.resolve(SF.choose(b, s, level));
+      const key = `${b.R}|${(b.voids || []).join(";")}`, id = ++seq;
+      return new Promise((res) => {
+        pend.set(id, (m) => res(m == null ? SF.choose(b, s, level) : m));
+        try { wk.postMessage({ id, s, level, board: key !== boardKey ? { R: b.R, voids: b.voids } : null }); boardKey = key; }
+        catch (e) { pend.delete(id); res(SF.choose(b, s, level)); }
+      });
+    },
+  };
+})();
 async function runAI() {
   if (over(S) || !isAI(S.turn)) return;
   busy = true; thinking = true; render();
-  const p = S.turn, gen = gameGen;
+  const p = S.turn, gen = gameGen, s0 = S;
+  // start thinking straight away; the pause before the move covers the time it takes
+  const pick = AIW.choose(B, S, CFG.level);
   await waitOrSkip(RM.matches ? 150 : CFG.watch ? 220 : S.n > 3 ? 380 : 650);
   if (gen !== gameGen || S.turn !== p || over(S)) return;
-  const m = SF.choose(B, S, CFG.level);
+  let m = await pick;
+  if (gen !== gameGen || S.turn !== p || over(S)) return;
+  if (S !== s0) m = SF.choose(B, S, CFG.level);
   thinking = false;
   if (!fast()) {
     setPreview(m, true);
@@ -3831,7 +4029,7 @@ function setupBoard(keepBoard) {
   W = FLAT ? short : long; H = FLAT ? long : short;
   stageEl.style.setProperty("--ar", (W / H).toFixed(4));
   buildHits();
-  wellCache = null;
+  wellCache = null; fieldBase = null;
   if (GL) GL.build(B, W, H, B.x.map((_, i) => cx(i)), B.y.map((_, i) => cy(i)));
   if (typeof resetZoom === "function" && !keepBoard) resetZoom();
   requestAnimationFrame(() => { sizeField(); if (typeof zoomHint === "function" && !keepBoard) zoomHint(); });
@@ -5273,7 +5471,7 @@ function applySeats(seats) {
     RGB[q] = [(HEX[q] >> 16) & 255, (HEX[q] >> 8) & 255, HEX[q] & 255];
     root.style.setProperty(`--p${q}`, hexOf(q));
   });
-  curKey = ""; skyColors = ""; thKey = ""; wellCache = null; sideIconKey = ""; fsIconKey = "";
+  curKey = ""; skyColors = ""; thKey = ""; wellCache = null; fieldBase = null; sideIconKey = ""; fsIconKey = "";
   return true;
 }
 function leaveOnline() {
