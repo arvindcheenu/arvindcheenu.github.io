@@ -2086,13 +2086,6 @@ const Sound = (() => {
   }
   // Bodies are generated too. Everything is soft-edged: band-limited noise and sines with gentle attacks, nothing above
   // a few kilohertz, so a placement sounds like matter settling rather than gravel.
-  let whiteBuf = null;
-  function white() {
-    if (whiteBuf) return whiteBuf;
-    const b = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), d = b.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    return (whiteBuf = b);
-  }
   function sfxOut(t, pan) {
     const g = ac.createGain(); g.gain.value = 1;
     if (pan && ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = Math.max(-0.8, Math.min(0.8, pan)); g.connect(p); p.connect(sfxBus); } else g.connect(sfxBus);
@@ -2100,7 +2093,7 @@ const Sound = (() => {
   }
   // a burst of filtered noise with its own envelope; the filter can sweep
   function puff(dest, t, { buf, type = "bandpass", f0, f1, q = 1, lvl, att = 0.004, dur }) {
-    const s = ac.createBufferSource(); s.buffer = buf || white(); s.loop = true;
+    const s = ac.createBufferSource(); s.buffer = buf || noiseBuf; s.loop = true;
     const f = ac.createBiquadFilter(), g = ac.createGain();
     f.type = type; f.Q.value = q; f.frequency.setValueAtTime(f0, t); if (f1) f.frequency.exponentialRampToValueAtTime(f1, t + dur);
     g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(lvl, t + att); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -2118,16 +2111,14 @@ const Sound = (() => {
     const t = ac.currentTime + 0.004, out = sfxOut(t, pan), V = vol(prefs.sfxVol) > 0 ? 1 : 0;
     if (!V) return;
     if (stage === 1) {
-      // a rock settles: a soft, low knock and a short breath of dust
-      knock(out, t, { f0: vary(210, 0.08), f1: vary(120, 0.08), lvl: 0.32, dur: 0.11 });
-      puff(out, t, { f0: vary(700, 0.15), f1: 260, q: 0.9, lvl: 0.16, att: 0.003, dur: 0.09 });
-      puff(out, t + 0.012, { buf: noiseBuf, type: "lowpass", f0: 420, lvl: 0.18, att: 0.006, dur: 0.16 });
+      // a rock settles into dust: a muffled, round thud with no edge to it
+      knock(out, t, { f0: vary(150, 0.08), f1: vary(95, 0.08), lvl: 0.3, att: 0.014, dur: 0.16 });
+      puff(out, t, { buf: noiseBuf, type: "lowpass", f0: 260, f1: 140, q: 0.5, lvl: 0.2, att: 0.018, dur: 0.2 });
     } else if (stage <= 3) {
-      // gas catching: a breath that brightens as it lights, warmer for a star than a protostar
+      // gas catching: a soft, dark breath that opens up as it lights, warmer for a star than a protostar
       const star = stage === 3;
-      puff(out, t, { f0: star ? 260 : 380, f1: star ? 1500 : 1900, q: 0.8, lvl: star ? 0.2 : 0.14, att: 0.04, dur: star ? 0.34 : 0.24 });
-      puff(out, t + 0.02, { buf: noiseBuf, type: "lowpass", f0: star ? 360 : 300, lvl: star ? 0.22 : 0.14, att: 0.03, dur: star ? 0.42 : 0.3 });
-      if (star) knock(out, t, { f0: 150, f1: 95, lvl: 0.16, att: 0.02, dur: 0.36 });
+      puff(out, t, { buf: noiseBuf, type: "lowpass", f0: star ? 180 : 220, f1: star ? 700 : 600, q: 0.6, lvl: star ? 0.26 : 0.18, att: 0.06, dur: star ? 0.42 : 0.3 });
+      knock(out, t, { f0: star ? 130 : 160, f1: star ? 90 : 120, lvl: star ? 0.16 : 0.1, att: 0.03, dur: star ? 0.38 : 0.24 });
     } else if (stage <= 6) {
       // a giant's weight: a low roll of dark noise that breathes, with a sub-bass swell under it
       const k = stage - 4, dur = 0.55 + 0.22 * k;
@@ -2138,10 +2129,9 @@ const Sound = (() => {
       am.frequency.value = vary(9 - 2 * k, 0.1); amg.gain.value = 0.12; am.connect(amg); amg.connect(g.gain);
       s.connect(lp); lp.connect(g); g.connect(out); s.start(t, Math.random()); s.stop(t + dur + 0.05); am.start(t); am.stop(t + dur + 0.05);
       knock(out, t, { f0: 90 - 10 * k, f1: 48 - 5 * k, lvl: 0.3 + 0.04 * k, att: 0.025, dur: dur * 0.9 });
-      puff(out, t, { f0: 600, f1: 200, q: 0.7, lvl: 0.05, att: 0.02, dur: 0.25 });
     } else {
-      // at the edge: a bright flare over the roll
-      puff(out, t, { f0: 500, f1: 2400, q: 0.9, lvl: 0.16, att: 0.03, dur: 0.3 });
+      // at the edge: a warm flare over the roll
+      puff(out, t, { buf: noiseBuf, type: "lowpass", f0: 300, f1: 900, q: 0.6, lvl: 0.22, att: 0.05, dur: 0.34 });
       puff(out, t, { buf: noiseBuf, type: "lowpass", f0: 220, f1: 120, lvl: 0.36, att: 0.05, dur: 0.6 });
       knock(out, t, { f0: 80, f1: 50, lvl: 0.26, att: 0.03, dur: 0.55 });
     }
@@ -2160,7 +2150,7 @@ const Sound = (() => {
         o.connect(g); g.connect(out); o.start(t); tr.start(t); o.stop(t + 0.75); tr.stop(t + 0.75);
       });
     } else {
-      for (let k = 0; k < 3; k++) knock(out, t + k * 0.11, { f0: f, f1: f * 0.98, lvl: 0.07 - k * 0.015, att: 0.004, dur: 0.18 });
+      for (let k = 0; k < 3; k++) knock(out, t + k * 0.11, { f0: f, f1: f * 0.98, lvl: 0.06 - k * 0.013, att: 0.014, dur: 0.2 });
     }
   }
   // A low bed under chain reactions: swells with each wave, releases after the last
@@ -2170,11 +2160,11 @@ const Sound = (() => {
     const t = ac.currentTime + 0.004 + (delay || 0), f = D5 * Math.pow(2, semi / 12);
     let dest = sfxBus;
     if (pan && ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = Math.max(-0.8, Math.min(0.8, pan)); p.connect(sfxBus); dest = p; }
-    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1800 + 2600 * bright; lp.connect(dest);
-    [["sine", 1, 1, 1.4], ["triangle", 2, 0.16 + 0.22 * bright, 0.6], ["sine", 3, 0.05 * bright, 0.35]].forEach(([type, m, a, d]) => {
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1400 + 2200 * bright; lp.connect(dest);
+    [["sine", 1, 1, 1.4], ["sine", 2, 0.08 + 0.2 * bright, 0.6], ["sine", 3, 0.05 * bright, 0.35]].forEach(([type, m, a, d]) => {
       const o = ac.createOscillator(), g = ac.createGain();
       o.type = type; o.frequency.value = f * m;
-      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(gain * a, t + 0.008);
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(gain * a, t + 0.012 + 0.012 * (1 - bright));
       g.gain.exponentialRampToValueAtTime(0.0001, t + d);
       o.connect(g); g.connect(lp); o.start(t); o.stop(t + d + 0.05);
     });
