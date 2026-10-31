@@ -79,11 +79,14 @@ export default function (eleventyConfig) {
     'src/favicon.ico': 'favicon.ico',
     'src/CNAME': 'CNAME',
     'src/_redirects': '_redirects',
-    'src/accrete': 'accrete'
+    'src/accrete': 'accrete',
+    'src/chimistry': 'chimistry'
   });
 
   // Accrete (the game at /accrete) is a finished static app: copy it as-is, never run it through templates
   eleventyConfig.ignores.add("src/accrete/**");
+  // Chimistry (the HCI concept game at /chimistry) is a single self-contained page: copy as-is too
+  eleventyConfig.ignores.add("src/chimistry/**");
 
   // Watch targets for the dev server
   eleventyConfig.addWatchTarget("./src/assets/");
