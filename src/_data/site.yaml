@@ -1,0 +1,467 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  arvindchee.nu — every word on the page lives in this file.
+#
+#  Editing rules of thumb
+#  • Text fields accept inline Markdown: **bold**, *italic*, [link](https://…).
+#  • Any entry can carry `only: research` or `only: industry` to appear in
+#    one CV mode. Leave it out and the entry shows in both.
+#  • A text field can be split per mode:
+#        summary:
+#          research: …
+#          industry: …
+#  • `image:` is optional on news, publications and projects. Put the file in
+#    src/assets/ and write `image: assets/name.webp`. Leave it out for none.
+#    Keep images small: about 640 px wide, WebP, under 80 KB.
+#  • Dates are YYYY-MM (or YYYY). Use `end: present` for ongoing roles.
+#  • Empty values are skipped, so a half-filled entry never shows "[todo]".
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Arvind Srinivasan
+short: AS
+url: https://arvindchee.nu
+location: Aarhus, Denmark
+timezone: Europe/Copenhagen
+email: arvind@cheenu.net
+work_email: arvind@cs.au.dk
+photo: assets/profile.webp        # remove to fall back to initials
+og_image: assets/profile-og.jpg    # preview image for link unfurls
+
+# The one accent colour. Used only for links, primary buttons, icon duotone
+# and a few typographic highlights. Light and dark need separate values so
+# links keep 4.5:1 contrast on both backgrounds.
+accent:
+  light: "#c93a0e"
+  dark: "#ff8a5c"
+
+# Font Awesome Pro kit id: the part between kit.fontawesome.com/ and .js.
+# Leave blank to fall back to Font Awesome Free (solid icons, no duotone).
+fontawesome_kit: ""
+
+# Sounds play on button presses. Visitors can mute them; this is the default.
+sound_default: on
+
+# ── CV modes ────────────────────────────────────────────────────────────────
+# `order` decides which sections appear in a mode and in what sequence.
+default_mode: research
+modes:
+  research:
+    label: Research
+    icon: flask
+    role: PhD candidate in visualization and HCI, Aarhus University
+    status: Open to postdoc positions from January 2027
+    ring: "Open to work · Postdoc · From Jan 2027 · "
+    bio:
+      - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later. My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, a capture, record and revisualize pipeline tested with single analysts, co-located pairs in mixed reality, musicians in rehearsal, and analysts handing work to one another.
+      - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
+    order: [news, publications, experience, teaching, talks, awards, education, projects, skills, elsewhere]
+  industry:
+    label: Industry
+    icon: briefcase
+    role: Research engineer for visualization, XR and human–AI interfaces
+    status: Open to research engineering and design-technologist roles from January 2027
+    ring: "Open to work · Engineering · From Jan 2027 · "
+    bio:
+      - I design and build interfaces for data, XR and human–AI collaboration, then test them with people. Since 2024 I have shipped attention-tracking systems for the web, Meta Quest 3 and HoloLens 2 at Aarhus University, covering rendering, gaze pipelines and study infrastructure, and published them at IEEE VIS, IEEE TVCG and ACM venues.
+      - I work across the stack in TypeScript and Python with React, React Three Fiber, WebXR, D3, Node and FastAPI. I maintain open-source libraries for colour, scientific figures and ambient-adaptive UI, and I prefer tools that load fast, work offline and explain what they are doing.
+    order: [news, experience, projects, skills, publications, education, awards, talks, teaching, elsewhere]
+
+# Buttons under the name. The first `primary: true` link gets the accent fill.
+links:
+  - { label: Email, url: "mailto:arvind@cheenu.net", icon: envelope, primary: true }
+  - { label: Google Scholar, url: "https://scholar.google.com/citations?user=lVhsLEMAAAAJ", icon: google-scholar, brand: true, only: research }
+  - { label: GitHub, url: "https://github.com/arvindcheenu", icon: github, brand: true }
+  - { label: LinkedIn, url: "https://www.linkedin.com/in/arvindcheenu", icon: linkedin, brand: true }
+  - { label: ORCID, url: "https://orcid.org/0000-0002-3409-6077", icon: orcid, brand: true, only: research }
+  - { label: Medium, url: "https://arvindcheenu.medium.com", icon: medium, brand: true }
+
+# ── Sections ────────────────────────────────────────────────────────────────
+sections:
+  news: News
+  publications: { research: Publications, industry: Selected publications }
+  experience: Experience
+  projects: Open source & projects
+  teaching: Teaching
+  talks: Talks
+  awards: Awards
+  education: Education
+  skills: Skills
+  elsewhere: Elsewhere
+
+# Newest first. The first `news_visible` items show; the rest fold away.
+news_visible: 6
+news:
+  - date: 2026-11
+    text: Presenting **HeedVision**, attention awareness for pairs analysing data in mixed reality, at IEEE VIS 2026.
+    link: https://arxiv.org/abs/2505.07069
+  - date: 2026-10
+    text: Released [heed](https://heed.arvindchee.nu), an open-source toolkit that records attention on any web page from cursor, viewport and webcam gaze.
+  - date: 2026-09
+    text: Submitted **Amanuensis**, data stories authored from an analyst's attention and speech, to ACM CHI 2027.
+    only: research
+  - date: 2026-08
+    text: Teaching assistant for the Data Visualization course at Aarhus University this autumn.
+  - date: 2026-06
+    text: Presented our mobile eye-tracking study of band rehearsals at ACM ETRA 2026 in Marrakesh.
+    link: https://arxiv.org/abs/2606.03485
+  - date: 2026-04
+    text: Presented *The Attention-Aware Pipeline* at the SAXR workshop, CHI 2026.
+    link: https://arxiv.org/abs/2606.03492
+  - date: 2026-02
+    text: Co-wrote *Ambient Analytics*, a Visualization Viewpoints article on calm technology for immersive sensemaking.
+    link: https://arxiv.org/abs/2602.19809
+  - date: 2024-06
+    text: Best Paper Honorable Mention at ACM Creativity & Cognition 2024 for AnalogiLead.
+  - date: 2024-01
+    text: Started my PhD at CA³, Aarhus University.
+
+# ── Publications ────────────────────────────────────────────────────────────
+# kind: journal | conference | article | short | workshop | demo | poster | preprint | thesis
+# status: published (default) | to-appear | under-review
+# equal: names that share first authorship (marked with †)
+# selected: true → shown in Industry mode
+# links: any of pdf, doi, arxiv, code, video, blog, supplement, poster, web
+# bibtex: generated automatically; set `bibtex: false` to hide the button
+publications:
+  - id: srinivasan2027amanuensis
+    title: "Amanuensis: Authoring Data Stories from an Analyst's Attention and Speech"
+    authors: [Arvind Srinivasan, Niklas Elmqvist]
+    venue: ACM CHI 2027
+    year: 2027
+    kind: conference
+    status: under-review
+    bibtex: false
+    only: research
+
+  - id: srinivasan2026heedvision
+    title: "HeedVision: Attention Awareness in Collaborative Immersive Analytics Environments"
+    authors: [Arvind Srinivasan, Niklas Elmqvist]
+    venue: IEEE VIS 2026
+    venue_long: IEEE Visualization and Visual Analytics (VIS) 2026
+    year: 2026
+    kind: conference
+    status: to-appear
+    selected: true
+    links:
+      arxiv: https://arxiv.org/abs/2505.07069
+
+  - id: hubenschmid2026ambient
+    title: "Ambient Analytics: Calm Technology for Immersive Visualization and Sensemaking"
+    authors: [Sebastian Hubenschmid, Arvind Srinivasan, Niklas Elmqvist, Dieter Schmalstieg, Michael Sedlmair]
+    venue: IEEE CG&A, Visualization Viewpoints
+    venue_long: IEEE Computer Graphics and Applications
+    year: 2026
+    kind: article
+    doi: 10.1109/MCG.2026.3667291
+    links:
+      arxiv: https://arxiv.org/abs/2602.19809
+
+  - id: srinivasan2026band
+    title: Analyzing Visual Attention Patterns During Band Rehearsal with Mobile Eye Tracking
+    authors: [Arvind Srinivasan, Tobias Rau, Michael Sedlmair]
+    venue: ACM ETRA 2026
+    venue_long: ACM Symposium on Eye Tracking Research and Applications (ETRA) 2026
+    year: 2026
+    kind: short
+    selected: true
+    links:
+      arxiv: https://arxiv.org/abs/2606.03485
+
+  - id: srinivasan2026pipeline
+    title: "The Attention-Aware Pipeline: Design Tensions from Making Attention Visible in XR"
+    authors: [Arvind Srinivasan, Niklas Elmqvist]
+    venue: SAXR Workshop at ACM CHI 2026
+    year: 2026
+    kind: workshop
+    links:
+      arxiv: https://arxiv.org/abs/2606.03492
+
+  - id: elmqvist2025participatory
+    title: "Participatory AI: A Scandinavian Approach to Human-Centered AI"
+    authors: [Niklas Elmqvist, Eve Hoggan, Hans-Jörg Schulz, Marianne Graves Petersen, Peter Dalsgaard, Ira Assent, Olav W. Bertelsen, Akhil Arora, Kaj Grønbæk, Susanne Bødker, Clemens Nylandsted Klokmose, Rachel Charlotte Smith, Sebastian Hubenschmid, Christoph A. Johns, Gabriela Molina León, Anton Wolter, Johannes Ellemose, Vaishali Dhanoa, Simon Aagaard Enni, Mille Skovhus Lunding, Karl-Emil Kjær Bilstrup, Juan Sánchez Esquivel, Luke Connelly, Rafael Pablos Sarabia, Morten Birk, Joachim Nyborg, Stefanie Zollmann, Tobias Langlotz, Meredith Siang-Yun Chou, Jens Emil Sloth Grønbæk, Michael Wessely, Yijing Jiang, Caroline Berger, Duosi Dai, Michael Mose Biskjaer, Germán Leiva, Jonas Frich, Eva Eriksson, Kim Halskov, Thorbjørn Mikkelsen, Nearchos Potamitis, Michel Yildirim, Arvind Srinivasan, Jeanette Falk, Nanna Inie, Ole Sejer Iversen, Hugo Andersson]
+    venue: arXiv preprint
+    year: 2025
+    kind: preprint
+    only: research
+    bibtex: false
+    links:
+      arxiv: https://arxiv.org/abs/2509.12752
+
+  - id: srinivasan2025attention
+    title: "Attention-Aware Visualization: Tracking and Responding to User Perception Over Time"
+    authors: [Arvind Srinivasan, Johannes Ellemose, Peter W. S. Butcher, Panagiotis D. Ritsos, Niklas Elmqvist]
+    equal: [Arvind Srinivasan, Johannes Ellemose]
+    venue: IEEE TVCG (VIS 2024)
+    venue_long: IEEE Transactions on Visualization and Computer Graphics
+    volume: "31"
+    number: "1"
+    pages: 1017–1027
+    year: 2025
+    kind: journal
+    doi: 10.1109/TVCG.2024.3456300
+    selected: true
+    # image: assets/pubs/srinivasan2025attention.webp
+    links:
+      pdf: https://arxiv.org/pdf/2404.10732
+      supplement: https://osf.io/8mfhp/
+      blog: https://arvindcheenu.medium.com/when-data-pays-attention-b4e87cd59ea3
+
+  - id: srinivasan2024improving
+    title: Improving Selection of Analogical Inspirations through Chunking and Recombination
+    authors: [Arvind Srinivasan, Joel Chan]
+    venue: ACM C&C 2024
+    venue_long: Proceedings of the 16th Conference on Creativity & Cognition
+    pages: 374–397
+    year: 2024
+    kind: conference
+    doi: 10.1145/3635636.3656207
+    award: Best Paper Honorable Mention
+    selected: true
+    # image: assets/pubs/srinivasan2023improving.webp
+    links:
+      pdf: https://dl.acm.org/doi/pdf/10.1145/3635636.3656207
+
+  - id: ding2023fluid
+    title: "Fluid Transformers and Creative Analogies: Exploring Large Language Models' Capacity for Augmenting Cross-Domain Analogical Creativity"
+    authors: [Zijian Ding, Arvind Srinivasan, Stephen MacNeil, Joel Chan]
+    venue: ACM C&C 2023
+    venue_long: Proceedings of the 15th Conference on Creativity & Cognition
+    pages: 489–505
+    year: 2023
+    kind: conference
+    doi: 10.1145/3591196.3593516
+    award: Best Paper Honorable Mention
+    selected: true
+    # image: assets/pubs/ding2023fluid.webp
+    links:
+      pdf: https://dl.acm.org/doi/pdf/10.1145/3591196.3593516
+
+  - id: srinivasan2023analogilead
+    title: "AnalogiLead: Improving Selection of Analogical Inspirations with Chunking and Recombination"
+    authors: [Arvind Srinivasan, Joel Chan]
+    venue: ACM C&C 2023
+    venue_long: Proceedings of the 15th Conference on Creativity & Cognition
+    pages: 338–341
+    year: 2023
+    kind: demo
+    doi: 10.1145/3591196.3596817
+    # image: assets/pubs/srinivasan2023analogilead.webp
+    links:
+      video: https://youtu.be/l6z20KZWum0
+
+  - id: srinivasan2023thesis
+    title: Improving Selection of Analogical Inspirations with Chunking and Recombination
+    authors: [Arvind Srinivasan]
+    venue: MS thesis, University of Maryland
+    year: 2023
+    kind: thesis
+    only: research
+    links:
+      web: https://www.proquest.com/openview/5c1d854b35961b28251685dd7095fcba/
+
+  - id: srinivasan2022hotshots
+    title: "Hotshots: Visualizing Stroke-by-Stroke Tennis Data"
+    authors: [Arvind Srinivasan, Abhinav Kannan, Niklas Elmqvist]
+    venue: IEEE VIS 2022 Posters
+    year: 2022
+    kind: poster
+    # image: assets/pubs/srinivasan2022hotshots.webp
+    links:
+      poster: https://ieeevis.b-cdn.net/vis_2022/posters/v-vis-posters-1037.pdf
+      pdf: https://ieeevis.b-cdn.net/vis_2022/posters/v-vis-posters-1037-summary.pdf
+
+# ── Experience ──────────────────────────────────────────────────────────────
+experience:
+  - role: PhD Fellow
+    org: Center for Anytime Anywhere Analytics (CA³), Aarhus University
+    place: Aarhus, Denmark
+    start: 2024-01
+    end: present
+    summary:
+      research: One of the centre's first hires. Developed attention-aware visualization from a single-user web prototype to co-located WebXR collaboration and asynchronous handoff between analysts, and ran the user studies behind each step.
+      industry: One of the centre's first hires. Built and evaluated attention-tracking interfaces for the web, Meta Quest 3 (WebXR) and HoloLens 2 (Unity), including gaze capture, per-mark visibility tracking and an event-logged analysis backend on MongoDB.
+    tags: [WebXR, React Three Fiber, Unity, eye tracking, user studies]
+
+  - role: Visiting PhD Researcher
+    org: VISUS, University of Stuttgart
+    place: Stuttgart, Germany
+    duration: 5 months
+    summary: Hosted by Michael Sedlmair. Analysed mobile eye-tracking recordings of band rehearsals (Pupil Labs Neon) with YOLOv8-assisted area-of-interest annotation.
+    tags: [Pupil Labs Neon, YOLOv8, Python]
+
+  - role: Graduate Research Assistant
+    org: College of Information Studies, University of Maryland
+    place: College Park, MD, USA
+    start: 2022-06
+    end: 2023-08
+    summary: With Joel Chan. Prototyped a sociotechnical analogical matchmaking system, a Python pipeline for processing research papers, and Elasticsearch-based analogical search.
+    tags: [Python, Elasticsearch, React]
+
+  - role: User Experience Intern
+    org: Tetrate
+    place: Remote
+    start: 2020-09
+    end: 2021-03
+    summary: Redesigned the core platform for a new brand identity, from information architecture to multi-fidelity Figma prototypes.
+    tags: [Figma, design systems]
+
+# ── Education ───────────────────────────────────────────────────────────────
+education:
+  - degree: PhD, Computer Science
+    org: Aarhus University
+    place: Aarhus, Denmark
+    start: 2024-01
+    end: 2026-12
+    detail: "Thesis: *Attention-Aware Analytics: Recording and Revisualizing Where People Look*. Supervisor: Niklas Elmqvist. Submission December 2026, defence expected spring 2027."
+  - degree: MS, Human-Computer Interaction
+    org: University of Maryland
+    place: College Park, MD, USA
+    start: 2021-08
+    end: 2023-05
+    detail: "GPA 3.93/4.00. Thesis on analogical inspiration with chunking and recombination, advised by Joel Chan."
+  - degree: BTech, Computer Science and Engineering
+    org: SRM Institute of Science and Technology
+    place: Chennai, India
+    start: 2016-08
+    end: 2020-05
+    detail: GPA 3.82/4.00, First Class with Distinction.
+
+# ── Open source & projects ──────────────────────────────────────────────────
+# kind: library | tool | research | game | infrastructure
+projects:
+  - name: heed
+    kind: library
+    year: 2026
+    summary: Attention recording for any web page. Cursor dwell, viewport visibility and webcam gaze with calibration, scanpaths, attention-triggered experience sampling and on-device LLM summaries, behind one declarative spec.
+    tech: [JavaScript, MediaPipe, WebLLM]
+    links:
+      web: https://heed.arvindchee.nu
+      code: https://github.com/arvindcheenu/heed
+  - name: SciFig
+    kind: tool
+    summary: Browser generator for CHI-style teaser and multi-panel figures. Layout presets, drag-in panels, annotation, export at 300–600 dpi.
+    tech: [React, TypeScript, Vite]
+    links:
+      web: https://scifig.arvindchee.nu
+      code: https://github.com/arvindcheenu/scifig
+  - name: habitat.css
+    kind: library
+    summary: Ambient-adapting CSS. E-ink and camouflage display modes driven by measured room light and colour.
+    tech: [CSS, JavaScript]
+    links:
+      web: https://arvindchee.nu/habitat.css/
+      code: https://github.com/arvindcheenu/habitat.css
+  - name: Matercolors
+    kind: library
+    summary: Tiny, zero-dependency library that builds harmonious Material palettes from any colour.
+    tech: [JavaScript, npm]
+    links:
+      web: https://www.npmjs.com/package/matercolors
+      code: https://github.com/arvindcheenu/matercolors
+  - name: Chromanomer
+    kind: library
+    summary: Perceptually intuitive colour naming on the LCh colour space, for accessible colour selection with almost no learning curve.
+    tech: [JavaScript, npm]
+    links:
+      web: https://arvindcheenu.github.io/Chromanomer/
+      code: https://github.com/arvindcheenu/chromanomer
+  - name: vizlit
+    kind: research
+    summary: Python package for chart reading grounded in the IVL visualization-literacy framework, with a companion agent skill.
+    tech: [Python]
+    only: research
+  - name: Dragon Drop
+    kind: tool
+    summary: Human-centred, AI-assisted brainstorming tool built on Gestalt principles.
+    tech: [React, TypeScript, Vite]
+    links:
+      code: https://github.com/arvindcheenu/dragon-drop
+  - name: Research infrastructure
+    kind: infrastructure
+    summary: CA³ lab website and publications pipeline (Eleventy, Google Sheets/Drive as CMS, BibTeX tooling), and a HoloLens 2 experiment stack (Unity, Python WebSocket, MongoDB, music21/Verovio).
+    tech: [Eleventy, Unity, MongoDB]
+
+# ── Teaching ────────────────────────────────────────────────────────────────
+teaching:
+  - role: Teaching assistant, Data Visualization
+    org: Aarhus University
+    when: Autumn 2026
+    detail: TA sessions, weekly critique exercises, examiner in the mock oral exam.
+  - role: Teaching assistant, Requirements Engineering
+    org: Aarhus University
+    when: ""
+    detail: Designed an LLM-driven client persona for elicitation practice, shipped as an offline single-file tool.
+  - role: Guest lecture, Information Visualization
+    org: Aarhus University
+    when: March 2024
+  - role: Master's thesis censor
+    org: Aarhus University
+    when: ""
+
+# ── Talks ───────────────────────────────────────────────────────────────────
+talks:
+  - title: "HeedVision: Attention Awareness in Collaborative Immersive Analytics"
+    event: IEEE VIS 2026
+    date: 2026-11
+  - title: Analyzing Visual Attention Patterns During Band Rehearsal
+    event: ACM ETRA 2026, Marrakesh
+    date: 2026-06
+  - title: "The Attention-Aware Pipeline: Design Tensions from Making Attention Visible in XR"
+    event: SAXR Workshop, ACM CHI 2026, Barcelona
+    date: 2026-04
+  - title: Improving Selection of Analogical Inspirations through Chunking and Recombination
+    event: ACM Creativity & Cognition 2024, Chicago
+    date: 2024-06
+  - title: "Hotshots: Visualizing Stroke-by-Stroke Tennis Data (poster)"
+    event: IEEE VIS 2022, Oklahoma City
+    date: 2022-10
+
+# ── Awards ──────────────────────────────────────────────────────────────────
+awards:
+  - title: Best Paper Honorable Mention
+    by: ACM Creativity & Cognition
+    year: 2024
+  - title: Best Paper Honorable Mention
+    by: ACM Creativity & Cognition
+    year: 2023
+  - title: Jacob K. Goldhaber Travel Award
+    by: University of Maryland
+    year: 2022
+  - title: Special Merit Scholarship, 25% tuition waiver
+    by: SRM Institute of Science and Technology
+    year: 2016–2019
+
+# ── Skills ──────────────────────────────────────────────────────────────────
+skills:
+  - group: Languages
+    items: [TypeScript, JavaScript, Python, C#]
+  - group: Interfaces
+    items: [React, React Three Fiber, Three.js, WebXR, D3.js, Svelte, Electron]
+  - group: Back end & data
+    items: [Node.js, FastAPI, MongoDB, Elasticsearch, WebSockets]
+  - group: XR & sensing
+    items: [Meta Quest 3, HoloLens 2, Unity, Pupil Labs Neon, MediaPipe]
+  - group: Research methods
+    items: [Eye tracking, Controlled studies, Mixed methods, Qualitative analysis]
+  - group: Design
+    items: [Figma, Prototyping, Design systems]
+  - group: Spoken
+    items: [Tamil (native), English (fluent)]
+
+# ── Elsewhere ───────────────────────────────────────────────────────────────
+elsewhere:
+  - kind: Writing
+    label: Medium
+    detail: Posts on research and tools, including *When Data Pays Attention*.
+    url: https://arvindcheenu.medium.com
+  # - kind: Writing
+  #   label: Ponderlust
+  #   detail: Essays and poetry on time, meaning and lived experience.
+  #   url: https://…
+  - kind: Play
+    label: Accrete
+    detail: A chain-reaction game where dust grows into stars and black holes.
+    url: /accrete/
+  - kind: Play
+    label: Chimistry
+    detail: Combine HCI concepts into new ones, Little Alchemy style.
+    url: /chimistry/

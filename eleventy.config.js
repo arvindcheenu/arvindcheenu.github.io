@@ -1,125 +1,157 @@
-import { DateTime } from "luxon";
+import fs from "node:fs";
+import yaml from "js-yaml";
+import markdownIt from "markdown-it";
+
+const md = markdownIt({ html: true, typographer: true });
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MODES = ["research", "industry"];
+
+// "2026-11" → "Nov 2026", "2026" → "2026"
+function ym(v) {
+  if (v === undefined || v === null || v === "") return "";
+  const s = String(v);
+  const m = s.match(/^(\d{4})-(\d{1,2})/);
+  return m ? `${MONTHS[+m[2] - 1]} ${m[1]}` : s;
+}
+
+// Markdown or a { research, industry } pair → HTML. Pairs become two spans the page toggles.
+function vary(v, inline = true) {
+  if (v === undefined || v === null || v === "") return "";
+  const render = (s) => (inline ? md.renderInline(String(s)) : md.render(String(s)));
+  if (typeof v === "object" && !Array.isArray(v) && (v.research || v.industry)) {
+    return MODES.filter((m) => v[m]).map((m) => `<span data-only="${m}">${render(v[m])}</span>`).join("");
+  }
+  return render(v);
+}
+
+function lastFirst(name) {
+  const parts = String(name).trim().split(/\s+/);
+  if (parts.length < 2) return name;
+  return `${parts.pop()}, ${parts.join(" ")}`;
+}
+
+function bibtex(p, siteName) {
+  const kindType = { journal: "article", article: "article", preprint: "misc", thesis: "mastersthesis" };
+  const type = kindType[p.kind] || "inproceedings";
+  const f = [["author", (p.authors || []).map(lastFirst).join(" and ")], ["title", `{${p.title}}`]];
+  const venue = p.venue_long || p.venue;
+  if (type === "article") f.push(["journal", venue]);
+  else if (type === "inproceedings") f.push(["booktitle", venue]);
+  else if (type === "mastersthesis") f.push(["school", String(p.venue || "").replace(/^MS thesis,\s*/i, "")]);
+  else if (p.links?.arxiv) {
+    f.push(["eprint", p.links.arxiv.replace(/.*\/abs\//, "")], ["archivePrefix", "arXiv"]);
+  }
+  f.push(["year", p.year], ["volume", p.volume], ["number", p.number], ["pages", p.pages && String(p.pages).replace(/[–-]+/, "--")], ["doi", p.doi]);
+  if (!p.doi) f.push(["url", p.links?.arxiv || p.links?.pdf || p.links?.web]);
+  const body = f.filter(([, v]) => v).map(([k, v]) => `  ${k} = {${v}}`).join(",\n");
+  return `@${type}{${p.id},\n${body}\n}`;
+}
+
+// Author list with the site owner in bold, equal contribution marked with †, long lists folded.
+function authors(list, self, equal = []) {
+  const fmt = (n) => {
+    const mark = equal.includes(n) ? "†" : "";
+    return n === self ? `<b class="self">${esc(n)}${mark}</b>` : `${esc(n)}${mark}`;
+  };
+  if (!list) return "";
+  if (list.length <= 8) return list.map(fmt).join(", ");
+  const i = list.indexOf(self);
+  const head = list.slice(0, 3).map(fmt);
+  const mid = i > 2 ? [`…`, fmt(self)] : [];
+  return `${[...head, ...mid].join(", ")}, … <span class="count">${list.length} authors</span>`;
+}
+
+function primaryUrl(p) {
+  if (p.doi) return `https://doi.org/${p.doi}`;
+  const l = p.links || {};
+  return l.arxiv || l.pdf || l.web || l.code || l.poster || "";
+}
 
 export default function (eleventyConfig) {
-  // Date formatting filter
-  eleventyConfig.addFilter("dateformat", (dateObj, format = "DATETIME_FULL", zone = "utc") => {
-    // DateTime presets for standard formats
-    const presets = {
-      "DATE_SHORT": DateTime.DATE_SHORT,
-      "DATE_MED": DateTime.DATE_MED,
-      "DATE_MED_WITH_WEEKDAY": DateTime.DATE_MED_WITH_WEEKDAY,
-      "DATE_FULL": DateTime.DATE_FULL,
-      "DATE_HUGE": DateTime.DATE_HUGE,
-      "TIME_SIMPLE": DateTime.TIME_SIMPLE,
-      "TIME_WITH_SECONDS": DateTime.TIME_WITH_SECONDS,
-      "TIME_WITH_SHORT_OFFSET": DateTime.TIME_WITH_SHORT_OFFSET,
-      "TIME_WITH_LONG_OFFSET": DateTime.TIME_WITH_LONG_OFFSET,
-      "TIME_24_SIMPLE": DateTime.TIME_24_SIMPLE,
-      "TIME_24_WITH_SECONDS": DateTime.TIME_24_WITH_SECONDS,
-      "TIME_24_WITH_SHORT_OFFSET": DateTime.TIME_24_WITH_SHORT_OFFSET,
-      "TIME_24_WITH_LONG_OFFSET": DateTime.TIME_24_WITH_LONG_OFFSET,
-      "DATETIME_SHORT": DateTime.DATETIME_SHORT,
-      "DATETIME_MED": DateTime.DATETIME_MED,
-      "DATETIME_MED_WITH_WEEKDAY": DateTime.DATETIME_MED_WITH_WEEKDAY,
-      "DATETIME_FULL": DateTime.DATETIME_FULL,
-      "DATETIME_HUGE": DateTime.DATETIME_HUGE,
-      "DATETIME_SHORT_WITH_SECONDS": DateTime.DATETIME_SHORT_WITH_SECONDS,
-      "DATETIME_MED_WITH_SECONDS": DateTime.DATETIME_MED_WITH_SECONDS,
-      "DATETIME_FULL_WITH_SECONDS": DateTime.DATETIME_FULL_WITH_SECONDS,
-      "DATETIME_HUGE_WITH_SECONDS": DateTime.DATETIME_HUGE_WITH_SECONDS,
-    };
+  eleventyConfig.addDataExtension("yaml,yml", (contents) => yaml.load(contents));
 
-    // Custom textual formats
-    const textualPresets = {
-      "MONTH_YEAR": "LLLL yyyy",
-      "YEAR_MONTH_DAY": "yyyy-MM-dd",
-      "FULL_MONTH_DAY_YEAR": "MMMM dd, yyyy",
-      "DAY_MONTH_YEAR": "dd MMMM yyyy",
-      "TIME_12_HOUR": "hh:mm a",
-      "TIME_24_HOUR": "HH:mm",
-    };
-
-    try {
-      // Convert input to DateTime object
-      const dt = DateTime.fromJSDate(new Date(dateObj), { zone });
-
-      if (presets[format]) {
-        return dt.toLocaleString(presets[format]);
-      } else if (textualPresets[format]) {
-        return dt.toFormat(textualPresets[format]);
-      } else if (format) {
-        // If format is provided but not in presets, try to use it as a custom format
-        return dt.toFormat(format);
+  eleventyConfig.addFilter("md", (s) => vary(s));
+  eleventyConfig.addFilter("mdblock", (s) => vary(s, false));
+  eleventyConfig.addFilter("ym", ym);
+  eleventyConfig.addFilter("esc", esc);
+  eleventyConfig.addFilter("bibtex", bibtex);
+  eleventyConfig.addFilter("authors", authors);
+  eleventyConfig.addFilter("primaryUrl", primaryUrl);
+  eleventyConfig.addFilter("isOn", (v) => v === true || v === "on" || v === "true" || v === "yes");
+  eleventyConfig.addFilter("year", (v) => String(v ?? "").slice(0, 4));
+  // Ranges read as years, Swiss-style: "2022 — 2023", "2024 — Now".
+  eleventyConfig.addFilter("period", (e) => {
+    if (e.duration && !e.start) return e.duration;
+    const a = String(e.start ?? "").slice(0, 4);
+    const b = e.end === "present" ? "Now" : String(e.end ?? "").slice(0, 4);
+    if (a && b && a === b) return a;
+    return [a, b].filter(Boolean).join(" — ");
+  });
+  // Marks publications whose year repeats the one above, separately for each mode,
+  // so each year label shows once per group whichever entries are visible.
+  eleventyConfig.addFilter("pubRows", (pubs = []) => {
+    const label = (p) => (p.status === "under-review" ? "In review" : String(p.year));
+    const seen = { research: new Set(), industry: new Set() };
+    return pubs.map((p) => {
+      const vis = {
+        research: p.only ? p.only === "research" : true,
+        industry: p.only ? p.only === "industry" : !!p.selected,
+      };
+      const rep = {};
+      for (const m of MODES) {
+        rep[m] = vis[m] && seen[m].has(label(p));
+        if (vis[m]) seen[m].add(label(p));
       }
-      
-      // Default fallback
-      return dt.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS);
-    } catch (error) {
-      console.error("Date formatting error:", error);
-      return dateObj; // Return original value if formatting fails
-    }
+      return { p, label: label(p), repR: rep.research, repI: rep.industry };
+    });
   });
-
-  // Server options
-  eleventyConfig.setServerOptions({
-    watch: [
-      '_site/**/*.css',
-      '_site/**/*.js',
-      '_site/**/*.html'
-    ],
-    showAllHosts: true, // Makes the server accessible from other devices on the network
-    port: process.env.PORT || 8080
+  // Months between a YYYY-MM value and the build date, for "New" labels.
+  eleventyConfig.addFilter("ageMonths", (v) => {
+    const m = String(v).match(/^(\d{4})-(\d{1,2})/);
+    if (!m) return 99;
+    const now = new Date();
+    return (now.getFullYear() - +m[1]) * 12 + (now.getMonth() + 1 - +m[2]);
   });
+  eleventyConfig.addFilter("host", (u) => String(u).replace(/^mailto:/, "").replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""));
+  eleventyConfig.addFilter("json", (v) => JSON.stringify(v));
+  eleventyConfig.addFilter("sameAs", (links = []) => JSON.stringify(links.map((l) => l.url).filter((u) => /^https?:/.test(u))));
+  eleventyConfig.addFilter("sectionOrder", (order, key) => {
+    const i = (order || []).indexOf(key);
+    return i < 0 ? 0 : i + 1;
+  });
+  eleventyConfig.addFilter("pad2", (n) => String(n).padStart(2, "0"));
+  eleventyConfig.addShortcode("buildDate", () => {
+    const d = new Date();
+    return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  });
+  eleventyConfig.addShortcode("buildYear", () => String(new Date().getFullYear()));
+  // Inline a file from src/_includes so the page ships as one request.
+  eleventyConfig.addShortcode("inline", (file) => fs.readFileSync(`src/_includes/${file}`, "utf8"));
 
-  // Asset handling
   eleventyConfig.addPassthroughCopy({
-    'src/assets': 'assets',
-    'src/_includes/js': '.',
-    'src/robots.txt': 'robots.txt',
-    'src/favicon.ico': 'favicon.ico',
-    'src/CNAME': 'CNAME',
-    'src/_redirects': '_redirects',
-    'src/accrete': 'accrete',
-    'src/chimistry': 'chimistry'
+    "src/assets": "assets",
+    "src/favicon.svg": "favicon.svg",
+    "src/robots.txt": "robots.txt",
+    "src/CNAME": "CNAME",
+    "src/_redirects": "_redirects",
+    "src/accrete": "accrete",
+    "src/chimistry": "chimistry",
   });
 
-  // Accrete (the game at /accrete) is a finished static app: copy it as-is, never run it through templates
+  // Finished static apps that live under subpaths: copy as-is, never template them.
   eleventyConfig.ignores.add("src/accrete/**");
-  // Chimistry (the HCI concept game at /chimistry) is a single self-contained page: copy as-is too
   eleventyConfig.ignores.add("src/chimistry/**");
 
-  // Watch targets for the dev server
-  eleventyConfig.addWatchTarget("./src/assets/");
-  eleventyConfig.addWatchTarget("./src/_includes/js/");
+  eleventyConfig.addWatchTarget("./src/_includes/");
+  eleventyConfig.addWatchTarget("./src/_data/");
 
-  // Add plugins if needed
-  // eleventyConfig.addPlugin(pluginName, options);
+  eleventyConfig.setServerOptions({ showAllHosts: true, port: process.env.PORT || 8080 });
 
-  // Configure markdown-it options if using markdown
-  let markdownOptions = {
-    html: true,
-    breaks: true,
-    linkify: true
-  };
-  
-  // Return the configuration object
   return {
-    dir: {
-      input: 'src',
-      output: '_site',
-      includes: '_includes',
-      layouts: '_layouts',
-      data: '_data'
-    },
-    templateFormats: [
-      'html',
-      'njk',
-      'md',
-      '11ty.js'
-    ],
-    markdownTemplateEngine: 'njk',
-    htmlTemplateEngine: 'njk',
-    dataTemplateEngine: 'njk',
-    passthroughFileCopy: true
+    dir: { input: "src", output: "_site", includes: "_includes", data: "_data" },
+    templateFormats: ["njk", "md", "html"],
+    htmlTemplateEngine: "njk",
+    markdownTemplateEngine: "njk",
   };
 }
