@@ -73,36 +73,35 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 <main id="main" class="wrap">
   <section class="hero row" id="top" aria-label="Introduction">
     <div class="lead">
-      <div class="avatar">
-        <svg class="ring" viewBox="0 0 132 132" aria-hidden="true">
-          <defs><path id="ring-path" d="M66,66 m-54,0 a54,54 0 1,1 108,0 a54,54 0 1,1 -108,0"/></defs>
-          {%- for key, m in s.modes %}
-          <text data-only="{{ key }}"><textPath href="#ring-path" textLength="336" lengthAdjust="spacing">{{ m.ring }}</textPath></text>
-          {%- endfor %}
-        </svg>
+      <figure class="avatar{% if s.open_to_work %} otw{% endif %}">
         <div class="face">
           {%- if s.photo %}<img src="{{ s.photo }}" alt="Portrait of {{ s.name }}" width="184" height="184" fetchpriority="high" decoding="async">{% else %}<span aria-hidden="true">{{ s.short }}</span>{% endif -%}
         </div>
-      </div>
+        {%- if s.open_to_work %}<figcaption class="otw-label">{{ s.open_to_work }}</figcaption>{% endif %}
+      </figure>
     </div>
     <div class="body">
       <h1 class="name">{{ s.name }}</h1>
       <p class="role">{% for key, m in s.modes %}<span data-only="{{ key }}">{{ m.role }}</span>{% endfor %}</p>
-      <p class="status no-print"><span class="pulse" aria-hidden="true"></span>{% for key, m in s.modes %}<span data-only="{{ key }}">{{ m.status }}</span>{% endfor %}</p>
+      <p class="status no-print"><span class="dot" aria-hidden="true"></span>{% for key, m in s.modes %}<span data-only="{{ key }}">{{ m.status }}</span>{% endfor %}</p>
       <p class="print-only contact-line"><a href="mailto:{{ s.email }}">{{ s.email }}</a> · <a href="{{ s.url }}">{{ s.url | host }}</a> · {{ s.location }}{% for l in s.links %}{% if l.brand %}<span {{- only(l) }}> · <a href="{{ l.url }}">{{ l.label }}</a></span>{% endif %}{% endfor %}</p>
       <div class="bio">
         {%- for key, m in s.modes %}
         <div data-only="{{ key }}">{% for para in m.bio %}<p>{{ para | md | safe }}</p>{% endfor %}</div>
         {%- endfor %}
       </div>
-      <div class="links no-print">
-        {%- for l in s.links %}{% if l.primary %}
-        <a class="btn tac primary" href="{{ l.url }}"{{ only(l) }}>{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a>
-        {%- endif %}{% endfor %}
-        <button type="button" class="btn tac" data-action="print">{{ icon("file-arrow-down") }}<span>Download CV</span></button>
-        {%- for l in s.links %}{% if not l.primary %}
-        <a class="btn tac" href="{{ l.url }}"{% if l.url.startsWith('http') %} rel="me noopener"{% endif %}{{ only(l) }}>{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a>
-        {%- endif %}{% endfor %}
+      <div class="actions no-print">
+        <div class="links">
+          {%- for l in s.links %}{% if l.primary %}
+          <a class="btn tac primary" href="{{ l.url }}"{{ only(l) }}>{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a>
+          {%- endif %}{% endfor %}
+          <button type="button" class="btn tac" data-action="print">{{ icon("file-arrow-down") }}<span>Download CV</span></button>
+        </div>
+        <ul class="profiles" aria-label="Profiles">
+          {%- for l in s.links %}{% if not l.primary %}
+          <li{{ only(l) }}><a href="{{ l.url }}"{% if l.url.startsWith('http') %} rel="me noopener"{% endif %}>{{ icon(l.icon, l.brand) }}{{ l.label }}</a></li>
+          {%- endif %}{% endfor %}
+        </ul>
       </div>
     </div>
   </section>
@@ -123,13 +122,13 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
         <article class="item news{% if loop.index > s.news_visible %} fold{% endif %}"{{ only(n) }}>
           <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time></div>
           <div class="what">
-            <p>{% if (n.date | ageMonths) <= 1 %}<span class="new">New</span>{% endif %}{{ n.text | md | safe }}{% if n.link %} <a class="more" href="{{ n.link }}" aria-label="Read more">{{ icon("arrow-up-right-from-square") }}</a>{% endif %}</p>
+            <p>{% if (n.date | ageMonths) <= 1 %}<span class="new">New</span>{% endif %}{{ n.text | md | safe }}{% if n.link %} <a class="more" href="{{ n.link }}" aria-label="Read more">↗</a>{% endif %}</p>
             {%- if n.image %}<img class="thumb" src="{{ n.image }}" alt="{{ n.image_alt or '' }}" loading="lazy" decoding="async">{% endif %}
           </div>
         </article>
         {%- endfor %}
         {%- if s.news.length > s.news_visible %}
-        <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="btn sm tac fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show all {{ s.news.length }}</span></button></div></div>
+        <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false"><span>Show all {{ s.news.length }}</span>{{ icon("chevron-down") }}</button></div></div>
         {%- endif %}
 
       {%- elif key == "publications" %}
@@ -147,9 +146,10 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
               <p class="print-only ref">{% if p.doi %}doi:{{ p.doi }}{% elif p.links and p.links.arxiv %}arXiv:{{ p.links.arxiv | replace("https://arxiv.org/abs/", "") }}{% endif %}</p>
               {%- if p.doi or p.links or p.bibtex !== false %}
               <p class="acts no-print">
-                {%- if p.doi %}<a class="btn xs tac" href="https://doi.org/{{ p.doi }}">{{ icon("link") }}DOI</a>{% endif %}
-                {%- for k, u in p.links %}<a class="btn xs tac" href="{{ u }}">{{ icon(actIcons[k] or "link") }}{{ actLabels[k] or k }}</a>{% endfor %}
-                {%- if p.bibtex !== false %}<button type="button" class="btn xs tac" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">{{ icon("quote-right") }}BibTeX</button>{% endif %}
+                {%- for k, u in p.links %}{% if k == "pdf" %}<a class="tl" href="{{ u }}">PDF</a>{% endif %}{% endfor %}
+                {%- if p.doi %}<a class="tl" href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}
+                {%- for k, u in p.links %}{% if k != "pdf" %}<a class="tl" href="{{ u }}">{{ actLabels[k] or k }}</a>{% endif %}{% endfor %}
+                {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">BibTeX</button>{% endif %}
               </p>
               {%- endif %}
             </div>
@@ -166,7 +166,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
             <h3 class="h">{{ e.role }}<span class="org">{{ e.org }}</span></h3>
             {%- if e.place %}<p class="place">{{ e.place }}{% if e.duration and e.start %} · {{ e.duration }}{% endif %}</p>{% endif %}
             {%- if e.summary %}<p class="sum">{{ e.summary | md | safe }}</p>{% endif %}
-            {%- if e.tags %}<p class="tags">{% for t in e.tags %}<span class="tag">{{ t }}</span>{% endfor %}</p>{% endif %}
+            {%- if e.tags %}<p class="meta">{{ e.tags | join(" · ") }}</p>{% endif %}
           </div>
         </article>
         {%- endfor %}
@@ -182,7 +182,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
               <p class="sum">{{ p.summary | md | safe }}</p>
               <p class="meta">{% if p.tech %}<span class="tech">{{ p.tech | join(" · ") }}</span>{% endif %}</p>
               {%- if p.links %}
-              <p class="acts no-print">{% for k, u in p.links %}<a class="btn xs tac" href="{{ u }}">{{ icon("github" if k == "code" else (actIcons[k] or "link"), k == "code") }}{{ "Live" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>
+              <p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{{ "Live ↗" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>
               {%- endif %}
             </div>
             {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
