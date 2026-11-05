@@ -59,7 +59,8 @@ i.fa-brands{color:currentColor}
 .body{min-width:0}
 
 /* ── Top bar ───────────────────────────────────────────────────────────────── */
-.topbar{position:sticky;top:0;z-index:30;background:color-mix(in oklab,var(--bg) 82%,transparent);-webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:var(--bg)}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in oklab,var(--bg) 82%,transparent);-webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
 
 .bar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;height:3.5rem}
 .brand{display:inline-flex;align-items:center;gap:.625rem;color:var(--fg);text-decoration:none;font-weight:680;font-size:.9375rem;letter-spacing:-.012em;min-width:0}
