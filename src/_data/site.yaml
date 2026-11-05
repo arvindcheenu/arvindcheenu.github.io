@@ -25,7 +25,6 @@ email: arvind@cheenu.net
 work_email: arvind@cs.au.dk
 photo: assets/profile.webp        # remove to fall back to initials
 og_image: assets/profile-og.jpg    # preview image for link unfurls
-open_to_work: Open to work        # label under the portrait; leave blank to hide
 
 # The one accent colour. Used only for links, primary buttons, icon duotone
 # and a few typographic highlights. Light and dark need separate values so
@@ -50,6 +49,7 @@ modes:
     icon: flask
     role: PhD candidate in visualization and HCI, Aarhus University
     status: Open to postdoc positions from January 2027
+    ring: "Open to work · Postdoc · From Jan 2027 · "   # text spinning round the portrait
     bio:
       - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later. My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, a capture, record and revisualize pipeline tested with single analysts, co-located pairs in mixed reality, musicians in rehearsal, and analysts handing work to one another.
       - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
@@ -59,6 +59,7 @@ modes:
     icon: briefcase
     role: Research engineer for visualization, XR and human–AI interfaces
     status: Open to research engineering and design-technologist roles from January 2027
+    ring: "Open to work · Engineering · From Jan 2027 · "
     bio:
       - I design and build interfaces for data, XR and human–AI collaboration, then test them with people. Since 2024 I have shipped attention-tracking systems for the web, Meta Quest 3 and HoloLens 2 at Aarhus University, covering rendering, gaze pipelines and study infrastructure, and published them at IEEE VIS, IEEE TVCG and ACM venues.
       - I work across the stack in TypeScript and Python with React, React Three Fiber, WebXR, D3, Node and FastAPI. I maintain open-source libraries for colour, scientific figures and ambient-adaptive UI, and I prefer tools that load fast, work offline and explain what they are doing.

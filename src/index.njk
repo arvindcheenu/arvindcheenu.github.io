@@ -73,12 +73,17 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 <main id="main" class="wrap">
   <section class="hero row" id="top" aria-label="Introduction">
     <div class="lead">
-      <figure class="avatar{% if s.open_to_work %} otw{% endif %}">
+      <div class="avatar">
+        <svg class="ring" viewBox="0 0 132 132" aria-hidden="true">
+          <defs><path id="ring-path" d="M66,66 m-54,0 a54,54 0 1,1 108,0 a54,54 0 1,1 -108,0"/></defs>
+          {%- for key, m in s.modes %}{% if m.ring %}
+          <text data-only="{{ key }}"><textPath href="#ring-path" textLength="336" lengthAdjust="spacing">{{ m.ring }}</textPath></text>
+          {%- endif %}{% endfor %}
+        </svg>
         <div class="face">
           {%- if s.photo %}<img src="{{ s.photo }}" alt="Portrait of {{ s.name }}" width="184" height="184" fetchpriority="high" decoding="async">{% else %}<span aria-hidden="true">{{ s.short }}</span>{% endif -%}
         </div>
-        {%- if s.open_to_work %}<figcaption class="otw-label">{{ s.open_to_work }}</figcaption>{% endif %}
-      </figure>
+      </div>
     </div>
     <div class="body">
       <h1 class="name">{{ s.name }}</h1>
@@ -113,7 +118,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
     {%- if (oR or oI) and s[key] and s[key].length %}
     <section class="sec row" id="{{ key }}" style="--or:{{ oR }};--oi:{{ oI }}"{% if not oI %} data-only="research"{% elif not oR %} data-only="industry"{% endif %} aria-labelledby="h-{{ key }}">
       <div class="lead">
-        <h2 class="sec-label" id="h-{{ key }}"><span class="num" aria-hidden="true">{% if oR %}<span data-only="research">{{ oR | pad2 }}</span>{% endif %}{% if oI %}<span data-only="industry">{{ oI | pad2 }}</span>{% endif %}</span><span class="sec-title">{{ title | md | safe }}</span></h2>
+        <h2 class="sec-label" id="h-{{ key }}">{{ title | md | safe }}</h2>
       </div>
       <div class="body">
 
@@ -245,7 +250,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
   {%- endfor %}
 
     <section class="sec row contact no-print" id="contact" style="--or:99;--oi:99" aria-labelledby="h-contact">
-      <div class="lead"><h2 class="sec-label" id="h-contact"><span class="num" aria-hidden="true">→</span><span class="sec-title">Contact</span></h2></div>
+      <div class="lead"><h2 class="sec-label" id="h-contact">Contact</h2></div>
       <div class="body">
         <p class="big"><a href="mailto:{{ s.email }}">{{ s.email }}</a></p>
         <p class="sub">{% if s.work_email %}University mail <a href="mailto:{{ s.work_email }}">{{ s.work_email }}</a><span class="sep">·</span>{% endif %}{{ s.location }}<span class="sep">·</span><span class="clock" data-clock>&nbsp;</span></p>
