@@ -7,20 +7,20 @@ One-page personal site and CV. Static HTML built with Eleventy, deployed to GitH
 All content lives in **`src/_data/site.yaml`**: intro, biographies, news, publications, projects, experience, teaching, talks, service, grants, awards, education, skills and links. Edit it on GitHub, commit, and the site rebuilds.
 
 - Text fields take inline Markdown: `**bold**`, `*italic*`, `[link](https://…)`.
-- `tailor.views` holds the Research and Industry views. Each has its own section `order`, `status` line and CV title. Delete a name from an `order` to hide that section in that view. `?for=industry` in a link opens the Industry view.
+- `tailor.views` holds the Research and Industry views. Each has its own section `order`, `status` line and CV title. Delete a name from an `order` to leave that section out of that view; `arranged` explains the order in a collapsed note under the introduction, which also lists what is left out and can show it. `print_order` gives the saved PDF a different order (the Research CV starts with education, as academic CVs do). `?for=industry` in a link opens the Industry view.
 - A field written as `{ research: …, industry: … }` shows the matching text in each view. `bio` (the introduction) works this way.
 - `biography` has eight versions: research or industry, short or long, first or third person. The page has switches for length and voice; the view picks the set.
 - In Experience, `summary` is the paragraph the Research view shows and `highlights` are the bullet points the Industry view shows.
-- Publications list by year; visitors can switch to grouping by type. `pub_groups` sets the type groups and their prefixes (J, C, W, P), numbered newest first. `url` sets where a title links.
+- Publications list by year; visitors can switch to grouping by type. `pub_groups` sets the type groups and their prefixes (J, C, W, P), numbered newest first, and a legend under the heading explains the letters and icons in use (`key` names a group there). `url` sets where a title links.
 - BibTeX is generated from each publication's fields. `bibtex: false` hides the button.
 - `image:` adds one picture to a news item, publication or project. `images:` (a list of `src`, `alt`, `caption`) adds a strip of pictures that open full size; the Attention-Aware Visualization entry has an example. Each picture keeps its own shape (read from the file at build time); the strip scrolls sideways, and its edges blur progressively while there is more to see that way, with arrow buttons on hover.
 - Grant `amount`s written with a currency code or symbol (`20,000 DKK`, `US$400`) get a live conversion in brackets. `currency_default` and `currencies` set the default and the choices.
-- `sections` sets each section's heading, icon and colour. Links inside a section take its colour; a link to an entry in another section takes that section's colour.
+- `sections` sets each section's heading, icon and colour, and optionally a `note` under the heading and a `print_title` for the PDF. Links inside a section take its colour; a link to an entry in another section takes that section's colour.
 - Link to another entry on the page with `[text](#id)` or `ref: id`, so only an entry's own page leads outside (a talk links to its paper here; the paper links to its DOI). Links that leave the page get an external-link icon automatically.
 - `venues` describes each publication venue for readers outside the field and holds acceptance rates by year; a paper uses the rate for its own year.
 - `publications_note` is the paragraph under the Publications heading (conventions, acceptance rates, a pointer to Google Scholar).
 - `travel` feeds the map under Talks & travel: bases (`home`, `stay`) and trips (`talk`, `school`) with coordinates; trips are drawn from the base you were at. The slider and Play move through time.
-- Updates are Work unless marked `tag: life`; visitors switch between Work (the default) and Life. Updates from the last two months get a sparkle badge. `news_visible` and `service_visible` set how many show before "Show more"; in open source and certifications, entries marked `selected: true` show first.
+- Updates are Work unless marked `tag: life`; visitors switch between Work (the default) and Life. Updates from the last two months get a sparkle badge. `news_visible` and `service_visible` set how many show before "Show more"; in open source and certifications, entries marked `selected: true` show first. A project with `wip: true` gets a "Work in progress" badge.
 - Dated sections (news, experience, education, teaching, talks, service, grants, awards, publications) are sorted newest first on the page, whatever order they have in the file.
 - Teaching entries take `lead` for the person who runs the course.
 - Empty fields are skipped, so a half-filled entry never shows a placeholder.

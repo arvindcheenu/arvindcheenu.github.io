@@ -215,6 +215,35 @@ kbd{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;padding:
 .sec-label{display:inline-flex;align-items:center;gap:.6rem;font-size:var(--t-head);font-weight:700;letter-spacing:-.01em}
 .sec-note{flex-basis:100%;margin-top:-.25rem;color:var(--muted);font-size:var(--t-sm);text-wrap:pretty;line-height:1.6}
 .sec-note a{font-weight:500}
+/* "How this page is arranged": a quiet disclosure under the introduction */
+.arranged{max-width:40rem;font-size:var(--t-sm);color:var(--soft)}
+.arranged summary{display:inline-flex;align-items:center;gap:.5rem;padding:.25rem 0;color:var(--muted);font-weight:600;cursor:pointer;list-style:none;-webkit-tap-highlight-color:transparent;border-radius:6px}
+.arranged summary::-webkit-details-marker{display:none}
+.arranged summary:hover{color:var(--fg)}
+.arranged summary:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.arranged .ar-chev{font-size:.75em;transition:transform .25s var(--ease-out)}
+.arranged[open] .ar-chev{transform:rotate(180deg)}
+.ar-body{padding:.5rem 0 0 1.6rem;line-height:1.6;text-wrap:pretty}
+.arranged[open] .ar-body{animation:pop .3s var(--ease) both}
+.ar-body>*+*{margin-top:.6rem}
+.ar-out{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem 1rem}
+.ar-k{color:var(--muted);font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.ar-sec{display:inline-flex;align-items:center;gap:.4rem;color:var(--fg);font-weight:500}
+.ar-sec .ic{color:var(--c)}
+.ar-acts{display:flex;flex-wrap:wrap;gap:.25rem 1.25rem}
+.ar-acts .i-hide{display:none}
+.ar-acts [aria-pressed="true"] .i-hide{display:inline-block}
+.ar-acts [aria-pressed="true"] .i-show{display:none}
+/* A section shown on request although the view leaves it out */
+.sec.outside .sec-title::after{content:"Not part of this view";display:block;margin-top:.35rem;color:var(--muted);font-size:var(--t-xs);font-weight:600;letter-spacing:.02em}
+
+/* Legend for the publication labels (J, C, W, P and the type icons) */
+.pub-key{flex-basis:100%;display:flex;flex-wrap:wrap;gap:.3rem 1.25rem;margin-top:-.25rem;list-style:none;color:var(--muted);font-size:var(--t-xs);line-height:1.5}
+.pub-key li{display:inline-flex;align-items:baseline;gap:.4rem}
+.pub-key b{min-width:.75em;color:var(--soft);font-weight:700;letter-spacing:.01em}
+.pub-key .ic{align-self:center;color:var(--soft)}
+/* A project still being built */
+.wip{display:inline-flex;align-items:center;gap:.3rem;margin-left:.35rem;vertical-align:.12em;color:var(--c-orange);font-size:var(--t-xs);font-weight:700;letter-spacing:.01em;white-space:nowrap}
 .sec-ic{display:inline-grid;place-items:center;flex:none;width:1.25rem;color:var(--c,var(--link));font-size:.95em}
 .sec-ctl{display:flex;flex-wrap:wrap;gap:.5rem}
 .list{display:flex;flex-direction:column;gap:var(--gap)}
@@ -557,6 +586,8 @@ a.award:hover{color:color-mix(in srgb,var(--c-amber) 78%,var(--fg))}
   .subhead{break-after:avoid;page-break-after:avoid}
   .sec-label{font-size:1.15rem}
   .sec-note{font-size:.92rem;margin-top:.6mm}
+  .pub-key{font-size:.85rem;gap:0 3.5mm;margin-top:.4mm}
+  .wip{color:#9a3412!important}
   .list{display:block}
   .list>*+*{margin-top:1.3mm}
   .list>.subhead{margin-top:2.2mm}

@@ -17,13 +17,15 @@ permalink: /index.html
 {%- macro icon(name, brand=false, cls="") -%}{{ name | svgIcon(brand, cls) | safe }}{%- endmacro -%}
 {%- macro edge(pos) -%}<div class="edge {{ pos }}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><b></b></div>{%- endmacro -%}
 {%- macro perView(field) -%}{% for k, v in views %}<span data-only="{{ k }}">{{ v[field] }}</span>{% endfor %}{%- endmacro -%}
-{%- macro head(key, sec, note="") -%}
+{%- macro head(key, sec, note="", extra="") -%}
     <div class="sec-head rv">
       <div class="sec-title">
-        <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}<span>{{ sec.title | md | safe }}</span></h2>
+        <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}{% if sec.print_title %}<span class="no-print">{{ sec.title | md | safe }}</span><span class="print-only">{{ sec.print_title | md | safe }}</span>{% else %}<span>{{ sec.title | md | safe }}</span>{% endif %}</h2>
       </div>
       {%- if caller %}{{ caller() }}{% endif %}
-      {%- if note %}<p class="sec-note">{{ note | safe }}</p>{% endif %}
+      {%- set nt = note if note else ((sec.note | md) if sec.note else "") %}
+      {%- if nt %}<p class="sec-note">{{ nt | safe }}</p>{% endif %}
+      {{- extra | safe }}
     </div>
 {%- endmacro -%}
 <!doctype html>
@@ -133,12 +135,25 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         {%- endfor %}
       </ul>
     </div>
+    {#- How this view is arranged and what it leaves out: collapsed until asked for. #}
+    <details class="arranged no-print" style="--i:4">
+      <summary>{{ icon("list-check") }}<span>How this page is arranged</span>{{ icon("chevron-down", false, "ar-chev") }}</summary>
+      {%- for k, v in views %}{% set lo = s.tailor | leftOut(k, s) %}
+      <div class="ar-body" data-only="{{ k }}">
+        {%- if v.arranged %}<p>{{ v.arranged | md | safe }}</p>{% endif %}
+        {%- if lo.length %}
+        <p class="ar-out"><span class="ar-k">Left out here</span>{% for key in lo %}{% set sc = s.sections[key] or { title: key } %}<span class="ar-sec" data-c="{{ sc.color or 'blue' }}">{{ icon(sc.icon or "circle") }}{{ sc.title | md | safe }}</span>{% endfor %}</p>
+        <p class="ar-acts"><button type="button" class="tl tac" data-action="extra" aria-pressed="false">{{ icon("eye", false, "i-show") }}{{ icon("eye-slash", false, "i-hide") }}<span class="ar-l" data-on="Hide them again">Show them here</span></button>{% for k2, v2 in views %}{% if k2 != k %}<button type="button" class="tl tac" data-go-tailor="{{ k2 }}">{{ icon(v2.icon) }}<span>Switch to {{ v2.label }}</span></button>{% endif %}{% endfor %}</p>
+        {%- endif %}
+      </div>
+      {%- endfor %}
+    </details>
   </section>
 
   {%- for key in s.tailor | sectionKeys %}
   {%- set sec = s.sections[key] or { title: key } %}
   {%- if s[key] and (s[key].length or key == "biography") %}
-  <section class="sec" id="{{ key }}" data-c="{{ sec.color or 'blue' }}" aria-labelledby="h-{{ key }}"{% for k, v in views %} data-o-{{ k }}="{{ v.order | posIn(key) }}"{% endfor %}{% if (views[dv].order | posIn(key)) == 0 %} hidden{% endif %}>
+  <section class="sec" id="{{ key }}" data-c="{{ sec.color or 'blue' }}" aria-labelledby="h-{{ key }}"{% for k, v in views %} data-o-{{ k }}="{{ v.order | posIn(key) }}"{% if v.print_order %} data-p-{{ k }}="{{ v.print_order | posIn(key) }}"{% endif %}{% endfor %}{% if (views[dv].order | posIn(key)) == 0 %} hidden{% endif %}>
     {%- if key == "biography" %}
     {%- call head(key, sec) %}
       <div class="sec-ctl no-print">
@@ -163,7 +178,8 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     {%- endcall %}
     {%- elif key == "publications" %}
     {%- set pnote = (s.publications_note | md) if s.publications_note else ("† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
-    {%- call head(key, sec, pnote) %}
+    {%- set pkey %}<ul class="pub-key" aria-label="Publication types">{% for g in s.publications | pubKey(s.pub_groups) %}<li>{% if g.prefix %}<b>{{ g.prefix }}</b>{% else %}{{ icon(g.icon) }}{% endif %}{{ g.name }}</li>{% endfor %}</ul>{% endset %}
+    {%- call head(key, sec, pnote, pkey) %}
       <div class="sec-ctl no-print">
         <div class="seg sm" role="radiogroup" aria-label="List publications by">
           <button type="button" class="seg-b tac" role="radio" aria-checked="true" data-pubsort="year">{{ icon("calendar") }}<span>Year</span></button>
@@ -260,7 +276,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         <div class="when">{{ projectKinds[p.kind] or p.kind }}</div>
         <div class="what">
           <div class="main">
-            <h3 class="t">{% if purl %}<a href="{{ purl }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</h3>
+            <h3 class="t">{% if purl %}<a href="{{ purl }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.wip %} <span class="wip">{{ icon("person-digging") }}Work in progress</span>{% endif %}</h3>
             <p class="text">{{ p.summary | md | safe }}</p>
             {%- if p.tech %}<p class="tech">{{ p.tech | join(" · ") }}</p>{% endif %}
             {%- if p.links %}<p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{% if k == "code" and "github.com" in u %}{{ icon("github", true) }}{% else %}{{ icon(actIcons[k] or "link") }}{% endif %}{{ "Live" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>{% endif %}

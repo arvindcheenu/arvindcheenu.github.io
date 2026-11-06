@@ -166,20 +166,38 @@
   const views = $$("[data-set-tailor]").map((b) => b.dataset.setTailor);
   const main = $("#main"), contactSec = $("#contact");
   const secs = $$("#main > .sec").filter((s) => s.hasAttribute(`data-o-${views[0]}`));
-  function arrange(v) {
+  // Sections in the view's order; with `extra`, the ones it leaves out follow,
+  // marked as outside the view. `print` uses the view's print order if it has one.
+  let extra = false;
+  function arrange(v, print) {
+    const key = print && secs.some((s) => s.hasAttribute(`data-p-${v}`)) ? "p" : "o";
     secs
-      .map((s) => ({ s, o: +s.getAttribute(`data-o-${v}`) || 0 }))
+      .map((s, i) => {
+        const shown = +s.getAttribute(`data-o-${v}`) || 0;
+        const o = shown ? (+s.getAttribute(`data-${key}-${v}`) || 900 + shown) : (extra ? 1000 + i : 0);
+        return { s, o, out: !shown };
+      })
       .sort((a, b) => a.o - b.o)
-      .forEach(({ s, o }) => {
+      .forEach(({ s, o, out }) => {
         s.hidden = !o;
+        s.classList.toggle("outside", out && !!o);
         if (o) main.insertBefore(s, contactSec || null);
       });
+  }
+  function setExtra(on) {
+    extra = on;
+    $$('[data-action="extra"]').forEach((b) => {
+      b.setAttribute("aria-pressed", String(on));
+      const l = $(".ar-l", b);
+      if (l) { if (!l.dataset.off) l.dataset.off = l.textContent; l.textContent = on ? l.dataset.on : l.dataset.off; }
+    });
   }
   const viewLabel = (v) => { const b = $(`[data-set-tailor="${v}"] .seg-l`); return b ? b.textContent : v; };
   function setTailor(v, fromUser) {
     if (!views.includes(v)) v = d.dataset.defaultTailor || views[0];
     const apply = () => {
       d.dataset.tailor = v;
+      setExtra(false);
       arrange(v);
       syncBio();
       $$("[data-set-tailor]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.setTailor === v)));
@@ -380,6 +398,8 @@
       }
       return;
     }
+    const goBtn = t.closest("[data-go-tailor]");
+    if (goBtn) { setTailor(goBtn.dataset.goTailor, true); return; }
     const newsBtn = t.closest("[data-newstag]");
     if (newsBtn) { if (newsBtn.getAttribute("aria-checked") !== "true") setNewsTag(newsBtn.dataset.newstag, true); return; }
     const sortBtn = t.closest("[data-pubsort]");
@@ -399,6 +419,14 @@
       play(on ? "on" : "off", true); toast(on ? "Sound on" : "Sound off");
     } else if (act === "print") {
       window.print();
+    } else if (act === "extra") {
+      const on = !extra;
+      swap([main], () => { setExtra(on); arrange(d.dataset.tailor); revealOnScreen(); });
+      play(on ? "open" : "mode");
+      if (on) {
+        const first = $("#main > .sec.outside");
+        if (first) setTimeout(() => first.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }), 380);
+      }
     } else if (act === "copy" || act === "copy-to") {
       const text = act === "copy-to" ? ($("#cf-to") || {}).value : a.dataset.copy;
       const ok = await copy(text || "");
@@ -414,8 +442,10 @@
 
   // The saved PDF is titled after the view on screen.
   const baseTitle = document.title;
-  window.addEventListener("beforeprint", () => { document.title = `Arvind Srinivasan — ${cvName()}`; closeMenu(); });
-  window.addEventListener("afterprint", () => { document.title = baseTitle; });
+  // The saved PDF follows the view's print order (the usual CV order), then the
+  // page goes back to its screen order.
+  window.addEventListener("beforeprint", () => { document.title = `Arvind Srinivasan — ${cvName()}`; closeMenu(); arrange(d.dataset.tailor, true); });
+  window.addEventListener("afterprint", () => { document.title = baseTitle; arrange(d.dataset.tailor); });
 
   /* ── Recipient dropdown: the native select stays in the form, hidden ────── */
   const sel = $("#cf-to"), ddBtn = $(".dd-btn"), dd = $(".dd-menu");

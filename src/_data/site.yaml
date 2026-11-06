@@ -60,6 +60,9 @@ sound_default: on
 # ── Tailoring ───────────────────────────────────────────────────────────────
 # The Research / Industry switch in the top bar. Each view has its own section
 # order, status line and CV title. Links can open a view: arvindchee.nu/?for=industry
+# A section missing from a view's `order` is left out of it; `arranged` explains
+# the order in a collapsed note under the introduction, which lists what is left
+# out and can show it. `print_order` sets a different order for the saved PDF.
 tailor:
   default: research
   views:
@@ -68,13 +71,23 @@ tailor:
       icon: flask
       cv: CV
       status: Open to postdoc and research roles from January 2027
-      order: [news, biography, education, experience, publications, grants, awards, talks, teaching, service, projects, skills, certifications]
+      order: [news, publications, experience, talks, awards, grants, teaching, service, projects, education, biography]
+      print_order: [education, experience, publications, awards, grants, talks, teaching, service, projects]
+      arranged: >-
+        As on most research pages, publications come first, then positions, talks, awards,
+        funding, teaching and reviewing, with education last. Skills and certifications are
+        left out, as research pages rarely list them; the Industry view has them. The CV you
+        download keeps the usual academic order, starting with education.
     industry:
       label: Industry
       icon: briefcase
       cv: Résumé
       status: Open to research, software engineering and design roles from January 2027
-      order: [news, biography, experience, projects, skills, certifications, education, publications, awards, talks, teaching, grants, service]
+      order: [experience, projects, publications, skills, awards, talks, teaching, news, certifications, education, biography]
+      arranged: >-
+        As on a résumé, experience and projects come first, then publications, skills,
+        awards and talks, with education last. Research grants and peer reviewing are left
+        out, as they matter mostly to academic readers; the Research view has them.
 
 # ── Introduction ────────────────────────────────────────────────────────────
 role: PhD candidate in visualization and HCI
@@ -82,13 +95,13 @@ affiliation: Center for Anytime Anywhere Analytics, Aarhus University
 ring: "Open to work · From January 2027 · "   # text spinning round the portrait
 bio:
   research:
-    - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later.
-    - "My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, systems that capture, record and revisualize where people look for four readers, each further from the moment it happened: the analyst during their own task, collaborators sharing a mixed-reality space, an observer reviewing the session afterwards, and a stranger who only receives the findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2."
-    - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
+    - I build systems that record where people look during data analysis and show it back to them, their collaborators and the people who read their work later.
+    - "My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics* for four readers, each further from the moment it happened: the analyst during their own task, collaborators sharing a mixed-reality space, an observer reviewing the session afterwards, and a stranger who only receives the findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2, and two of them, [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision), are IEEE VIS papers in IEEE TVCG."
+    - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, on creativity support for analogical reasoning and early studies of LLMs as analogy generators; two of those papers received Best Paper Honorable Mentions at ACM Creativity & Cognition. Next, I want attention to become a first-class signal in data work that people share with AI agents.
   industry:
     - I build analytics interfaces that track where people look and put that record to use, for the person at the screen, for collaborators in the same mixed-reality space, and for whoever picks up the analysis next.
-    - "At the Center for Anytime Anywhere Analytics, Aarhus University, I write these systems end to end for the web, Meta Quest 3 and HoloLens 2: gaze capture, per-mark visibility tracking, event-logged back ends and the views that replay them. I run the user studies that test them, and I maintain [heed](#project-heed), an open-source toolkit that records attention on any web page."
-    - Before Aarhus I did a master's in HCI at the University of Maryland and worked as a UX intern at Tetrate, redesigning its core platform for a new brand identity. I work mostly in TypeScript, React, WebXR, Python and Unity.
+    - "As a PhD fellow at the Center for Anytime Anywhere Analytics, Aarhus University, I write these systems end to end for the web, Meta Quest 3 and HoloLens 2: gaze capture, per-mark visibility tracking, event-logged back ends and the views that replay them. I run the user studies that test them, and two of the systems are published in IEEE TVCG. I am also building [heed](#project-heed), an open-source toolkit that records attention on any web page."
+    - Before Aarhus I did a master's in HCI at the University of Maryland, building a paper-processing pipeline and Elasticsearch-based analogical search as a research assistant, and worked as a UX intern at Tetrate. I work mostly in TypeScript, React, WebXR, Python and Unity.
 
 # Biographies for talk introductions, programmes and applications. The page has
 # Short / Long and First / Third person switches; the Research / Industry switch
@@ -97,50 +110,52 @@ biography:
   research:
     short:
       third: >-
-        Arvind Srinivasan is a PhD candidate at the Center for Anytime Anywhere Analytics,
-        Aarhus University, advised by Niklas Elmqvist. He builds systems that capture,
-        record and revisualize where people look, from a single analyst at a dashboard to
-        collaborators sharing a mixed-reality space. His work appears in IEEE TVCG and at
-        IEEE VIS and ACM Creativity & Cognition, where two of his papers received Best
-        Paper Honorable Mentions.
+        Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
+        advised by Niklas Elmqvist at the Center for Anytime Anywhere Analytics. He builds
+        attention-aware analytics: systems that capture where people look during analysis,
+        record it, and show it back to the analyst, to collaborators in mixed reality and to
+        people who read the work later. Two of these systems are IEEE VIS papers in IEEE
+        TVCG. His earlier work on creativity support at the University of Maryland received
+        two Best Paper Honorable Mentions at ACM Creativity & Cognition.
       first: >-
-        I am a PhD candidate at the Center for Anytime Anywhere Analytics, Aarhus
-        University, advised by Niklas Elmqvist. I build systems that capture, record and
-        revisualize where people look, from a single analyst at a dashboard to
-        collaborators sharing a mixed-reality space. My work appears in IEEE TVCG and at
-        IEEE VIS and ACM Creativity & Cognition, where two of my papers received Best
-        Paper Honorable Mentions.
+        I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
+        Elmqvist at the Center for Anytime Anywhere Analytics. I build attention-aware
+        analytics: systems that capture where people look during analysis, record it, and
+        show it back to the analyst, to collaborators in mixed reality and to people who
+        read the work later. Two of these systems are IEEE VIS papers in IEEE TVCG. My
+        earlier work on creativity support at the University of Maryland received two Best
+        Paper Honorable Mentions at ACM Creativity & Cognition.
     long:
       third: |
-        Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University. He
-        joined the Center for Anytime Anywhere Analytics (CA³) as one of its first hires and
-        is advised by Niklas Elmqvist. His research develops attention-aware analytics,
-        systems that capture where people look during analysis, record it, and show it back
-        to a reader. His thesis follows that record outward from the person who produced it,
-        to collaborators sharing a mixed-reality space, to an observer reviewing a session
-        afterwards, and to a stranger who receives only the findings. He builds these systems
-        himself for the web, Meta Quest 3 and HoloLens 2, and has published them in IEEE TVCG
-        and at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a
-        visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair, studying
-        gaze in band rehearsals with mobile eye tracking.
+        Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
+        advised by Niklas Elmqvist. He joined the Center for Anytime Anywhere Analytics (CA³)
+        as one of its first hires. His research develops attention-aware analytics, systems
+        that capture where people look during analysis, record it, and show it back. His
+        thesis follows that record outward from the person who produced it, to collaborators
+        sharing a mixed-reality space, to an observer reviewing a session afterwards, and to
+        a reader who receives only the findings. He builds these systems himself for the
+        web, Meta Quest 3 and HoloLens 2. Two of them are IEEE VIS papers in IEEE TVCG,
+        Attention-Aware Visualization (2024) and HeedVision (2026), and others have appeared
+        at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a
+        visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair,
+        studying gaze in band rehearsals with mobile eye tracking.
 
         Before Aarhus, he earned an MS in Human-Computer Interaction at the University of
         Maryland, where he worked with Joel Chan on creativity support tools for analogical
         reasoning and on early studies of large language models as analogy generators. That
         work received Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and
-        2024. He holds a BTech in Computer Science and Engineering from SRM Institute of
-        Science and Technology, and worked as a user experience intern at Tetrate. He
-        maintains open-source tools including heed, Elicitation Lab, SciFig and Matercolors,
-        and is a teaching assistant on the Data Visualization course at Aarhus University.
+        2024. He reviews for ACM CHI, IEEE VIS and ACM Creativity & Cognition, and is a
+        teaching assistant on the Data Visualization course at Aarhus University.
       first: |
-        I am a PhD candidate in Computer Science at Aarhus University. I joined the Center
-        for Anytime Anywhere Analytics (CA³) as one of its first hires, and I am advised by
-        Niklas Elmqvist. My research develops attention-aware analytics, systems that capture
-        where people look during analysis, record it, and show it back to a reader. My thesis
-        follows that record outward from the person who produced it, to collaborators sharing
-        a mixed-reality space, to an observer reviewing a session afterwards, and to a
-        stranger who receives only the findings. I build these systems myself for the web,
-        Meta Quest 3 and HoloLens 2, and have published them in IEEE TVCG and at workshops of
+        I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
+        Elmqvist. I joined the Center for Anytime Anywhere Analytics (CA³) as one of its
+        first hires. My research develops attention-aware analytics, systems that capture
+        where people look during analysis, record it, and show it back. My thesis follows
+        that record outward from the person who produced it, to collaborators sharing a
+        mixed-reality space, to an observer reviewing a session afterwards, and to a reader
+        who receives only the findings. I build these systems myself for the web, Meta Quest
+        3 and HoloLens 2. Two of them are IEEE VIS papers in IEEE TVCG, Attention-Aware
+        Visualization (2024) and HeedVision (2026), and others have appeared at workshops of
         ACM CHI and ACM ETRA. From October 2025 to February 2026 I was a visiting researcher
         at VISUS, University of Stuttgart, with Michael Sedlmair, studying gaze in band
         rehearsals with mobile eye tracking.
@@ -149,26 +164,24 @@ biography:
         Maryland, where I worked with Joel Chan on creativity support tools for analogical
         reasoning and on early studies of large language models as analogy generators. That
         work received Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and
-        2024. I hold a BTech in Computer Science and Engineering from SRM Institute of Science
-        and Technology, and worked as a user experience intern at Tetrate. I maintain
-        open-source tools including heed, Elicitation Lab, SciFig and Matercolors, and I am
-        a teaching assistant on the Data Visualization course at Aarhus University.
+        2024. I review for ACM CHI, IEEE VIS and ACM Creativity & Cognition, and I am a
+        teaching assistant on the Data Visualization course at Aarhus University.
   industry:
     short:
       third: >-
         Arvind Srinivasan builds analytics interfaces that track and respond to where people
-        look. At the Center for Anytime Anywhere Analytics, Aarhus University, he has built
-        attention-aware systems for the web, Meta Quest 3 and HoloLens 2, and he maintains
-        heed, an open-source toolkit that records attention on any web page. He works in
-        TypeScript, React, WebXR, Python and Unity, and runs the user studies that test what
-        he builds.
+        look. As a PhD fellow at the Center for Anytime Anywhere Analytics, Aarhus
+        University, he builds attention-aware systems end to end for the web, Meta Quest 3
+        and HoloLens 2 and runs the user studies that test them; two are published in IEEE
+        TVCG. He works mostly in TypeScript, React, WebXR, Python and Unity, and is building
+        heed, an open-source toolkit that records attention on any web page.
       first: >-
-        I build analytics interfaces that track and respond to where people look. At the
-        Center for Anytime Anywhere Analytics, Aarhus University, I have built
-        attention-aware systems for the web, Meta Quest 3 and HoloLens 2, and I maintain
-        heed, an open-source toolkit that records attention on any web page. I work in
-        TypeScript, React, WebXR, Python and Unity, and I run the user studies that test what
-        I build.
+        I build analytics interfaces that track and respond to where people look. As a PhD
+        fellow at the Center for Anytime Anywhere Analytics, Aarhus University, I build
+        attention-aware systems end to end for the web, Meta Quest 3 and HoloLens 2 and run
+        the user studies that test them; two are published in IEEE TVCG. I work mostly in
+        TypeScript, React, WebXR, Python and Unity, and I am building heed, an open-source
+        toolkit that records attention on any web page.
     long:
       third: |
         Arvind Srinivasan builds analytics interfaces that track and respond to where people
@@ -176,37 +189,36 @@ biography:
         University, where he was one of the first hires, he took attention-aware
         visualization from a single-user web prototype to co-located collaboration in WebXR
         on Meta Quest 3 and to asynchronous handoff between analysts. He wrote the gaze
-        capture, per-mark visibility tracking and event-logged back end himself and ran the
-        user studies behind each step. He also helped build the centre's website,
-        publication pipeline and shared tooling.
+        capture, per-mark visibility tracking and event-logged back ends himself, ran the
+        user studies behind each step and published the results in IEEE TVCG. He also looks
+        after the centre's website, branding and publication pipeline.
 
-        He maintains open-source tools including heed, which records attention on any web
-        page from cursor, viewport and webcam gaze; Elicitation Lab, an offline
-        requirements-elicitation simulator; SciFig, a generator for research figures; and
-        Matercolors, a palette library on npm. Before his PhD he earned an MS in
-        Human-Computer Interaction at the University of Maryland, where he built a
+        He is building heed, an open-source toolkit that records attention on any web page
+        from cursor, viewport and webcam gaze, and has released caav, the toolkit from his
+        HeedVision paper, which does the same for 3D objects. Before his PhD he earned an MS
+        in Human-Computer Interaction at the University of Maryland, where he built a
         paper-processing pipeline and Elasticsearch-based analogical search as a graduate
-        research assistant, and he redesigned Tetrate's core platform for a new brand
-        identity as a UX intern. His work has appeared in IEEE TVCG and received two Best
-        Paper Honorable Mentions at ACM Creativity & Cognition.
+        research assistant; that line of work received two Best Paper Honorable Mentions at
+        ACM Creativity & Cognition. Earlier, as a UX intern at Tetrate, he redesigned the
+        company's core platform for a new brand identity.
       first: |
         I build analytics interfaces that track and respond to where people look. As a PhD
         fellow at the Center for Anytime Anywhere Analytics (CA³), Aarhus University, where I
         was one of the first hires, I took attention-aware visualization from a single-user
         web prototype to co-located collaboration in WebXR on Meta Quest 3 and to
         asynchronous handoff between analysts. I wrote the gaze capture, per-mark visibility
-        tracking and event-logged back end myself and ran the user studies behind each step.
-        I also helped build the centre's website, publication pipeline and shared tooling.
+        tracking and event-logged back ends myself, ran the user studies behind each step
+        and published the results in IEEE TVCG. I also look after the centre's website,
+        branding and publication pipeline.
 
-        I maintain open-source tools including heed, which records attention on any web page
-        from cursor, viewport and webcam gaze; Elicitation Lab, an offline
-        requirements-elicitation simulator; SciFig, a generator for research figures; and
-        Matercolors, a palette library on npm. Before my PhD I earned an MS in
+        I am building heed, an open-source toolkit that records attention on any web page
+        from cursor, viewport and webcam gaze, and have released caav, the toolkit from my
+        HeedVision paper, which does the same for 3D objects. Before my PhD I earned an MS in
         Human-Computer Interaction at the University of Maryland, where I built a
         paper-processing pipeline and Elasticsearch-based analogical search as a graduate
-        research assistant, and I redesigned Tetrate's core platform for a new brand
-        identity as a UX intern. My work has appeared in IEEE TVCG and received two Best
-        Paper Honorable Mentions at ACM Creativity & Cognition.
+        research assistant; that line of work received two Best Paper Honorable Mentions at
+        ACM Creativity & Cognition. Earlier, as a UX intern at Tetrate, I redesigned the
+        company's core platform for a new brand identity.
 
 # Profile links under the introduction and in the footer.
 links:
@@ -225,7 +237,7 @@ footer: PhD candidate at Aarhus University, working at the Center for Anytime An
 # elsewhere on the page takes the colour of the section it points into.
 sections:
   news: { title: Updates, icon: bullhorn, color: blue }
-  biography: { title: Biography, icon: id-card, color: violet }
+  biography: { title: Biography, icon: id-card, color: violet, note: "For talk introductions, programmes and applications. Choose a length and voice, then copy." }
   education: { title: Education, icon: graduation-cap, color: teal }
   experience: { title: Experience, icon: briefcase, color: indigo }
   publications: { title: Publications, icon: book-open, color: rose }
@@ -234,7 +246,7 @@ sections:
   certifications: { title: Selected certifications, icon: certificate, color: lime }
   grants: { title: Grants, icon: coins, color: orange }
   awards: { title: Honors & awards, icon: trophy, color: amber }
-  talks: { title: Talks & travel, icon: plane-departure, color: fuchsia }
+  talks: { title: Talks & travel, print_title: Talks, icon: plane-departure, color: fuchsia }
   teaching: { title: Teaching, icon: chalkboard-user, color: sky }
   service: { title: Reviewing experience, icon: handshake-angle, color: pink }
   contact: { title: Contact, icon: envelope, color: blue }
@@ -249,7 +261,7 @@ news:
   - date: 2026-11
     text: Presenting [HeedVision](#srinivasan2026heedvision), attention awareness for pairs analysing data in mixed reality, at IEEE VIS 2026.
   - date: 2026-10
-    text: Released [heed](#project-heed), an open-source toolkit that records attention on any web page from cursor, viewport and webcam gaze.
+    text: Released an early version of [heed](#project-heed), an open-source toolkit that records attention on any web page from cursor, viewport and webcam gaze.
   - date: 2026-09
     text: Submitted [Amanuensis](#srinivasan2027amanuensis), data stories authored from an analyst's attention and speech, to ACM CHI 2027.
   - date: 2026-08
@@ -279,15 +291,16 @@ news:
 # Listed by year by default; visitors can switch to grouping by type. Types with
 # a prefix are numbered newest first (J3, J2, J1). Items land in the first group
 # whose `kinds` include their kind; `status: under-review` goes to that group.
+# `key` is the group's name in the legend under the heading (default: its title).
 # The Research view shows each entry as a citation; Industry leads with the title.
 pub_groups:
-  - { title: Journal articles, prefix: J, kinds: [journal, article] }
-  - { title: Conference papers, prefix: C, kinds: [conference] }
-  - { title: Workshop papers, prefix: W, kinds: [workshop, short] }
-  - { title: "Posters, demos and extended abstracts", prefix: P, kinds: [poster, demo, abstract] }
+  - { title: Journal articles, key: Journal article, prefix: J, kinds: [journal, article] }
+  - { title: Conference papers, key: Conference paper, prefix: C, kinds: [conference] }
+  - { title: Workshop papers, key: Workshop paper, prefix: W, kinds: [workshop, short] }
+  - { title: "Posters, demos and extended abstracts", key: "Poster, demo or extended abstract", prefix: P, kinds: [poster, demo, abstract] }
   - { title: Under review, status: under-review, icon: hourglass-half }
-  - { title: Preprints, kinds: [preprint], icon: file-lines }
-  - { title: Theses, kinds: [thesis], icon: scroll }
+  - { title: Preprints, key: Preprint, kinds: [preprint], icon: file-lines }
+  - { title: Theses, key: Thesis, kinds: [thesis], icon: scroll }
 
 # Shown under the Publications heading, after Niklas Elmqvist's CV.
 publications_note: >-
@@ -514,7 +527,7 @@ experience:
     highlights:
       - Built attention-aware analytics end to end for the web, Meta Quest 3 and HoloLens 2, from gaze capture and per-mark visibility tracking to an event-logged back end.
       - Took the work from a single-user web prototype to co-located WebXR collaboration and asynchronous handoff between analysts, running the user study behind each step.
-      - Released [heed](#project-heed), an open-source toolkit that records attention on any web page.
+      - Building [heed](#project-heed), an open-source toolkit that records attention on any web page, and [caav](#project-caav), the toolkit from the HeedVision paper, which does the same for 3D objects.
       - One of the centre's first hires; manages its branding and online presence, and helped build its website, publication pipeline and shared tooling.
     tags: [WebXR, React Three Fiber, Unity, eye tracking, user studies]
 
@@ -586,6 +599,7 @@ education:
 projects:
   - name: heed
     selected: true
+    wip: true          # shows a "Work in progress" badge
     kind: library
     year: 2026
     summary: Attention recording for any web page. Cursor dwell, viewport visibility and webcam gaze with calibration, scanpaths, attention-triggered experience sampling and on-device LLM summaries, behind one declarative spec.
@@ -593,6 +607,15 @@ projects:
     links:
       web: https://heed.arvindchee.nu
       code: https://github.com/arvindcheenu/heed
+  - name: caav
+    selected: true
+    kind: library
+    year: 2026
+    summary: The toolkit from the [HeedVision](#srinivasan2026heedvision) paper. Attaches attention to any 3D object, records it per person and shows it back in every mode of the HeedVision design space. Dependency-free core with Three.js and React Three Fiber layers.
+    tech: [TypeScript, Three.js, React Three Fiber]
+    links:
+      web: https://heedvision.arvindchee.nu/toolkit/
+      code: https://github.com/arvindcheenu/caav
   - name: Elicitation Lab
     selected: true
     kind: tool
@@ -668,6 +691,8 @@ teaching:
     when: March 2024
 
 # ── Talks ───────────────────────────────────────────────────────────────────
+# Only talks given in person or remotely by Arvind himself. The C&C 2024 paper was
+# presented by Joel Chan, so it is listed under Publications only.
 talks:
   - id: talk-vis2026
     ref: srinivasan2026heedvision
@@ -687,13 +712,8 @@ talks:
   - id: talk-vis2024
     ref: srinivasan2025attention
     title: "Attention-Aware Visualization: Tracking and Responding to User Perception Over Time"
-    event: IEEE VIS 2024, virtual
+    event: IEEE VIS 2024, presented remotely
     date: 2024-10
-  - id: talk-cc2024
-    ref: srinivasan2024improving
-    title: Improving Selection of Analogical Inspirations through Chunking and Recombination
-    event: ACM Creativity & Cognition 2024, Chicago
-    date: 2024-06
   - id: talk-vis2022
     ref: srinivasan2022hotshots
     title: "Hotshots: Visualizing Stroke-by-Stroke Tennis Data (poster)"
@@ -710,7 +730,6 @@ travel:
   - { from: 2022-10, place: Oklahoma City, country: USA, lat: 35.47, lon: -97.52, kind: talk, label: "Hotshots poster, IEEE VIS 2022", ref: talk-vis2022 }
   - { from: 2024-01, to: present, place: Aarhus, country: Denmark, lat: 56.16, lon: 10.20, kind: home, label: "PhD, Center for Anytime Anywhere Analytics", ref: ca3 }
   - { from: 2024-06-10, place: Oulu, country: Finland, lat: 65.01, lon: 25.47, kind: school, label: "UBI Summer School 2024", ref: award-ubiss }
-  - { from: 2024-06-23, place: Chicago, country: USA, lat: 41.88, lon: -87.63, kind: talk, label: "ACM Creativity & Cognition 2024", ref: talk-cc2024 }
   - { from: 2025-10, to: 2026-02, place: Stuttgart, country: Germany, lat: 48.78, lon: 9.18, kind: stay, label: "Research stay at VISUS, University of Stuttgart", ref: visus }
   - { from: 2026-04, place: Barcelona, country: Spain, lat: 41.39, lon: 2.17, kind: talk, label: "SAXR workshop, ACM CHI 2026", ref: talk-saxr2026 }
   - { from: 2026-06, place: Marrakesh, country: Morocco, lat: 31.63, lon: -7.99, kind: talk, label: "ETVIS 2026 at ACM ETRA", ref: talk-etvis2026 }
@@ -788,6 +807,8 @@ awards:
 
 # ── Skills ──────────────────────────────────────────────────────────────────
 skills:
+  - group: AI & agents
+    items: [Claude Code, Claude API, Agent Skills, WebLLM, Chrome built-in AI, Ollama, LLM evaluation]
   - group: Languages
     items: [TypeScript, JavaScript, Python, C#]
   - group: Interfaces

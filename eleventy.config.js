@@ -307,6 +307,13 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("titleUrl", titleUrl);
   eleventyConfig.addFilter("cite", cite);
   eleventyConfig.addFilter("pubRows", pubRows);
+  // The legend under the Publications heading: one entry per type in use, with
+  // its letter (J, C, W, P) or icon, in the order of pub_groups.
+  eleventyConfig.addFilter("pubKey", (pubs, groups) => {
+    const used = new Set((pubs || []).map((p) => groupOf(p, groups)));
+    return groups.map((g, i) => ({ ...g, i })).filter((g) => used.has(g.i))
+      .map((g) => ({ prefix: g.prefix || "", icon: g.icon || "", name: g.key || g.title }));
+  });
   eleventyConfig.addFilter("venueLine", venueLine);
   eleventyConfig.addFilter("money", money);
   eleventyConfig.addFilter("fmtMoney", fmtMoney);
@@ -317,6 +324,14 @@ export default function (eleventyConfig) {
     const keys = [];
     for (const v of views) for (const k of v.order || []) if (!keys.includes(k)) keys.push(k);
     return keys;
+  });
+  // Sections another view shows that this one leaves out, in page order, skipping
+  // any without content.
+  eleventyConfig.addFilter("leftOut", (tailor, view, site) => {
+    const order = tailor?.views?.[view]?.order || [];
+    const all = [];
+    for (const v of Object.values(tailor?.views || {})) for (const k of v.order || []) if (!all.includes(k)) all.push(k);
+    return all.filter((k) => !order.includes(k) && site?.[k] && (site[k].length || k === "biography"));
   });
   // 1-based position of a section in a view's order, 0 when that view hides it.
   eleventyConfig.addFilter("posIn", (order, key) => (order || []).indexOf(key) + 1);
