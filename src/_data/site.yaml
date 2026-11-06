@@ -510,14 +510,13 @@ experience:
     place: Aarhus, Denmark
     start: 2024-01
     end: present
-    summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling, and manages its branding and online presence. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step. Used Unity on HoloLens 2 for XR prototyping during ideation and brainstorming.
+    summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling, and manages its branding and online presence. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step.
     highlights:
       - Built attention-aware analytics end to end for the web, Meta Quest 3 and HoloLens 2, from gaze capture and per-mark visibility tracking to an event-logged back end.
       - Took the work from a single-user web prototype to co-located WebXR collaboration and asynchronous handoff between analysts, running the user study behind each step.
-      - Prototyped XR ideas in Unity on HoloLens 2 during ideation and brainstorming.
       - Released [heed](#project-heed), an open-source toolkit that records attention on any web page.
       - One of the centre's first hires; manages its branding and online presence, and helped build its website, publication pipeline and shared tooling.
-    tags: [WebXR, React Three Fiber, Unity, HoloLens 2, eye tracking, user studies]
+    tags: [WebXR, React Three Fiber, Unity, eye tracking, user studies]
 
   - id: visus
     role: Visiting PhD Researcher
@@ -525,12 +524,13 @@ experience:
     place: Stuttgart, Germany
     start: 2025-10
     end: 2026-02
-    summary: Hosted by Michael Sedlmair. Analysed mobile eye-tracking recordings of band rehearsals (Pupil Labs Neon) with YOLOv8-assisted area-of-interest annotation.
+    summary: Hosted by Michael Sedlmair. Used Unity on HoloLens 2 for XR prototyping during ideation and brainstorming. Analysed mobile eye-tracking recordings of band rehearsals (Pupil Labs Neon) with YOLOv8-assisted area-of-interest annotation.
     highlights:
+      - Prototyped XR ideas in Unity on HoloLens 2 during ideation and brainstorming.
       - Analysed mobile eye-tracking recordings of band rehearsals captured with Pupil Labs Neon.
       - Used YOLOv8 to assist area-of-interest annotation across the recordings.
       - Published the study at the ETVIS 2026 workshop at ACM ETRA.
-    tags: [Pupil Labs Neon, YOLOv8, Python]
+    tags: [Unity, HoloLens 2, Pupil Labs Neon, YOLOv8, Python]
 
   - id: umd
     role: Graduate Research Assistant
