@@ -14,7 +14,10 @@
   "devDependencies": {
     "@11ty/eleventy": "^3.1.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^6.7.2"
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "d3-geo": "^3.1.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",

@@ -3,6 +3,8 @@ import yaml from "js-yaml";
 import markdownIt from "markdown-it";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
+import { geoMercator, geoPath } from "d3-geo";
+import { feature, mesh } from "topojson-client";
 
 const md = markdownIt({ html: true, typographer: true });
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -34,6 +36,51 @@ function entryId(e, prefix) {
   if (e.id) return e.id;
   if (prefix === "award" && e.ref) return `award-${e.ref}`;
   return `${prefix}-${slug(e.name || e.title || e.role || e.degree || e.venue || "")}`;
+}
+
+// ── The travel map: world outlines and routes drawn once, at build time ──────
+// Mercator on a 1000-unit-wide plane, the projection map apps use. Trips are drawn
+// from the base (home or stay) active at their date; moves go from base to base.
+const MAP_W = 1000;
+const proj = geoMercator().scale(MAP_W / (2 * Math.PI)).translate([MAP_W / 2, MAP_W / 2]).precision(0.2);
+let mapBase = null;
+function mapGeometry() {
+  if (mapBase) return mapBase;
+  const topo = JSON.parse(fs.readFileSync("node_modules/world-atlas/countries-110m.json", "utf8"));
+  const land = feature(topo, topo.objects.land);
+  land.features = land.features.filter((f) => f.geometry); // keep everything; Antarctica sits off-frame
+  const path = geoPath(proj).digits(1);
+  mapBase = { land: path(land), borders: path(mesh(topo, topo.objects.countries, (a, b) => a !== b)) };
+  return mapBase;
+}
+const dateNum = (v) => { const m = String(v ?? "").match(/(\d{4})(?:-(\d{1,2}))?(?:-(\d{1,2}))?/); return m ? +m[1] * 10000 + (+m[2] || 1) * 100 + (+m[3] || 1) : 0; };
+const isoDay = (v) => (v instanceof Date ? v.toISOString().slice(0, 10) : v);
+function travelMap(travel = []) {
+  const ev = travel.map((e) => ({ ...e, from: isoDay(e.from), to: isoDay(e.to) })).sort((a, b) => dateNum(a.from) - dateNum(b.from));
+  const isBase = (e) => e.kind === "home" || e.kind === "stay";
+  const active = (e, d) => isBase(e) && dateNum(e.from) <= d && (e.to === "present" || !e.to || dateNum(e.to) >= d);
+  const out = ev.map((e, i) => {
+    const [x, y] = proj([e.lon, e.lat]);
+    const d = dateNum(e.from);
+    let origin = null;
+    if (isBase(e)) {
+      for (let j = i - 1; j >= 0; j--) if (ev[j].kind === "home") { origin = ev[j]; break; }
+    } else {
+      const bases = ev.slice(0, i).filter((b) => active(b, d));
+      origin = bases.sort((a, b) => (a.kind === "stay") - (b.kind === "stay") || dateNum(a.from) - dateNum(b.from)).pop() || null;
+    }
+    let arc = "", ox = null, oy = null;
+    if (origin) {
+      [ox, oy] = proj([origin.lon, origin.lat]);
+      const mx = (ox + x) / 2, my = (oy + y) / 2, dx = x - ox, dy = y - oy, len = Math.hypot(dx, dy) || 1;
+      const lift = Math.min(len * 0.28, 90);
+      const cx = mx + (dy / len) * lift * (dx > 0 ? -1 : 1), cy = my - Math.abs(dx / len) * lift - (dy / len) * 0;
+      arc = `M${ox.toFixed(1)} ${oy.toFixed(1)}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    }
+    const when = e.to ? `${ym(e.from)} – ${e.to === "present" ? "now" : ym(e.to)}` : ym(e.from);
+    return { ...e, x: +x.toFixed(1), y: +y.toFixed(1), ox, oy, arc, when, base: isBase(e), d, year: String(e.from).slice(0, 4) };
+  });
+  return { ...mapGeometry(), W: MAP_W, events: out };
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -249,6 +296,16 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("posIn", (order, key) => (order || []).indexOf(key) + 1);
   // "arvind@cheenu.net" → "arvind [at] cheenu.net"
   eleventyConfig.addFilter("newestFirst", newestFirst);
+  eleventyConfig.addFilter("travelMap", travelMap);
+  // Selected entries first, then the rest, each group keeping its order.
+  eleventyConfig.addFilter("selectedFirst", (list = []) => [...list.filter((e) => e.selected), ...list.filter((e) => !e.selected)]);
+  // An update counts as new for two months after its date.
+  eleventyConfig.addFilter("isNew", (v, months = 2) => {
+    const m = String(v).match(/^(\d{4})-(\d{1,2})/);
+    if (!m) return false;
+    const now = new Date();
+    return (now.getFullYear() - +m[1]) * 12 + (now.getMonth() + 1 - +m[2]) < months;
+  });
   // The acceptance rate for the year a paper appeared at its venue.
   eleventyConfig.addFilter("rateFor", (p, venues) => {
     if (p.rate) return { rate: p.rate, year: "" };

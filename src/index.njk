@@ -8,6 +8,9 @@ permalink: /index.html
 {%- set cur = s.currency_default or "EUR" -%}
 {%- set bioR = s.bio.research or s.bio -%}
 {%- set awardRefs = s.awards | pluck("ref") -%}
+{%- set kindIcon = { home: "house", stay: "briefcase", talk: "microphone-lines", school: "graduation-cap" } -%}
+{%- set kindColor = { home: "sky", stay: "indigo", talk: "fuchsia", school: "amber" } -%}
+{%- set kindName = { home: "Home", stay: "Research stay", talk: "Talk", school: "Summer school" } -%}
 {%- set projectKinds = { library: "Library", tool: "Tool", research: "Research", game: "Game", infrastructure: "Infrastructure" } -%}
 {%- set actLabels = { pdf: "PDF", doi: "DOI", arxiv: "arXiv", code: "Code", video: "Video", blog: "Blog", supplement: "Supplement", poster: "Poster", web: "Project page", proquest: "ProQuest" } -%}
 {%- set actIcons = { pdf: "file-pdf", doi: "link", arxiv: "file-lines", code: "code", video: "circle-play", blog: "pen-nib", supplement: "folder-open", poster: "image", web: "globe", proquest: "book" } -%}
@@ -18,7 +21,7 @@ permalink: /index.html
     <div class="sec-head rv">
       <div class="sec-title">
         <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}<span>{{ sec.title | md | safe }}</span></h2>
-        {%- if note %}<p class="sec-note">{{ note }}</p>{% endif %}
+        {%- if note %}<p class="sec-note">{{ note | safe }}</p>{% endif %}
       </div>
       {%- if caller %}{{ caller() }}{% endif %}
     </div>
@@ -151,7 +154,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     {%- endcall %}
     {%- elif key == "publications" %}
     {%- set pnote = ("† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
-    {%- if citations.total %}{% set pnote = pnote + (" · " if pnote else "") + (citations.total | string) + " citations on Semantic Scholar, " + (citations.date | ymd) %}{% endif %}
+    {%- if citations.total %}{% set pnote = pnote + (" · " if pnote else "") + '<a href="' + citations.profile + '">' + (citations.total | string) + " citations" + (", h-index " + citations.h if citations.h else "") + " on Google Scholar</a>" %}{% endif %}
     {%- call head(key, sec, pnote) %}
       <div class="sec-ctl no-print">
         <div class="seg sm" role="radiogroup" aria-label="List publications by">
@@ -183,7 +186,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     {%- elif key == "news" %}
       {%- for n in s.news | newestFirst %}
       <article class="item rv{% if loop.index > s.news_visible %} fold{% endif %}">
-        <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time></div>
+        <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time>{% if n.date | isNew %}<span class="new" data-new="{{ n.date }}">{{ icon("wand-magic-sparkles") }}New</span>{% endif %}</div>
         <div class="what">
           <div class="main"><p class="text">{{ n.text | md | safe }}{% if n.link %} <a href="{{ n.link }}">More</a>{% endif %}</p></div>
           {%- if n.image %}<img class="thumb" src="{{ n.image }}" alt="{{ n.image_alt or '' }}" decoding="async">{% endif %}
@@ -191,7 +194,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </article>
       {%- endfor %}
       {%- if s.news.length > s.news_visible %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show all {{ s.news.length }}</span></button></div></div>
+      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
       {%- endif %}
 
     {%- elif key == "publications" %}
@@ -223,10 +226,10 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
               {%- endfor %}
             </div>
             {%- endif %}
-            {%- if p.links or p.bibtex !== false %}
+            {%- if p.links or p.bibtex !== false or citations.counts[p.id] %}
             <p class="acts no-print">
               {%- for k, l in p.links %}<a class="tl" href="{{ l }}">{{ icon(actIcons[k] or "link") }}{{ actLabels[k] or k }}</a>{% endfor %}
-              {%- if citations.counts[p.id] !== undefined %}<a class="tl cites" href="{{ citations.links[p.id] or ('https://www.semanticscholar.org/search?q=' + (p.title | urlencode)) }}" title="Citations on Semantic Scholar, {{ citations.date }}">{{ icon("quote-left") }}{{ citations.counts[p.id] }} citation{% if citations.counts[p.id] != 1 %}s{% endif %}</a>{% endif %}
+              {%- if citations.counts[p.id] %}<a class="tl cites" href="{{ citations.links[p.id] or citations.profile }}" title="Cited by, on Google Scholar ({{ citations.date | ymd }})">{{ icon("quote-left") }}{{ citations.counts[p.id] }} citation{% if citations.counts[p.id] != 1 %}s{% endif %}</a>{% endif %}
               {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">{{ icon("quote-right") }}BibTeX</button>{% endif %}
             </p>
             {%- endif %}
@@ -237,9 +240,10 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "projects" %}
-      {%- for p in s.projects %}
+      {%- set anySel = s.projects | selectattr("selected") | length %}
+      {%- for p in s.projects | selectedFirst %}
       {%- set purl = (p.links.web if p.links else "") or (p.links.code if p.links else "") -%}
-      <article class="item rv" id="{{ p | entryId('project') }}">
+      <article class="item rv{% if anySel and not p.selected %} fold{% endif %}" id="{{ p | entryId('project') }}">
         <div class="when">{{ projectKinds[p.kind] or p.kind }}</div>
         <div class="what">
           <div class="main">
@@ -252,6 +256,9 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         </div>
       </article>
       {%- endfor %}
+      {%- if anySel and anySel < s.projects.length %}
+      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
+      {%- endif %}
 
     {%- elif key == "experience" %}
       {%- for e in s.experience | newestFirst %}
@@ -276,6 +283,47 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "talks" %}
+      {%- if s.travel and s.travel.length %}
+      {%- set tm = s.travel | travelMap %}
+      {%- set nEv = tm.events.length %}
+      <figure class="map rv no-print" data-map>
+        <div class="map-view">
+          <svg class="map-svg" viewBox="0 150 1000 560" preserveAspectRatio="xMidYMid slice" role="img" aria-label="World map of the places in this timeline">
+            <rect class="map-sea" x="-1000" y="-1000" width="3000" height="3000"/>
+            <path class="map-land" d="{{ tm.land }}"/>
+            <path class="map-borders" d="{{ tm.borders }}"/>
+            <g class="map-routes">{% for e in tm.events %}{% if e.arc %}<path class="map-route" data-i="{{ loop.index0 }}" data-c="{{ kindColor[e.kind] }}" d="{{ e.arc }}" pathLength="1"/>{% endif %}{% endfor %}</g>
+          </svg>
+          <div class="map-pins">
+            {%- for e in tm.events %}
+            <button type="button" class="pin" data-i="{{ loop.index0 }}" data-x="{{ e.x }}" data-y="{{ e.y }}" data-ox="{{ e.ox if e.ox !== null else '' }}" data-oy="{{ e.oy if e.oy !== null else '' }}" data-when="{{ e.when }}" data-c="{{ kindColor[e.kind] }}" aria-label="{{ e.place }}, {{ e.when }}: {{ e.label }}">{{ icon(kindIcon[e.kind]) }}<span class="pin-label">{{ e.place }}</span></button>
+            {%- endfor %}
+          </div>
+          <div class="map-cards" aria-live="polite">
+            {%- for e in tm.events %}
+            <div class="map-card" data-i="{{ loop.index0 }}" data-c="{{ kindColor[e.kind] }}"{% if not loop.last %} hidden{% endif %}>
+              <p class="mc-kind">{{ icon(kindIcon[e.kind]) }}{{ kindName[e.kind] }}<span class="sep">·</span>{{ e.when }}</p>
+              <p class="mc-place">{{ e.place }}, {{ e.country }}</p>
+              <p class="mc-what">{% if e.ref %}<a href="#{{ e.ref }}">{{ e.label }}</a>{% else %}{{ e.label }}{% endif %}</p>
+            </div>
+            {%- endfor %}
+          </div>
+        </div>
+        <figcaption class="map-ctl">
+          <button type="button" class="btn icon tac map-play" aria-label="Replay the timeline" title="Replay">{{ icon("play", false, "i-play") }}{{ icon("pause", false, "i-pause") }}</button>
+          <div class="map-track">
+            <input type="range" class="map-range" min="0" max="{{ nEv - 1 }}" step="any" value="{{ nEv - 1 }}" aria-label="Move through time">
+            <div class="map-ticks" aria-hidden="true">
+              {%- set lastY = "" %}
+              {%- for e in tm.events %}
+              <span class="tick" style="left:{{ (loop.index0 / (nEv - 1) * 100) | round(2) }}%" data-c="{{ kindColor[e.kind] }}"><i></i>{% if loop.first or tm.events[loop.index0 - 1].year != e.year %}<b>{{ e.year }}</b>{% endif %}</span>
+              {%- endfor %}
+            </div>
+          </div>
+          <ul class="map-legend" aria-label="Legend">{% for k, nm in kindName %}<li data-c="{{ kindColor[k] }}">{{ icon(kindIcon[k]) }}{{ nm }}</li>{% endfor %}</ul>
+        </figcaption>
+      </figure>
+      {%- endif %}
       {%- for t in s.talks | newestFirst %}
       <article class="item rv" id="{{ t | entryId('talk') }}">
         <div class="when">{{ t.date | ym }}</div>
@@ -285,7 +333,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
 
     {%- elif key == "service" %}
       {%- for r in s.service | newestFirst %}
-      <article class="item rv" id="{{ r | entryId('service') }}">
+      <article class="item rv{% if s.service_visible and loop.index > s.service_visible %} fold{% endif %}" id="{{ r | entryId('service') }}">
         {%- if r.reviews %}
         <div class="when">{{ r.venue | year4 }}</div>
         <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="award">{{ icon("medal") }}{{ r.note }}</span>{% endif %}</p></div></div>
@@ -295,6 +343,9 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         {%- endif %}
       </article>
       {%- endfor %}
+      {%- if s.service_visible and s.service.length > s.service_visible %}
+      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
+      {%- endif %}
 
     {%- elif key == "grants" %}
       {%- for g in s.grants | newestFirst %}
@@ -331,12 +382,16 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "certifications" %}
-      {%- for c in s.certifications | newestFirst %}
-      <article class="item rv" id="{{ c | entryId('cert') }}">
+      {%- set anySel = s.certifications | selectattr("selected") | length %}
+      {%- for c in s.certifications | newestFirst | selectedFirst %}
+      <article class="item rv{% if anySel and not c.selected %} fold{% endif %}" id="{{ c | entryId('cert') }}">
         <div class="when">{{ c.year }}</div>
         <div class="what"><div class="main"><h3 class="t">{% if c.url %}<a href="{{ c.url }}">{{ c.title }}</a>{% else %}{{ c.title }}{% endif %}</h3><p class="sub">{{ c.by }}</p>{% if c.detail %}<p class="text">{{ c.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
+      {%- if anySel and anySel < s.certifications.length %}
+      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
+      {%- endif %}
 
     {%- elif key == "skills" %}
       {%- for g in s.skills %}

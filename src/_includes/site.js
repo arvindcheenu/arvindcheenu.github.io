@@ -745,6 +745,108 @@
     else if (choice() === null) setTimeout(() => ask(), 900);
   })();
 
+  /* ── Updates: the sparkle leaves after two months, even before a rebuild ── */
+  $$("[data-new]").forEach((b) => {
+    const m = String(b.dataset.new).match(/^(\d{4})-(\d{1,2})/); if (!m) return;
+    const now = new Date(), age = (now.getFullYear() - +m[1]) * 12 + (now.getMonth() + 1 - +m[2]);
+    if (age >= 2) b.remove();
+  });
+
+  /* ── Talks & travel: a map that moves through time ────────────────────── */
+  // The slider runs from the first place to the last. Between two places the
+  // camera glides, pulling back for long trips, and the route draws as it goes.
+  const mapEl = $("[data-map]");
+  if (mapEl) {
+    const svg = $(".map-svg", mapEl), view = $(".map-view", mapEl), range = $(".map-range", mapEl), playBtn = $(".map-play", mapEl);
+    const pins = $$(".pin", mapEl), cards = $$(".map-card", mapEl);
+    const routes = new Map($$(".map-route", mapEl).map((r) => [+r.dataset.i, r]));
+    const num = (v) => (v === "" || v === undefined ? null : +v);
+    const ev = pins.map((p) => ({ x: +p.dataset.x, y: +p.dataset.y, ox: num(p.dataset.ox), oy: num(p.dataset.oy), el: p }));
+    const N = ev.length;
+    const MIN_W = 70;
+    const frames = ev.map((e) => {
+      const xs = [e.x], ys = [e.y];
+      if (e.ox !== null) { xs.push(e.ox); ys.push(e.oy); }
+      const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, w: Math.max(MIN_W, (x1 - x0) * 1.6), h: Math.max(MIN_W * 0.6, (y1 - y0) * 2.2) };
+    });
+    let t = N - 1, raf = 0, playing = false, tween = null;
+    const smooth = (f) => f * f * (3 - 2 * f);
+    function camera(tt) {
+      const i = Math.max(0, Math.min(N - 1, Math.floor(tt))), f = Math.min(1, tt - i);
+      const a = frames[i], b = frames[Math.min(N - 1, i + 1)], e = smooth(f);
+      const cx = a.cx + (b.cx - a.cx) * e, cy = a.cy + (b.cy - a.cy) * e;
+      const far = Math.hypot(b.cx - a.cx, b.cy - a.cy) / Math.max(a.w, b.w);
+      const bump = 1 + Math.sin(Math.PI * f) * Math.min(1.4, far * 0.9);
+      let w = (a.w + (b.w - a.w) * e) * bump, h = (a.h + (b.h - a.h) * e) * bump;
+      const ar = (view.clientWidth || 16) / (view.clientHeight || 10);
+      if (w / h < ar) w = h * ar; else h = w / ar;
+      // The place card sits top left, so the places being shown sit a little right of and below centre.
+      return { x: cx - w / 2 - w * 0.06, y: cy - h / 2 - h * 0.05, w, h };
+    }
+    function render() {
+      const vb = camera(t), W = view.clientWidth, H = view.clientHeight;
+      svg.setAttribute("viewBox", `${vb.x.toFixed(2)} ${vb.y.toFixed(2)} ${vb.w.toFixed(2)} ${vb.h.toFixed(2)}`);
+      svg.style.setProperty("--k", (vb.w / (W || 1)).toFixed(4));
+      const cur = Math.min(N - 1, Math.round(t));
+      ev.forEach((e, i) => {
+        // `translate` composes before `scale`, so the highlighted pin grows in place.
+        e.el.style.translate = `${((e.x - vb.x) / vb.w) * W}px ${((e.y - vb.y) / vb.h) * H}px`;
+        const shown = t >= i - 0.3;
+        e.el.classList.toggle("on", shown); e.el.classList.toggle("now", i === cur);
+        e.el.tabIndex = shown ? 0 : -1;
+        const r = routes.get(i);
+        if (r) {
+          const pr = Math.max(0, Math.min(1, t - (i - 1)));
+          r.style.strokeDashoffset = String(1 - pr); r.style.opacity = pr > 0 ? "" : "0";
+          r.classList.toggle("past", i < cur);
+        }
+      });
+      cards.forEach((c, i) => { c.hidden = i !== cur; });
+      range.value = String(t);
+      range.style.setProperty("--p", `${(t / (N - 1)) * 100}%`);
+      const pc = pins[cur];
+      range.setAttribute("aria-valuetext", pc ? pc.getAttribute("aria-label") : "");
+    }
+    const queueRender = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render); };
+    function stop() { playing = false; tween = null; mapEl.classList.remove("playing"); playBtn.setAttribute("aria-label", "Replay the timeline"); }
+    // Glide to an event; `then` runs on arrival.
+    function glide(to, ms, then) {
+      const from = t, start = performance.now(), dur = reduced ? 0 : ms * Math.max(1, Math.abs(to - from)) ** 0.6;
+      tween = (now) => {
+        const f = dur ? Math.min(1, (now - start) / dur) : 1;
+        t = from + (to - from) * f;
+        render();
+        if (f < 1) return requestAnimationFrame((n) => tween && tween(n));
+        tween = null; if (then) then();
+      };
+      requestAnimationFrame((n) => tween && tween(n));
+    }
+    function play() {
+      if (t >= N - 1 - 1e-3) t = 0;
+      playing = true; mapEl.classList.add("playing"); playBtn.setAttribute("aria-label", "Pause");
+      const next = () => {
+        if (!playing) return;
+        const k = Math.floor(t + 1e-6) + 1;
+        if (k > N - 1) { stop(); return; }
+        glide(k, 1300, () => setTimeout(() => { if (playing) next(); }, reduced ? 900 : 650));
+      };
+      render(); setTimeout(next, 350);
+    }
+    playBtn.addEventListener("click", () => { if (playing) stop(); else { play(); } });
+    range.addEventListener("input", () => { stop(); t = +range.value; queueRender(); });
+    range.addEventListener("keydown", (e) => {
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) return;
+      e.preventDefault(); stop();
+      const k = e.key === "Home" ? 0 : e.key === "End" ? N - 1 : Math.max(0, Math.min(N - 1, Math.round(t) + (e.key === "ArrowLeft" || e.key === "ArrowDown" ? -1 : 1)));
+      glide(k, 700);
+    });
+    pins.forEach((p, i) => p.addEventListener("click", () => { stop(); glide(i, 800); }));
+    $$(".tick", mapEl).forEach((tk, i) => tk.addEventListener("click", () => { stop(); glide(i, 800); }));
+    if ("ResizeObserver" in window) new ResizeObserver(queueRender).observe(view);
+    render();
+  }
+
   /* ── Image viewer for entries with several pictures ─────────────────────── */
   const lb = $(".lightbox");
   if (lb && typeof lb.showModal === "function") {

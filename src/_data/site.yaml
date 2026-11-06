@@ -73,7 +73,7 @@ tailor:
       label: Industry
       icon: briefcase
       cv: Résumé
-      status: Open to research scientist and research engineer roles from January 2027
+      status: Open to research, software engineering and design roles from January 2027
       order: [news, biography, experience, projects, skills, certifications, education, publications, awards, talks, teaching, grants, service]
 
 # ── Introduction ────────────────────────────────────────────────────────────
@@ -231,15 +231,17 @@ sections:
   publications: { title: Publications, icon: book-open, color: rose }
   projects: { title: Selected Open Source, icon: code-branch, color: emerald }
   skills: { title: Skills, icon: screwdriver-wrench, color: cyan }
-  certifications: { title: Certifications, icon: certificate, color: lime }
+  certifications: { title: Selected certifications, icon: certificate, color: lime }
   grants: { title: Grants, icon: coins, color: orange }
   awards: { title: Honors & awards, icon: trophy, color: amber }
-  talks: { title: Talks, icon: microphone-lines, color: fuchsia }
+  talks: { title: Talks & travel, icon: plane-departure, color: fuchsia }
   teaching: { title: Teaching, icon: chalkboard-user, color: sky }
-  service: { title: Service, icon: handshake-angle, color: pink }
+  service: { title: Reviewing experience, icon: handshake-angle, color: pink }
   contact: { title: Contact, icon: envelope, color: blue }
 
-# Newest first. The first `news_visible` items show; the rest fold away.
+# Newest first. The first `news_visible` items show; "Show more" opens the rest.
+# Open source and certifications work the same way: entries marked `selected: true`
+# show first, and "Show more" opens the others.
 news_visible: 6
 news:
   - date: 2026-11
@@ -491,13 +493,13 @@ experience:
     place: Aarhus, Denmark
     start: 2024-01
     end: present
-    summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step. Used Unity on HoloLens 2 for XR prototyping during ideation and brainstorming.
+    summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling, and manages its branding and online presence. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step. Used Unity on HoloLens 2 for XR prototyping during ideation and brainstorming.
     highlights:
       - Built attention-aware analytics end to end for the web, Meta Quest 3 and HoloLens 2, from gaze capture and per-mark visibility tracking to an event-logged back end.
       - Took the work from a single-user web prototype to co-located WebXR collaboration and asynchronous handoff between analysts, running the user study behind each step.
       - Prototyped XR ideas in Unity on HoloLens 2 during ideation and brainstorming.
       - Released [heed](#project-heed), an open-source toolkit that records attention on any web page.
-      - One of the centre's first hires; helped build its website, publication pipeline and shared tooling.
+      - One of the centre's first hires; manages its branding and online presence, and helped build its website, publication pipeline and shared tooling.
     tags: [WebXR, React Three Fiber, Unity, HoloLens 2, eye tracking, user studies]
 
   - id: visus
@@ -540,19 +542,22 @@ experience:
 
 # ── Education ───────────────────────────────────────────────────────────────
 education:
-  - degree: PhD, Computer Science
+  - id: phd
+    degree: PhD, Computer Science
     org: Aarhus University
     place: Aarhus, Denmark
     start: 2024-01
     end: 2026-12
     detail: "Thesis: *Attention-Aware Analytics: Recording and Revisualizing Where People Look*. Supervisor: Niklas Elmqvist. Submission December 2026, defence expected spring 2027."
-  - degree: MS, Human-Computer Interaction
+  - id: ms
+    degree: MS, Human-Computer Interaction
     org: University of Maryland
     place: College Park, MD, USA
     start: 2021-08
     end: 2023-05
     detail: "GPA 3.93/4.00. Thesis on analogical inspiration with chunking and recombination, advised by Joel Chan. Coursework: Data Visualization, Fundamentals of Human-Computer Interaction, Interaction Design Studio, UX Research Methods."
-  - degree: BTech, Computer Science and Engineering
+  - id: btech
+    degree: BTech, Computer Science and Engineering
     org: SRM Institute of Science and Technology
     place: Chennai, India
     start: 2016-08
@@ -563,6 +568,7 @@ education:
 # kind: library | tool | research | game | infrastructure
 projects:
   - name: heed
+    selected: true
     kind: library
     year: 2026
     summary: Attention recording for any web page. Cursor dwell, viewport visibility and webcam gaze with calibration, scanpaths, attention-triggered experience sampling and on-device LLM summaries, behind one declarative spec.
@@ -571,6 +577,7 @@ projects:
       web: https://heed.arvindchee.nu
       code: https://github.com/arvindcheenu/heed
   - name: Elicitation Lab
+    selected: true
     kind: tool
     summary: Compiles a client persona into an offline requirements-elicitation simulator, with Claude, Chrome's built-in model, WebLLM or Ollama doing the compiling.
     tech: [JavaScript, WebLLM, Ollama]
@@ -578,6 +585,7 @@ projects:
       web: https://arvindchee.nu/elicitation-lab/
       code: https://github.com/arvindcheenu/elicitation-lab
   - name: SciFig
+    selected: true
     kind: tool
     summary: Browser generator for CHI-style teaser and multi-panel figures. Layout presets, drag-in panels, annotation, export at 300–600 dpi.
     tech: [React, TypeScript, Vite]
@@ -585,37 +593,37 @@ projects:
       web: https://scifig.arvindchee.nu
       code: https://github.com/arvindcheenu/scifig
   - name: habitat.css
+    selected: true
     kind: library
     summary: Ambient-adapting CSS. E-ink and camouflage display modes driven by measured room light and colour.
     tech: [CSS, JavaScript]
     links:
       web: https://arvindchee.nu/habitat.css/
       code: https://github.com/arvindcheenu/habitat.css
-  # Not shown for now; remove the # marks to bring any of these back.
-  # - name: Matercolors
-  #   kind: library
-  #   summary: Tiny, zero-dependency library that builds harmonious Material palettes from any colour, with a companion Figma plugin.
-  #   tech: [JavaScript, npm]
-  #   links:
-  #     web: https://www.npmjs.com/package/matercolors
-  #     code: https://github.com/arvindcheenu/matercolors
-  # - name: Chromanomer
-  #   kind: library
-  #   summary: Perceptually intuitive colour naming on the LCh colour space, for accessible colour selection with almost no learning curve.
-  #   tech: [JavaScript, npm]
-  #   links:
-  #     web: https://arvindcheenu.github.io/Chromanomer/
-  #     code: https://github.com/arvindcheenu/chromanomer
+  - name: Matercolors
+    kind: library
+    summary: Tiny, zero-dependency library that builds harmonious Material palettes from any colour, with a companion Figma plugin.
+    tech: [JavaScript, npm]
+    links:
+      web: https://www.npmjs.com/package/matercolors
+      code: https://github.com/arvindcheenu/matercolors
+  - name: Chromanomer
+    kind: library
+    summary: Perceptually intuitive colour naming on the LCh colour space, for accessible colour selection with almost no learning curve.
+    tech: [JavaScript, npm]
+    links:
+      web: https://arvindcheenu.github.io/Chromanomer/
+      code: https://github.com/arvindcheenu/chromanomer
   # - name: vizlit
   #   kind: research
   #   summary: Python package for chart reading grounded in the IVL visualization-literacy framework, with a companion agent skill.
   #   tech: [Python]
-  # - name: Dragon Drop
-  #   kind: tool
-  #   summary: Human-centred, AI-assisted brainstorming tool built on Gestalt principles.
-  #   tech: [React, TypeScript, Vite]
-  #   links:
-  #     code: https://github.com/arvindcheenu/dragon-drop
+  - name: Dragon Drop
+    kind: tool
+    summary: Human-centred, AI-assisted brainstorming tool built on Gestalt principles.
+    tech: [React, TypeScript, Vite]
+    links:
+      code: https://github.com/arvindcheenu/dragon-drop
   # - name: Research infrastructure
   #   kind: infrastructure
   #   summary: CA³ lab website and publications pipeline (Eleventy, Google Sheets/Drive as CMS, BibTeX tooling), and a HoloLens 2 experiment stack (Unity, Python WebSocket, MongoDB, music21/Verovio).
@@ -644,34 +652,57 @@ teaching:
 
 # ── Talks ───────────────────────────────────────────────────────────────────
 talks:
-  - ref: srinivasan2026heedvision
+  - id: talk-vis2026
+    ref: srinivasan2026heedvision
     title: "HeedVision: Attention Awareness in Collaborative Immersive Analytics"
-    event: IEEE VIS 2026
+    event: IEEE VIS 2026, Boston
     date: 2026-11
-  - ref: srinivasan2026band
+  - id: talk-etvis2026
+    ref: srinivasan2026band
     title: Analyzing Visual Attention Patterns During Band Rehearsal
     event: ETVIS 2026 at ACM ETRA, Marrakesh
     date: 2026-06
-  - ref: srinivasan2026pipeline
+  - id: talk-saxr2026
+    ref: srinivasan2026pipeline
     title: "The Attention-Aware Pipeline: Design Tensions from Making Attention Visible in XR"
     event: SAXR Workshop, ACM CHI 2026, Barcelona
     date: 2026-04
-  - ref: srinivasan2025attention
+  - id: talk-vis2024
+    ref: srinivasan2025attention
     title: "Attention-Aware Visualization: Tracking and Responding to User Perception Over Time"
     event: IEEE VIS 2024, virtual
     date: 2024-10
-  - ref: srinivasan2024improving
+  - id: talk-cc2024
+    ref: srinivasan2024improving
     title: Improving Selection of Analogical Inspirations through Chunking and Recombination
     event: ACM Creativity & Cognition 2024, Chicago
     date: 2024-06
-  - ref: srinivasan2022hotshots
+  - id: talk-vis2022
+    ref: srinivasan2022hotshots
     title: "Hotshots: Visualizing Stroke-by-Stroke Tennis Data (poster)"
     event: IEEE VIS 2022, Oklahoma City
     date: 2022-10
 
-# ── Service ─────────────────────────────────────────────────────────────────
-# Reviewing is venue-level only; submission numbers and review links stay private.
-# Entries with `reviews` render as reviewing; others take `role`, `org`, `detail`.
+# ── Travel ──────────────────────────────────────────────────────────────────
+# The map under Talks & travel. `home` and `stay` are bases; every other trip is
+# drawn from the base you were at. `ref` links the card to the entry on the page.
+# kind: home | stay | talk | school
+travel:
+  - { from: 2016-08, to: 2020-05, place: Chennai, country: India, lat: 13.08, lon: 80.27, kind: home, label: "BTech, SRM Institute of Science and Technology", ref: btech }
+  - { from: 2021-08, to: 2023-08, place: College Park, country: USA, lat: 38.99, lon: -76.94, kind: home, label: "MS and research assistantship, University of Maryland", ref: ms }
+  - { from: 2022-10, place: Oklahoma City, country: USA, lat: 35.47, lon: -97.52, kind: talk, label: "Hotshots poster, IEEE VIS 2022", ref: talk-vis2022 }
+  - { from: 2024-01, to: present, place: Aarhus, country: Denmark, lat: 56.16, lon: 10.20, kind: home, label: "PhD, Center for Anytime Anywhere Analytics", ref: ca3 }
+  - { from: 2024-06-10, place: Oulu, country: Finland, lat: 65.01, lon: 25.47, kind: school, label: "UBI Summer School 2024", ref: award-ubiss }
+  - { from: 2024-06-23, place: Chicago, country: USA, lat: 41.88, lon: -87.63, kind: talk, label: "ACM Creativity & Cognition 2024", ref: talk-cc2024 }
+  - { from: 2025-10, to: 2026-02, place: Stuttgart, country: Germany, lat: 48.78, lon: 9.18, kind: stay, label: "Research stay at VISUS, University of Stuttgart", ref: visus }
+  - { from: 2026-04, place: Barcelona, country: Spain, lat: 41.39, lon: 2.17, kind: talk, label: "SAXR workshop, ACM CHI 2026", ref: talk-saxr2026 }
+  - { from: 2026-06, place: Marrakesh, country: Morocco, lat: 31.63, lon: -7.99, kind: talk, label: "ETVIS 2026 at ACM ETRA", ref: talk-etvis2026 }
+  - { from: 2026-11, place: Boston, country: USA, lat: 42.36, lon: -71.06, kind: talk, label: "HeedVision, IEEE VIS 2026", ref: talk-vis2026 }
+
+# ── Reviewing experience ────────────────────────────────────────────────────
+# Venue level only; submission numbers and review links stay private.
+# The newest `service_visible` show; "Show more" opens the rest.
+service_visible: 3
 service:
   - venue: ACM CHI 2027
     track: Papers
@@ -690,10 +721,7 @@ service:
   - venue: ACM Creativity & Cognition 2025
     track: Papers
     reviews: 1
-  - when: 2026
-    role: Organiser, research speed dating
-    org: Center for Anytime Anywhere Analytics, Aarhus University
-    detail: Grouped the centre's researchers by research problem to start collaborations.
+
 
 # ── Grants ──────────────────────────────────────────────────────────────────
 # Write amounts with a currency code (20,000 DKK) or a symbol (US$400, €500, £300).
@@ -764,10 +792,10 @@ skills:
 certifications:
   - { title: Information Design, by: Coursera, year: 2021, url: "https://www.coursera.org/account/accomplishments/certificate/58NBMZ4KE8HJ" }
   - { title: Social Computing, by: Coursera, year: 2021, url: "https://www.coursera.org/account/accomplishments/certificate/GND6PXQSNGAU" }
-  - { title: Natural Language Processing Specialization, by: Coursera, year: 2021, url: "https://www.coursera.org/account/accomplishments/specialization/certificate/MJUX3JEQQP6S" }
-  - { title: Social and Behavioral Research, by: CITI Program, year: 2021, detail: Human-subjects research training; valid to September 2024., url: "https://www.citiprogram.org/verify/?w7b8ab655-c853-47b1-95ff-4808f842664c-44682272" }
-  - { title: UI / UX Design Specialization, by: Coursera, year: 2020, url: "https://www.coursera.org/account/accomplishments/specialization/certificate/CZ7DQ5VZVSPL" }
-  - { title: Deep Learning Specialization, by: Coursera, year: 2020, url: "https://www.coursera.org/account/accomplishments/specialization/certificate/K6ECTM377PX2" }
+  - { selected: true, title: Natural Language Processing Specialization, by: Coursera, year: 2021, url: "https://www.coursera.org/account/accomplishments/specialization/certificate/MJUX3JEQQP6S" }
+  - { selected: true, title: Social and Behavioral Research, by: CITI Program, year: 2021, detail: Human-subjects research training; valid to September 2024., url: "https://www.citiprogram.org/verify/?w7b8ab655-c853-47b1-95ff-4808f842664c-44682272" }
+  - { selected: true, title: UI / UX Design Specialization, by: Coursera, year: 2020, url: "https://www.coursera.org/account/accomplishments/specialization/certificate/CZ7DQ5VZVSPL" }
+  - { selected: true, title: Deep Learning Specialization, by: Coursera, year: 2020, url: "https://www.coursera.org/account/accomplishments/specialization/certificate/K6ECTM377PX2" }
   - { title: Machine Learning, by: Coursera, year: 2019, url: "https://www.coursera.org/account/accomplishments/verify/4ZQ4Y9DLFLHH" }
   - { title: Neural Networks for Machine Learning, by: Coursera, year: 2018, url: "https://www.coursera.org/account/accomplishments/verify/LSHVLKEUDT7Q" }
   - { title: Responsive Web Design, by: Coursera, year: 2016, url: "https://www.coursera.org/account/accomplishments/verify/HD9NJC3FR82L" }
