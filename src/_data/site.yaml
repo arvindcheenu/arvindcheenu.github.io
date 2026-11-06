@@ -92,13 +92,15 @@ news:
   - date: 2026-02
     text: Co-wrote *Ambient Analytics*, a Visualization Viewpoints article on calm technology for immersive sensemaking.
     link: https://arxiv.org/abs/2602.19809
+  - date: 2025-10
+    text: Began a five-month research stay at VISUS, University of Stuttgart, with Michael Sedlmair.
   - date: 2024-06
     text: Best Paper Honorable Mention at ACM Creativity & Cognition 2024 for AnalogiLead.
   - date: 2024-01
     text: Started my PhD at CA³, Aarhus University.
 
 # ── Publications ────────────────────────────────────────────────────────────
-# kind: journal | conference | article | short | workshop | demo | poster | preprint | thesis
+# kind: journal | conference | article | short | workshop | abstract | demo | poster | preprint | thesis
 # status: published (default) | to-appear | under-review
 # equal: names that share first authorship (marked with †)
 # links: any of pdf, doi, arxiv, code, video, blog, supplement, poster, web
@@ -116,10 +118,10 @@ publications:
   - id: srinivasan2026heedvision
     title: "HeedVision: Attention Awareness in Collaborative Immersive Analytics Environments"
     authors: [Arvind Srinivasan, Niklas Elmqvist]
-    venue: IEEE VIS 2026
-    venue_long: IEEE Visualization and Visual Analytics (VIS) 2026
+    venue: IEEE TVCG (VIS 2026)
+    venue_long: IEEE Transactions on Visualization and Computer Graphics
     year: 2026
-    kind: conference
+    kind: journal
     status: to-appear
     links:
       arxiv: https://arxiv.org/abs/2505.07069
@@ -129,6 +131,9 @@ publications:
     authors: [Sebastian Hubenschmid, Arvind Srinivasan, Niklas Elmqvist, Dieter Schmalstieg, Michael Sedlmair]
     venue: IEEE CG&A, Visualization Viewpoints
     venue_long: IEEE Computer Graphics and Applications
+    volume: "46"
+    number: "3"
+    pages: 110–117
     year: 2026
     kind: article
     doi: 10.1109/MCG.2026.3667291
@@ -140,6 +145,7 @@ publications:
     authors: [Arvind Srinivasan, Tobias Rau, Michael Sedlmair]
     venue: ACM ETRA 2026
     venue_long: ACM Symposium on Eye Tracking Research and Applications (ETRA) 2026
+    pages: 1–7
     year: 2026
     kind: short
     links:
@@ -209,6 +215,7 @@ publications:
     # image: assets/pubs/ding2023fluid.webp
     links:
       pdf: https://dl.acm.org/doi/pdf/10.1145/3591196.3593516
+      arxiv: https://arxiv.org/abs/2302.12832
 
   - id: srinivasan2023analogilead
     title: "AnalogiLead: Improving Selection of Analogical Inspirations with Chunking and Recombination"
@@ -217,7 +224,7 @@ publications:
     venue_long: Proceedings of the 15th Conference on Creativity & Cognition
     pages: 338–341
     year: 2023
-    kind: demo
+    kind: abstract
     doi: 10.1145/3591196.3596817
     # image: assets/pubs/srinivasan2023analogilead.webp
     links:
@@ -243,6 +250,14 @@ publications:
       poster: https://ieeevis.b-cdn.net/vis_2022/posters/v-vis-posters-1037.pdf
       pdf: https://ieeevis.b-cdn.net/vis_2022/posters/v-vis-posters-1037-summary.pdf
 
+  - id: srinivasan2020ensemble
+    title: An Ensemble Deep Learning Approach to Explore the Impact of Enticement, Engagement and Experience in Reward Based Crowdfunding
+    authors: [Arvind Srinivasan]
+    venue: BTech thesis, SRM Institute of Science and Technology
+    year: 2020
+    kind: thesis
+    bibtex: false
+
 # ── Experience ──────────────────────────────────────────────────────────────
 experience:
   - role: PhD Fellow
@@ -250,13 +265,14 @@ experience:
     place: Aarhus, Denmark
     start: 2024-01
     end: present
-    summary: One of the centre's first hires. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step.
+    summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step.
     tags: [WebXR, React Three Fiber, Unity, eye tracking, user studies]
 
   - role: Visiting PhD Researcher
     org: VISUS, University of Stuttgart
     place: Stuttgart, Germany
-    duration: 5 months
+    start: 2025-10
+    end: 2026-02
     summary: Hosted by Michael Sedlmair. Analysed mobile eye-tracking recordings of band rehearsals (Pupil Labs Neon) with YOLOv8-assisted area-of-interest annotation.
     tags: [Pupil Labs Neon, YOLOv8, Python]
 
@@ -362,12 +378,8 @@ projects:
 teaching:
   - role: Teaching assistant, Data Visualization
     org: Aarhus University
-    when: Autumn 2026
-    detail: TA sessions, weekly critique exercises, examiner in the mock oral exam.
-  - role: Teaching assistant, Requirements Engineering
-    org: Aarhus University
-    when: ""
-    detail: Designed an LLM-driven client persona for elicitation practice, shipped offline as [Elicitation Lab](https://arvindchee.nu/elicitation-lab/).
+    when: 2024 — 2026
+    detail: Three autumn semesters of TA sessions, weekly critique exercises and the mock oral exam. Developed [visualization.info](https://visualization.info/), the course's curated index of visualization teaching material (2025), and [Elicitation Lab](https://arvindchee.nu/elicitation-lab/), an offline client persona for requirements-elicitation practice (2026).
   - role: Guest lecture, Information Visualization
     org: Aarhus University
     when: March 2024
