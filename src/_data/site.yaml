@@ -74,8 +74,8 @@ tailor:
       order: [news, publications, experience, talks, awards, grants, teaching, service, projects, education, biography]
       print_order: [education, experience, publications, awards, grants, talks, teaching, service, projects]
       arranged: >-
-        As on most research pages, publications come first, then positions, talks, awards,
-        funding, teaching and reviewing, with education last. Skills and certifications are
+        As on most research pages, the latest updates are followed by publications, then
+        positions, talks, awards, funding, teaching and reviewing, with education last. Skills and certifications are
         left out, as research pages rarely list them; the Industry view has them. The CV you
         download keeps the usual academic order, starting with education.
     industry:
@@ -83,11 +83,12 @@ tailor:
       icon: briefcase
       cv: Résumé
       status: Open to research, software engineering and design roles from January 2027
-      order: [experience, projects, publications, skills, awards, talks, teaching, news, certifications, education, biography]
+      order: [news, experience, projects, publications, skills, awards, talks, certifications, education, biography]
       arranged: >-
-        As on a résumé, experience and projects come first, then publications, skills,
-        awards and talks, with education last. Research grants and peer reviewing are left
-        out, as they matter mostly to academic readers; the Research view has them.
+        As on a résumé, the latest updates are followed by experience and projects, then
+        publications, skills, awards and talks, with education last. Grants, peer reviewing
+        and teaching are left out, as they matter mostly to academic readers; the Research
+        view has them.
 
 # ── Introduction ────────────────────────────────────────────────────────────
 role: PhD candidate in visualization and HCI
