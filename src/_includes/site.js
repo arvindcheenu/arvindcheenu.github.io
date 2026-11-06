@@ -122,7 +122,7 @@
       const ok = await copy(a.dataset.copy || "");
       if (ok) { play("copy"); toast(a.dataset.toast || "Copied"); } else toast("Copy failed");
     } else if (act === "fold") {
-      const sec = a.closest(".body"); const open = !sec.classList.contains("folded-open");
+      const sec = a.closest(".list"); const open = !sec.classList.contains("folded-open");
       sec.classList.toggle("folded-open", open); a.setAttribute("aria-expanded", String(open));
       const span = $("span", a); if (span) span.textContent = open ? "Show fewer" : span.dataset.label;
     }
@@ -177,9 +177,20 @@
   }
 
   /* ── Top bar border once the page scrolls ───────────────────────────────── */
+  // The top edge blur shows once the page moves; the bottom one leaves at the end.
   const bar = $("#topbar");
-  const onScroll = () => bar && bar.classList.toggle("scrolled", window.scrollY > 120);
-  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  let ticking = false;
+  const onScroll = () => {
+    ticking = false;
+    const y = window.scrollY, end = document.documentElement.scrollHeight - window.innerHeight;
+    d.classList.toggle("at-top", y < 4);
+    d.classList.toggle("at-end", y >= end - 4);
+    if (bar) bar.classList.toggle("scrolled", y > 140);
+  };
+  const queue = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
+  window.addEventListener("scroll", queue, { passive: true });
+  window.addEventListener("resize", queue, { passive: true });
+  onScroll();
 
   /* ── Local time ─────────────────────────────────────────────────────────── */
   const clock = $("[data-clock]");

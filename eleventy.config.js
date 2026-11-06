@@ -48,18 +48,15 @@ function bibtex(p, siteName) {
   return `@${type}{${p.id},\n${body}\n}`;
 }
 
-// Author list with the site owner in bold, equal contribution marked with †, long lists folded.
+// Full author list, the site owner in bold, equal contribution marked with †.
 function authors(list, self, equal = []) {
-  const fmt = (n) => {
-    const mark = equal.includes(n) ? "†" : "";
-    return n === self ? `<b class="self">${esc(n)}${mark}</b>` : `${esc(n)}${mark}`;
-  };
   if (!list) return "";
-  if (list.length <= 8) return list.map(fmt).join(", ");
-  const i = list.indexOf(self);
-  const head = list.slice(0, 3).map(fmt);
-  const mid = i > 2 ? [`…`, fmt(self)] : [];
-  return `${[...head, ...mid].join(", ")}, … <span class="count">${list.length} authors</span>`;
+  return list
+    .map((n) => {
+      const mark = equal.includes(n) ? "†" : "";
+      return n === self ? `<b class="self">${esc(n)}${mark}</b>` : `${esc(n)}${mark}`;
+    })
+    .join(", ");
 }
 
 function primaryUrl(p) {

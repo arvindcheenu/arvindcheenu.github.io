@@ -20,13 +20,6 @@ work_email: arvind@cs.au.dk
 photo: assets/profile.webp        # remove to fall back to initials
 og_image: assets/profile-og.jpg    # preview image for link unfurls
 
-# The one accent colour. Used only for links, the primary button, icon duotone
-# and a few typographic highlights. Light and dark need separate values so
-# links keep 4.5:1 contrast on both backgrounds.
-accent:
-  light: "#c93a0e"
-  dark: "#ff8a5c"
-
 # Font Awesome Pro kit id: the part between kit.fontawesome.com/ and .js.
 # Leave blank to fall back to Font Awesome Free (solid icons, no duotone).
 fontawesome_kit: ""
@@ -53,7 +46,7 @@ bio:
   - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
 
 # Sections in page order. Remove a line to hide that section.
-order: [news, publications, projects, experience, teaching, talks, service, awards, education, skills, elsewhere]
+order: [news, publications, projects, experience, teaching, talks, service, awards, education, skills]
 
 # Links under the bio. The `primary: true` link becomes the filled button.
 links:
@@ -69,7 +62,7 @@ sections:
   news: News
   publications: Publications
   experience: Experience
-  projects: Open source & projects
+  projects: Active OSS projects
   teaching: Teaching
   talks: Talks
   service: Reviewing
@@ -315,6 +308,13 @@ projects:
     links:
       web: https://heed.arvindchee.nu
       code: https://github.com/arvindcheenu/heed
+  - name: Elicitation Lab
+    kind: tool
+    summary: Compiles a client persona into an offline requirements-elicitation simulator, with Claude, Chrome's built-in model, WebLLM or Ollama doing the compiling.
+    tech: [JavaScript, WebLLM, Ollama]
+    links:
+      web: https://arvindchee.nu/elicitation-lab/
+      code: https://github.com/arvindcheenu/elicitation-lab
   - name: SciFig
     kind: tool
     summary: Browser generator for CHI-style teaser and multi-panel figures. Layout presets, drag-in panels, annotation, export at 300–600 dpi.
@@ -343,20 +343,20 @@ projects:
     links:
       web: https://arvindcheenu.github.io/Chromanomer/
       code: https://github.com/arvindcheenu/chromanomer
-  - name: vizlit
-    kind: research
-    summary: Python package for chart reading grounded in the IVL visualization-literacy framework, with a companion agent skill.
-    tech: [Python]
+  # - name: vizlit
+  #   kind: research
+  #   summary: Python package for chart reading grounded in the IVL visualization-literacy framework, with a companion agent skill.
+  #   tech: [Python]
   - name: Dragon Drop
     kind: tool
     summary: Human-centred, AI-assisted brainstorming tool built on Gestalt principles.
     tech: [React, TypeScript, Vite]
     links:
       code: https://github.com/arvindcheenu/dragon-drop
-  - name: Research infrastructure
-    kind: infrastructure
-    summary: CA³ lab website and publications pipeline (Eleventy, Google Sheets/Drive as CMS, BibTeX tooling), and a HoloLens 2 experiment stack (Unity, Python WebSocket, MongoDB, music21/Verovio).
-    tech: [Eleventy, Unity, MongoDB]
+  # - name: Research infrastructure
+  #   kind: infrastructure
+  #   summary: CA³ lab website and publications pipeline (Eleventy, Google Sheets/Drive as CMS, BibTeX tooling), and a HoloLens 2 experiment stack (Unity, Python WebSocket, MongoDB, music21/Verovio).
+  #   tech: [Eleventy, Unity, MongoDB]
 
 # ── Teaching ────────────────────────────────────────────────────────────────
 teaching:
@@ -367,7 +367,7 @@ teaching:
   - role: Teaching assistant, Requirements Engineering
     org: Aarhus University
     when: ""
-    detail: Designed an LLM-driven client persona for elicitation practice, shipped as an offline single-file tool.
+    detail: Designed an LLM-driven client persona for elicitation practice, shipped offline as [Elicitation Lab](https://arvindchee.nu/elicitation-lab/).
   - role: Guest lecture, Information Visualization
     org: Aarhus University
     when: March 2024
@@ -415,19 +415,18 @@ service:
     reviews: 1
 
 # ── Awards ──────────────────────────────────────────────────────────────────
+# `for` names the work the award was for; `link` makes it clickable.
 awards:
-  - title: Special Recognition for Outstanding Review
-    by: ACM CHI
-    year: 2027
-  - title: Special Recognition for Outstanding Review
-    by: ACM CHI
-    year: 2026
   - title: Best Paper Honorable Mention
     by: ACM Creativity & Cognition
     year: 2024
+    for: Improving Selection of Analogical Inspirations through Chunking and Recombination
+    link: https://doi.org/10.1145/3635636.3656207
   - title: Best Paper Honorable Mention
     by: ACM Creativity & Cognition
     year: 2023
+    for: "Fluid Transformers and Creative Analogies: Exploring Large Language Models' Capacity for Augmenting Cross-Domain Analogical Creativity"
+    link: https://doi.org/10.1145/3591196.3593516
   - title: Jacob K. Goldhaber Travel Award
     by: University of Maryland
     year: 2022
@@ -452,7 +451,7 @@ skills:
   - group: Spoken
     items: [Tamil (native), English (fluent)]
 
-# ── Elsewhere ───────────────────────────────────────────────────────────────
+# ── Elsewhere (hidden; add `elsewhere` to `order` to show it) ──────────────
 elsewhere:
   - kind: Writing
     label: Medium
@@ -462,11 +461,3 @@ elsewhere:
   #   label: Ponderlust
   #   detail: Essays and poetry on time, meaning and lived experience.
   #   url: https://…
-  - kind: Play
-    label: Accrete
-    detail: A chain-reaction game where dust grows into stars and black holes.
-    url: /accrete/
-  - kind: Play
-    label: Chimistry
-    detail: Combine HCI concepts into new ones, Little Alchemy style.
-    url: /chimistry/

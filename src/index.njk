@@ -8,8 +8,9 @@ permalink: /index.html
 {%- set projectKinds = { library: "Library", tool: "Tool", research: "Research", game: "Game", infrastructure: "Infrastructure" } -%}
 {%- set actLabels = { pdf: "PDF", doi: "DOI", arxiv: "arXiv", code: "Code", video: "Video", blog: "Blog", supplement: "Supplement", poster: "Poster", web: "Web" } -%}
 {%- macro icon(name, brand=false, cls="") -%}<i class="{% if brand %}fa-brands{% elif site.fontawesome_kit %}fa-duotone fa-solid{% else %}fa-solid{% endif %} fa-{{ name }}{% if cls %} {{ cls }}{% endif %}" aria-hidden="true"></i>{%- endmacro -%}
+{%- macro edge(pos) -%}<div class="edge {{ pos }}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><b></b></div>{%- endmacro -%}
 <!doctype html>
-<html lang="en" data-sound="{{ 'on' if (s.sound_default | isOn) else 'off' }}" data-base="{{ s.url }}" data-tz="{{ s.timezone }}">
+<html lang="en" class="at-top" data-sound="{{ 'on' if (s.sound_default | isOn) else 'off' }}" data-base="{{ s.url }}" data-tz="{{ s.timezone }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -25,11 +26,11 @@ permalink: /index.html
 <meta name="twitter:card" content="summary">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:slnt,wdth,wght@-10..0,75..125,300..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400..700&display=swap">
 <script>
 /* Runs before paint so the saved theme and sound setting never flash. */
 (function(){var d=document.documentElement,g=function(k){try{return localStorage.getItem(k)}catch(e){return null}};
@@ -37,7 +38,6 @@ var t=g("theme");if(t==="light"||t==="dark")d.dataset.theme=t;
 var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 </script>
 <style>
-:root{--accent-l:{{ s.accent.light }};--accent-d:{{ s.accent.dark }}}
 {% inline "site.css" %}
 </style>
 {%- if s.fontawesome_kit %}
@@ -51,6 +51,8 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+{{ edge("top") }}
+{{ edge("bottom") }}
 
 <header class="topbar" id="topbar">
   <div class="wrap bar">
@@ -65,7 +67,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 
 <main id="main" class="wrap">
   <section class="hero" id="top" aria-label="Introduction">
-    <div class="avatar">
+    <div class="avatar" style="--i:0">
       {%- if s.ring %}
       <svg class="ring" viewBox="0 0 132 132" aria-hidden="true">
         <defs><path id="ring-path" d="M66,66 m-54,0 a54,54 0 1,1 108,0 a54,54 0 1,1 -108,0"/></defs>
@@ -76,14 +78,16 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
         {%- if s.photo %}<img src="{{ s.photo }}" alt="Portrait of {{ s.name }}" width="184" height="184" fetchpriority="high" decoding="async">{% else %}<span aria-hidden="true">{{ s.short }}</span>{% endif -%}
       </div>
     </div>
-    <h1 class="name">{{ s.name }}</h1>
-    <p class="role">{{ s.role }}</p>
-    {%- if s.status %}<p class="status no-print"><span class="dot" aria-hidden="true"></span>{{ s.status }}</p>{% endif %}
-    <p class="print-only contact-line"><a href="mailto:{{ s.email }}">{{ s.email }}</a> · <a href="{{ s.url }}">{{ s.url | host }}</a> · {{ s.location }}{% for l in s.links %}{% if l.brand %} · <a href="{{ l.url }}">{{ l.label }}</a>{% endif %}{% endfor %}</p>
-    <div class="bio">
-      {%- for para in s.bio %}<p{% if loop.first %} class="lead"{% endif %}>{{ para | md | safe }}</p>{% endfor %}
+    <div class="intro" style="--i:1">
+      <h1 class="name">{{ s.name }}</h1>
+      <p class="role">{{ s.role }}</p>
+      {%- if s.status %}<p class="status no-print"><span class="dot" aria-hidden="true"></span>{{ s.status }}</p>{% endif %}
+      <p class="print-only contact-line"><a href="mailto:{{ s.email }}">{{ s.email }}</a> · <a href="{{ s.url }}">{{ s.url | host }}</a> · {{ s.location }}{% for l in s.links %}{% if l.brand %} · <a href="{{ l.url }}">{{ l.label }}</a>{% endif %}{% endfor %}</p>
     </div>
-    <div class="actions no-print">
+    <div class="bio" style="--i:2">
+      {%- for para in s.bio %}<p>{{ para | md | safe }}</p>{% endfor %}
+    </div>
+    <div class="actions no-print" style="--i:3">
       <div class="links">
         {%- for l in s.links %}{% if l.primary %}
         <a class="btn tac primary" href="{{ l.url }}">{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a>
@@ -102,185 +106,186 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
   {%- set title = s.sections[key] %}
   {%- if s[key] and s[key].length %}
   <section class="sec" id="{{ key }}" aria-labelledby="h-{{ key }}">
-    <h2 class="sec-label" id="h-{{ key }}">{{ title | md | safe }}</h2>
+    <h2 class="sec-label rv" id="h-{{ key }}">{{ title | md | safe }}</h2>
+    <div class="list">
 
     {%- if key == "news" %}
-    <div class="list">
       {%- for n in s.news %}
-      <article class="item news{% if loop.index > s.news_visible %} fold{% endif %}">
+      <article class="item rv{% if loop.index > s.news_visible %} fold{% endif %}">
         <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time></div>
         <div class="what">
-          <p>{% if (n.date | ageMonths) <= 1 %}<span class="new">New</span>{% endif %}{{ n.text | md | safe }}{% if n.link %} <a class="more" href="{{ n.link }}" aria-label="Read more">↗</a>{% endif %}</p>
+          <div class="main"><p class="text">{{ n.text | md | safe }}{% if n.link %} <a class="more" href="{{ n.link }}" aria-label="Read more">↗</a>{% endif %}</p></div>
           {%- if n.image %}<img class="thumb" src="{{ n.image }}" alt="{{ n.image_alt or '' }}" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
       {%- if s.news.length > s.news_visible %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false"><span>Show all {{ s.news.length }}</span>{{ icon("chevron-down") }}</button></div></div>
+      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false"><span>Show all {{ s.news.length }}</span></button></div></div>
       {%- endif %}
-    </div>
 
     {%- elif key == "publications" %}
-    {%- if s.publications | selectattr("equal") | length %}<p class="note">† Equal contribution</p>{% endif %}
-    {%- for row in s.publications | pubRows %}
-    {%- set p = row.p -%}
-    {%- set url = p | primaryUrl -%}
-    {%- if not row.repR %}<h3 class="year">{{ row.label }}</h3>{% endif %}
-    <article class="pub" data-kind="{{ p.kind }}">
-      <div class="pub-main">
-        <h4 class="t">{% if url %}<a href="{{ url }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h4>
-        <p class="au">{{ p.authors | authors(s.name, p.equal or []) | safe }}</p>
-        <p class="ve"><span class="venue">{{ p.venue }}</span><span class="kind">{{ kinds[p.kind] or p.kind }}</span>{% if statuses[p.status] %}<span class="st">{{ statuses[p.status] }}</span>{% endif %}{% if p.award %}<span class="award">{{ icon("trophy") }}{{ p.award }}</span>{% endif %}</p>
-        <p class="print-only ref">{% if p.doi %}doi:{{ p.doi }}{% elif p.links and p.links.arxiv %}arXiv:{{ p.links.arxiv | replace("https://arxiv.org/abs/", "") }}{% endif %}</p>
-        {%- if p.doi or p.links or p.bibtex !== false %}
-        <p class="acts no-print">
-          {%- for k, u in p.links %}{% if k == "pdf" %}<a class="tl" href="{{ u }}">PDF</a>{% endif %}{% endfor %}
-          {%- if p.doi %}<a class="tl" href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}
-          {%- for k, u in p.links %}{% if k != "pdf" %}<a class="tl" href="{{ u }}">{{ actLabels[k] or k }}</a>{% endif %}{% endfor %}
-          {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">BibTeX</button>{% endif %}
-        </p>
-        {%- endif %}
-      </div>
-      {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
-    </article>
-    {%- endfor %}
-
-    {%- elif key == "projects" %}
-    <div class="list">
-      {%- for p in s.projects %}
-      {%- set purl = (p.links.web if p.links else "") or (p.links.code if p.links else "") -%}
-      <article class="item proj">
-        <div class="when">{{ projectKinds[p.kind] or p.kind }}</div>
+      {%- for row in s.publications | pubRows %}
+      {%- set p = row.p -%}
+      {%- set url = p | primaryUrl -%}
+      <article class="item rv{% if row.repR %} rep{% endif %}" data-kind="{{ p.kind }}">
+        <div class="when">{{ row.label }}</div>
         <div class="what">
-          <div class="pub-main">
-            <h3 class="h">{% if purl %}<a href="{{ purl }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</h3>
-            <p class="sum">{{ p.summary | md | safe }}</p>
-            {%- if p.tech %}<p class="meta">{{ p.tech | join(" · ") }}</p>{% endif %}
-            {%- if p.links %}<p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{{ "Live ↗" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>{% endif %}
+          <div class="main">
+            <h3 class="t">{% if url %}<a href="{{ url }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h3>
+            <p class="sub">{{ p.authors | authors(s.name, p.equal or []) | safe }}</p>
+            <p class="sub">{{ p.venue }}<span class="sep">·</span>{{ kinds[p.kind] or p.kind }}{% if statuses[p.status] %}<span class="sep">·</span>{{ statuses[p.status] }}{% endif %}{% if p.award %}<span class="sep">·</span><span class="hl">{{ p.award }}</span>{% endif %}</p>
+            <p class="print-only ref">{% if p.doi %}doi:{{ p.doi }}{% elif p.links and p.links.arxiv %}arXiv:{{ p.links.arxiv | replace("https://arxiv.org/abs/", "") }}{% endif %}</p>
+            {%- if p.doi or p.links or p.bibtex !== false %}
+            <p class="acts no-print">
+              {%- for k, u in p.links %}{% if k == "pdf" %}<a class="tl" href="{{ u }}">PDF</a>{% endif %}{% endfor %}
+              {%- if p.doi %}<a class="tl" href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}
+              {%- for k, u in p.links %}{% if k != "pdf" %}<a class="tl" href="{{ u }}">{{ actLabels[k] or k }}</a>{% endif %}{% endfor %}
+              {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">BibTeX</button>{% endif %}
+            </p>
+            {%- endif %}
           </div>
           {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
-    </div>
+      {%- if s.publications | selectattr("equal") | length %}
+      <p class="item foot-note rv"><span class="when"></span><span class="what">† Equal contribution</span></p>
+      {%- endif %}
 
-    {%- elif key == "experience" %}
-    <div class="list">
-      {%- for e in s.experience %}
-      <article class="item">
-        <div class="when">{{ e | period }}</div>
+    {%- elif key == "projects" %}
+      {%- for p in s.projects %}
+      {%- set purl = (p.links.web if p.links else "") or (p.links.code if p.links else "") -%}
+      <article class="item rv">
+        <div class="when">{{ projectKinds[p.kind] or p.kind }}</div>
         <div class="what">
-          <h3 class="h">{{ e.role }}</h3>
-          <p class="org">{{ e.org }}{% if e.place %}<span class="place">{{ e.place }}</span>{% endif %}</p>
-          {%- if e.summary %}<p class="sum">{{ e.summary | md | safe }}</p>{% endif %}
-          {%- if e.tags %}<p class="meta">{{ e.tags | join(" · ") }}</p>{% endif %}
+          <div class="main">
+            <h3 class="t">{% if purl %}<a href="{{ purl }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</h3>
+            <p class="sub">{{ p.summary | md | safe }}</p>
+            {%- if p.tech %}<p class="sub tech">{{ p.tech | join(" · ") }}</p>{% endif %}
+            {%- if p.links %}<p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{{ "Live" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>{% endif %}
+          </div>
+          {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
-    </div>
+
+    {%- elif key == "experience" %}
+      {%- for e in s.experience %}
+      <article class="item rv">
+        <div class="when">{{ e | period }}</div>
+        <div class="what"><div class="main">
+          <h3 class="t">{{ e.role }}</h3>
+          <p class="sub">{{ e.org }}{% if e.place %}, {{ e.place }}{% endif %}</p>
+          {%- if e.summary %}<p class="text">{{ e.summary | md | safe }}</p>{% endif %}
+          {%- if e.tags %}<p class="sub tech">{{ e.tags | join(" · ") }}</p>{% endif %}
+        </div></div>
+      </article>
+      {%- endfor %}
 
     {%- elif key == "teaching" %}
-    <div class="list">
       {%- for t in s.teaching %}
-      <article class="item">
+      <article class="item rv">
         <div class="when">{{ t.when }}</div>
-        <div class="what"><h3 class="h">{{ t.role }}</h3><p class="org">{{ t.org }}</p>{% if t.detail %}<p class="sum">{{ t.detail | md | safe }}</p>{% endif %}</div>
+        <div class="what"><div class="main"><h3 class="t">{{ t.role }}</h3><p class="sub">{{ t.org }}</p>{% if t.detail %}<p class="text">{{ t.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
-    </div>
 
     {%- elif key == "talks" %}
-    <div class="list">
       {%- for t in s.talks %}
-      <article class="item">
+      <article class="item rv">
         <div class="when">{{ t.date | ym }}</div>
-        <div class="what"><h3 class="h">{% if t.link %}<a href="{{ t.link }}">{{ t.title }}</a>{% else %}{{ t.title }}{% endif %}</h3><p class="org">{{ t.event }}</p></div>
+        <div class="what"><div class="main"><h3 class="t">{% if t.link %}<a href="{{ t.link }}">{{ t.title }}</a>{% else %}{{ t.title }}{% endif %}</h3><p class="sub">{{ t.event }}</p></div></div>
       </article>
       {%- endfor %}
-    </div>
 
     {%- elif key == "service" %}
-    <div class="list">
       {%- for r in s.service %}
-      <article class="item">
+      <article class="item rv">
         <div class="when">{{ r.venue | year4 }}</div>
-        <div class="what"><h3 class="h">{{ r.venue | noYear }}<span class="track">{{ r.track }}</span></h3><p class="org">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="award">{{ icon("award") }}{{ r.note }}</span>{% endif %}</p></div>
+        <div class="what"><div class="main"><h3 class="t">{{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="hl">{{ r.note }}</span>{% endif %}</p></div></div>
       </article>
       {%- endfor %}
-    </div>
 
     {%- elif key == "awards" %}
-    <div class="list">
       {%- for a in s.awards %}
-      <article class="item">
+      <article class="item rv">
         <div class="when">{{ a.year }}</div>
-        <div class="what"><h3 class="h">{{ a.title }}</h3><p class="org">{{ a.by }}</p></div>
+        <div class="what"><div class="main"><h3 class="t">{{ a.title }}</h3><p class="sub">{{ a.by }}</p>{% if a.for %}<p class="sub">For {% if a.link %}<a href="{{ a.link }}">{{ a.for }}</a>{% else %}{{ a.for }}{% endif %}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
-    </div>
 
     {%- elif key == "education" %}
-    <div class="list">
       {%- for e in s.education %}
-      <article class="item">
+      <article class="item rv">
         <div class="when">{{ e | period }}</div>
-        <div class="what"><h3 class="h">{{ e.degree }}</h3><p class="org">{{ e.org }}{% if e.place %}<span class="place">{{ e.place }}</span>{% endif %}</p>{% if e.detail %}<p class="sum">{{ e.detail | md | safe }}</p>{% endif %}</div>
+        <div class="what"><div class="main"><h3 class="t">{{ e.degree }}</h3><p class="sub">{{ e.org }}{% if e.place %}, {{ e.place }}{% endif %}</p>{% if e.detail %}<p class="text">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
-    </div>
 
     {%- elif key == "skills" %}
-    <dl class="skills">
       {%- for g in s.skills %}
-      <div><dt>{{ g.group }}</dt><dd>{{ g.items | join(" · ") }}</dd></div>
-      {%- endfor %}
-    </dl>
-
-    {%- elif key == "elsewhere" %}
-    <div class="list">
-      {%- for e in s.elsewhere %}
-      <article class="item">
-        <div class="when">{{ e.kind }}</div>
-        <div class="what"><h3 class="h"><a href="{{ e.url }}">{{ e.label }}</a></h3>{% if e.detail %}<p class="sum">{{ e.detail | md | safe }}</p>{% endif %}</div>
+      <article class="item rv">
+        <div class="when">{{ g.group }}</div>
+        <div class="what"><div class="main"><p class="text">{{ g.items | join(", ") }}</p></div></div>
       </article>
       {%- endfor %}
-    </div>
+
+    {%- elif key == "elsewhere" %}
+      {%- for e in s.elsewhere %}
+      <article class="item rv">
+        <div class="when">{{ e.kind }}</div>
+        <div class="what"><div class="main"><h3 class="t"><a href="{{ e.url }}">{{ e.label }}</a></h3>{% if e.detail %}<p class="sub">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
+      </article>
+      {%- endfor %}
     {%- endif %}
+
+    </div>
   </section>
   {%- endif %}
   {%- endfor %}
 
   <section class="sec contact no-print" id="contact" aria-labelledby="h-contact">
-    <h2 class="sec-label" id="h-contact">Contact</h2>
-    <p class="big"><a href="mailto:{{ s.email }}">{{ s.email }}</a></p>
-    <p class="sub">{% if s.work_email %}University <a href="mailto:{{ s.work_email }}">{{ s.work_email }}</a><span class="sep">·</span>{% endif %}{{ s.location }}<span class="sep">·</span><span class="clock" data-clock>&nbsp;</span></p>
-
-    {%- set cf = s.contact_form or {} %}
-    <form class="form" id="contact-form" novalidate data-endpoint="{{ cf | formEndpoint }}" data-key="{{ cf.access_key }}" data-subject="{{ cf.subject }}" data-to="{{ s.email }}">
-      <div class="field">
-        <label for="cf-name">Name</label>
-        <input id="cf-name" name="name" type="text" autocomplete="name" required>
+    <h2 class="sec-label rv" id="h-contact">Contact</h2>
+    <div class="list">
+      <div class="item rv">
+        <div class="when">Email</div>
+        <div class="what"><div class="main">
+          <p class="t"><a href="mailto:{{ s.email }}">{{ s.email }}</a></p>
+          <p class="sub">{% if s.work_email %}University <a href="mailto:{{ s.work_email }}">{{ s.work_email }}</a><span class="sep">·</span>{% endif %}{{ s.location }}<span class="sep">·</span><span class="clock" data-clock>&nbsp;</span></p>
+        </div></div>
       </div>
-      <div class="field">
-        <label for="cf-email">Email</label>
-        <input id="cf-email" name="email" type="email" autocomplete="email" required>
+      <div class="item rv">
+        <div class="when">Message</div>
+        <div class="what"><div class="main">
+          {%- set cf = s.contact_form or {} %}
+          <form class="form" id="contact-form" novalidate data-endpoint="{{ cf | formEndpoint }}" data-key="{{ cf.access_key }}" data-subject="{{ cf.subject }}" data-to="{{ s.email }}">
+            <div class="field">
+              <label for="cf-name">Name</label>
+              <input id="cf-name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field wide">
+              <label for="cf-message">Message</label>
+              <textarea id="cf-message" name="message" rows="5" required></textarea>
+            </div>
+            <input class="hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="form-foot wide">
+              <button type="submit" class="btn tac primary">{{ icon("paper-plane") }}<span>Send message</span></button>
+              <button type="button" class="btn tac" data-action="copy" data-copy="{{ s.email }}" data-toast="Email address copied">{{ icon("copy") }}<span>Copy email</span></button>
+              <p class="form-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div></div>
       </div>
-      <div class="field wide">
-        <label for="cf-message">Message</label>
-        <textarea id="cf-message" name="message" rows="5" required></textarea>
-      </div>
-      <input class="hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <div class="form-foot wide">
-        <button type="submit" class="btn tac primary">{{ icon("paper-plane") }}<span>Send message</span></button>
-        <button type="button" class="btn tac" data-action="copy" data-copy="{{ s.email }}" data-toast="Email address copied">{{ icon("copy") }}<span>Copy email</span></button>
-        <p class="form-status" role="status" aria-live="polite"></p>
-      </div>
-    </form>
+    </div>
   </section>
 </main>
 
 <footer class="wrap foot no-print">
-  <p>© {% buildYear %} {{ s.name }}<span class="sep">·</span>Updated {% buildDate %}<span class="sep">·</span>Set in Google Sans Flex<span class="sep">·</span><a href="#top">Back to top</a></p>
+  <p>© {% buildYear %} {{ s.name }}<span class="sep">·</span>Updated {% buildDate %}<span class="sep">·</span><a href="#top">Back to top</a></p>
 </footer>
 
 <div class="qr-pop" aria-hidden="true"><div class="qr-code"></div><div class="qr-cap"></div></div>
