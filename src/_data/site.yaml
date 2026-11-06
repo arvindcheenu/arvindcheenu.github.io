@@ -71,11 +71,12 @@ tailor:
       icon: flask
       cv: CV
       status: Open to postdoc and research roles from January 2027
-      order: [news, publications, experience, talks, awards, grants, teaching, service, projects, education, biography]
+      order: [news, biography, publications, experience, talks, awards, grants, teaching, service, projects, education]
       print_order: [education, experience, publications, awards, grants, talks, teaching, service, projects]
       arranged: >-
-        As on most research pages, the latest updates are followed by publications, then
-        positions, talks, awards, funding, teaching and reviewing, with education last. Skills and certifications are
+        As on most research pages, the latest updates and a biography are followed by
+        publications, then positions, talks, awards, funding, teaching and reviewing, with
+        education last. Skills and certifications are
         left out, as research pages rarely list them; the Industry view has them. The CV you
         download keeps the usual academic order, starting with education.
     industry:
@@ -83,10 +84,10 @@ tailor:
       icon: briefcase
       cv: Résumé
       status: Open to research, software engineering and design roles from January 2027
-      order: [news, experience, projects, publications, skills, awards, talks, certifications, education, biography]
+      order: [news, biography, experience, projects, publications, skills, awards, talks, certifications, education]
       arranged: >-
-        As on a résumé, the latest updates are followed by experience and projects, then
-        publications, skills, awards and talks, with education last. Grants, peer reviewing
+        As on a résumé, the latest updates and a biography are followed by experience and
+        projects, then publications, skills, awards and talks, with education last. Grants, peer reviewing
         and teaching are left out, as they matter mostly to academic readers; the Research
         view has them.
 
