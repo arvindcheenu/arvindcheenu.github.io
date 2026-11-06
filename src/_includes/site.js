@@ -439,6 +439,10 @@
       const text = act === "copy-to" ? ($("#cf-to") || {}).value : a.dataset.copy;
       const ok = await copy(text || "");
       if (ok) { play("copy"); toast(act === "copy-to" ? `${text} copied` : (a.dataset.toast || "Copied")); } else toast("Copy failed");
+    } else if (act === "authors") {
+      const box = a.parentElement; const open = a.getAttribute("aria-expanded") !== "true";
+      $(".au-s", box).hidden = open; $(".au-f", box).hidden = !open;
+      a.setAttribute("aria-expanded", String(open)); a.textContent = open ? "(show fewer)" : `(show all ${a.dataset.n})`;
     } else if (act === "fold") {
       const list = a.closest(".list"); const open = !list.classList.contains("folded-open");
       list.classList.toggle("folded-open", open); a.setAttribute("aria-expanded", String(open));
@@ -452,7 +456,7 @@
   const baseTitle = document.title;
   // The saved PDF follows the view's print order (the usual CV order), then the
   // page goes back to its screen order.
-  window.addEventListener("beforeprint", () => { document.title = `Arvind Srinivasan — ${cvName()}`; closeMenu(); arrange(d.dataset.tailor, true); });
+  window.addEventListener("beforeprint", () => { document.title = `Arvind Srinivasan — ${cvName()}`; closeMenu(); arrange(d.dataset.tailor, true); $$("img[loading=lazy]").forEach((i) => { i.loading = "eager"; }); });
   window.addEventListener("afterprint", () => { document.title = baseTitle; arrange(d.dataset.tailor); });
 
   /* ── Recipient dropdown: the native select stays in the form, hidden ────── */
@@ -942,9 +946,40 @@
     }
   }
 
+  /* ── Scroll progress in section colours ──────────────────────────────────
+     A section's colour starts at the scroll position where its top reaches
+     a third of the way down the window. Recomputed whenever the page height
+     changes (view switch, "Show more", images loading). */
+  const pbar = $(".progress i");
+  if (pbar) {
+    let segQ = false;
+    const segs = () => {
+      segQ = false;
+      const max = document.documentElement.scrollHeight - innerHeight;
+      if (max <= 0) return;
+      const line = innerHeight / 3;
+      const stops = [];
+      let prevC = "var(--link)", prevP = 0;
+      $$("#main .sec, .sec.contact").forEach((s) => {
+        if (s.hidden || !s.offsetParent) return;
+        const p = Math.max(0, Math.min(100, ((s.getBoundingClientRect().top + scrollY - line) / max) * 100));
+        if (p > prevP) stops.push(`${prevC} ${prevP.toFixed(2)}% ${p.toFixed(2)}%`);
+        prevC = `var(--c-${s.dataset.c || "blue"})`;
+        prevP = Math.max(prevP, p);
+      });
+      stops.push(`${prevC} ${prevP.toFixed(2)}% 100%`);
+      pbar.style.setProperty("--segs", `linear-gradient(90deg,${stops.join(",")})`);
+    };
+    const qSegs = () => { if (!segQ) { segQ = true; requestAnimationFrame(segs); } };
+    if ("ResizeObserver" in window) new ResizeObserver(qSegs).observe(document.body);
+    addEventListener("resize", qSegs);
+    addEventListener("load", qSegs);
+    segs();
+  }
+
   /* ── Scroll progress for browsers without scroll-driven animations ──────── */
   if (!(window.CSS && CSS.supports && CSS.supports("animation-timeline: scroll()"))) {
-    const bar = $(".progress i");
+    const bar = pbar;
     let queued = false;
     const paint = () => {
       queued = false;

@@ -215,7 +215,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time>{% if n.date | isNew %}<span class="new" data-new="{{ n.date }}">{{ icon("wand-magic-sparkles") }}New</span>{% endif %}</div>
         <div class="what">
           <div class="main"><p class="text">{{ n.text | md | safe }}{% if n.link %} <a href="{{ n.link }}">More</a>{% endif %}</p></div>
-          {%- if n.image %}<img class="thumb" src="{{ n.image }}" alt="{{ n.image_alt or '' }}" decoding="async">{% endif %}
+          {%- if n.image %}<img class="thumb" src="{{ n.image }}" alt="{{ n.image_alt or '' }}" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
@@ -245,9 +245,9 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
             {%- if p.images %}
             <div class="gal no-print" data-gal>
               <div class="g-view">
-              <div class="gallery" role="list" aria-label="Images for {{ p.title }}">
+              <div class="gallery" role="group" aria-label="Images for {{ p.title }}">
                 {%- for im in p.images %}{% set dm = im.src | imgDims %}
-                <button type="button" class="g-item" role="listitem" data-src="{{ im.src }}" data-cap="{{ im.caption or im.alt }}"{% if dm %} style="--ar:{{ dm[0] }}/{{ dm[1] }}"{% endif %} aria-label="View image {{ loop.index }} of {{ p.images.length }}{% if im.alt %}: {{ im.alt }}{% endif %}"><img src="{{ im.src }}" alt=""{% if dm %} width="{{ dm[0] }}" height="{{ dm[1] }}"{% endif %} decoding="async" fetchpriority="low"></button>
+                <button type="button" class="g-item" data-src="{{ im.src }}" data-cap="{{ im.caption or im.alt }}"{% if dm %} style="--ar:{{ dm[0] }}/{{ dm[1] }}"{% endif %} aria-label="View image {{ loop.index }} of {{ p.images.length }}{% if im.alt %}: {{ im.alt }}{% endif %}"><img src="{{ im.src }}" alt=""{% if dm %} width="{{ dm[0] }}" height="{{ dm[1] }}"{% endif %} loading="lazy" decoding="async"></button>
                 {%- endfor %}
               </div>
               <div class="pb pb-l" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -264,7 +264,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
             </p>
             {%- endif %}
           </div>
-          {%- if p.image and not p.images %}<img class="thumb" src="{{ p.image }}" alt="" decoding="async">{% endif %}
+          {%- if p.image and not p.images %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
@@ -282,7 +282,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
             {%- if p.tech %}<p class="tech">{{ p.tech | join(" · ") }}</p>{% endif %}
             {%- if p.links %}<p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{% if k == "code" and "github.com" in u %}{{ icon("github", true) }}{% else %}{{ icon(actIcons[k] or "link") }}{% endif %}{{ "Live" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>{% endif %}
           </div>
-          {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" decoding="async">{% endif %}
+          {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
@@ -446,8 +446,8 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       <div class="mail-row">
         <label class="mail-k" for="cf-to" id="cf-to-label">To</label>
         <div class="to-chip">
-          {%- if s.avatar or s.photo %}<img src="{{ s.avatar or s.photo }}" alt="" width="24" height="24">{% endif %}
-          <select id="cf-to" name="to">
+          {%- if s.avatar or s.photo %}<img src="{{ s.avatar or s.photo }}" alt="" width="24" height="24" loading="lazy">{% endif %}
+          <select id="cf-to" name="to" aria-labelledby="cf-to-label">
             {%- for r in cf.recipients or [{ label: "Email", email: s.email }] %}
             <option value="{{ r.email }}" data-key="{{ r.access_key }}" data-label="{{ r.label }}">{{ r.email }} · {{ r.label }}</option>
             {%- endfor %}
@@ -483,7 +483,6 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     <p class="foot-name">{{ s.name }}</p>
     <div class="foot-grid">
       <div class="foot-col">
-        <p class="foot-muted">{{ s.name }}</p>
         <p><a class="ob" href="mailto:{{ s.email }}">{{ s.email | atSign }}</a></p>
         {%- if s.work_email %}<p><a class="ob" href="mailto:{{ s.work_email }}">{{ s.work_email | atSign }}</a></p>{% endif %}
       </div>

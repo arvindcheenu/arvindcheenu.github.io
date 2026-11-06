@@ -160,6 +160,17 @@ function authorList(list = [], self, equal = []) {
     return n === self ? `<b class="self">${esc(n)}${mark}</b>` : `${esc(n)}${mark}`;
   };
   const a = list.map(fmt);
+  // Very long author lists (consortium papers) show the first three, the
+  // owner of the page and the last author, with a button for the rest.
+  if (a.length > 12) {
+    const me = list.indexOf(self);
+    const keep = [...new Set([0, 1, 2, me, a.length - 1].filter((i) => i >= 0))].sort((x, y) => x - y);
+    const short = keep.map((i, k) => (k && i - keep[k - 1] > 1 ? `…, ${a[i]}` : a[i])).join(", ");
+    const full = `${a.slice(0, -1).join(", ")}, and ${a[a.length - 1]}`;
+    return `<span class="au-s">${short}</span><span class="au-f" hidden>${full}</span>`
+      + ` <button type="button" class="au-t no-print" data-action="authors" data-n="${a.length}" aria-expanded="false">(show all ${a.length})</button>`
+      + `<span class="print-only"> (${a.length} authors)</span>`;
+  }
   if (a.length <= 1) return a.join("");
   if (a.length === 2) return `${a[0]} and ${a[1]}`;
   return `${a.slice(0, -1).join(", ")}, and ${a[a.length - 1]}`;
@@ -393,8 +404,13 @@ export default function (eleventyConfig) {
   eleventyConfig.addTransform("links-and-icons", function (html) {
     if (!String(this.page?.outputPath || "").endsWith(".html")) return html;
     const ext = svgIcon("arrow-up-right-from-square", false, "ext");
+    // Keep the icon on the same line as the link's last word, so it never wraps on its own.
+    const glue = (inner) => {
+      const m = inner.match(/^([\s\S]*?)([^\s<>]+)$/);
+      return m && !/<[^>]*$/.test(m[1]) ? `${m[1]}<span class="nw">${m[2]}${ext}</span>` : `${inner}${ext}`;
+    };
     html = html.replace(/<a\b([^>]*\shref="https?:[^"]*"[^>]*)>([\s\S]*?)<\/a>/g, (all, attrs, inner) =>
-      /class="[^"]*\b(btn|no-ext)\b/.test(attrs) ? all : `<a${attrs}>${inner}${ext}</a>`);
+      /class="[^"]*\b(btn|no-ext)\b/.test(attrs) ? all : `<a${attrs}>${glue(inner)}</a>`);
     const colourOf = {};
     for (const m of html.matchAll(/<section\b[^>]*?\sid="([^"]+)"[^>]*?\sdata-c="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g)) {
       const [, sid, c, body] = m;
