@@ -75,11 +75,25 @@
     copy: () => { tone(880, 0.05, { gain: 0.045 }); tone(1320, 0.1, { gain: 0.045, delay: 0.06 }); },
     open: () => { tick(0.01, 0.05, 2600); tone(700, 0.07, { type: "triangle", gain: 0.035, to: 940 }); },
     cookie: () => { [0, 0.05, 0.11, 0.16].forEach((t, i) => tick(0.018, 0.07 - i * 0.012, 1800 + i * 500, t)); },
+    // Map: a soft detent while scrubbing, an airy pass while flying, a two-note chime on landing.
+    detent: () => tick(0.006, 0.035, 3200),
+    land: () => { tone(988, 0.12, { type: "triangle", gain: 0.03 }); tone(740, 0.22, { type: "triangle", gain: 0.03, delay: 0.1 }); },
+    fly: (dur = 1) => {
+      const c = audio(); if (!c) return;
+      const n = Math.floor(c.sampleRate * dur), b = c.createBuffer(1, n, c.sampleRate), a = b.getChannelData(0);
+      for (let i = 0; i < n; i++) a[i] = Math.random() * 2 - 1;
+      const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), t0 = c.currentTime;
+      src.buffer = b; f.type = "bandpass"; f.Q.value = 0.8;
+      f.frequency.setValueAtTime(380, t0); f.frequency.exponentialRampToValueAtTime(1500, t0 + dur * 0.5); f.frequency.exponentialRampToValueAtTime(520, t0 + dur);
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.03, t0 + dur * 0.45); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      src.connect(f).connect(g).connect(c.destination); src.start(t0); src.stop(t0 + dur + 0.02);
+    },
   };
-  const play = (name, force) => {
+  const play = (name, force, arg) => {
     if (!force && d.dataset.sound === "off") return;
-    try { sfx[name] && sfx[name](); } catch (e) {}
+    try { sfx[name] && sfx[name](arg); } catch (e) {}
   };
+  const sound = play; // the map has its own play(); it uses this name for sounds
 
   // Every tactile control clicks on press; keyboard presses click on activation.
   const tactile = (el) => el && el.closest && el.closest(".tac");
@@ -836,6 +850,10 @@
     const svg = $(".map-svg", mapEl), view = $(".map-view", mapEl), range = $(".map-range", mapEl), playBtn = $(".map-play", mapEl);
     const pins = $$(".pin", mapEl), cards = $$(".map-card", mapEl);
     const routes = new Map($$(".map-route", mapEl).map((r) => [+r.dataset.i, r]));
+    const plane = $(".map-plane", mapEl), planeIcon = plane && $("svg", plane);
+    // Route lengths, measured on first use (the map may not be rendered at load).
+    const lens = new Map();
+    const lenOf = (i, r) => { if (!lens.get(i)) { try { lens.set(i, r.getTotalLength()); } catch (e) { lens.set(i, 0); } } return lens.get(i); };
     const num = (v) => (v === "" || v === undefined ? null : +v);
     const ev = pins.map((p) => ({ x: +p.dataset.x, y: +p.dataset.y, ox: num(p.dataset.ox), oy: num(p.dataset.oy), el: p }));
     const N = ev.length;
@@ -846,7 +864,7 @@
       const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
       return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, w: Math.max(MIN_W, (x1 - x0) * 1.6), h: Math.max(MIN_W * 0.6, (y1 - y0) * 2.2) };
     });
-    let t = N - 1, raf = 0, playing = false, tween = null;
+    let t = N - 1, raf = 0, playing = false, tween = null, lastCur = null, scrubbing = false;
     const smooth = (f) => f * f * (3 - 2 * f);
     function camera(tt) {
       const i = Math.max(0, Math.min(N - 1, Math.floor(tt))), f = Math.min(1, tt - i);
@@ -878,6 +896,19 @@
           r.classList.toggle("past", i < cur);
         }
       });
+      // The plane flies the route being drawn, if any.
+      if (plane) {
+        const i = Math.ceil(t - 1e-6), r = routes.get(i), pr = t - (i - 1);
+        const flying = !!r && pr > 0.02 && pr < 0.97 && lenOf(i, r) > 0;
+        if (flying) {
+          const L = lens.get(i), p = r.getPointAtLength(pr * L), q = r.getPointAtLength(Math.min(L, pr * L + L * 0.02));
+          plane.style.translate = `${((p.x - vb.x) / vb.w) * W}px ${((p.y - vb.y) / vb.h) * H}px`;
+          planeIcon.style.rotate = `${Math.atan2(q.y - p.y, q.x - p.x)}rad`;
+          if (plane.dataset.c !== r.dataset.c) plane.dataset.c = r.dataset.c;
+        }
+        plane.classList.toggle("on", flying);
+      }
+      if (cur !== lastCur) { if (lastCur !== null && scrubbing) sound("detent"); lastCur = cur; }
       cards.forEach((c, i) => { c.hidden = i !== cur; });
       range.value = String(t);
       range.style.setProperty("--p", `${(t / (N - 1)) * 100}%`);
@@ -889,12 +920,15 @@
     // Glide to an event; `then` runs on arrival.
     function glide(to, ms, then) {
       const from = t, start = performance.now(), dur = reduced ? 0 : ms * Math.max(1, Math.abs(to - from)) ** 0.6;
+      if (Math.abs(to - from) > 0.25) { if (dur > 200) sound("fly", false, Math.min(3, dur / 1000)); }
       tween = (now) => {
         const f = dur ? Math.min(1, (now - start) / dur) : 1;
         t = from + (to - from) * f;
         render();
         if (f < 1) return requestAnimationFrame((n) => tween && tween(n));
-        tween = null; if (then) then();
+        tween = null;
+        if (Math.abs(to - from) > 0.25) sound("land");
+        if (then) then();
       };
       requestAnimationFrame((n) => tween && tween(n));
     }
@@ -910,7 +944,9 @@
       render(); setTimeout(next, 350);
     }
     playBtn.addEventListener("click", () => { if (playing) stop(); else { play(); } });
-    range.addEventListener("input", () => { stop(); t = +range.value; queueRender(); });
+    range.addEventListener("input", () => { stop(); scrubbing = true; t = +range.value; queueRender(); });
+    range.addEventListener("change", () => { scrubbing = false; });
+    range.addEventListener("pointerup", () => { scrubbing = false; });
     range.addEventListener("keydown", (e) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) return;
       e.preventDefault(); stop();

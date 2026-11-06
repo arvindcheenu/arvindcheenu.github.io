@@ -328,6 +328,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
             {%- for e in tm.events %}
             <button type="button" class="pin" data-i="{{ loop.index0 }}" data-x="{{ e.x }}" data-y="{{ e.y }}" data-ox="{{ e.ox if e.ox !== null else '' }}" data-oy="{{ e.oy if e.oy !== null else '' }}" data-when="{{ e.when }}" data-c="{{ kindColor[e.kind] }}" aria-label="{{ e.place }}, {{ e.when }}: {{ e.label }}">{{ icon(kindIcon[e.kind]) }}<span class="pin-label">{{ e.place }}</span></button>
             {%- endfor %}
+            <span class="map-plane" aria-hidden="true">{{ icon("plane") }}</span>
           </div>
           <div class="map-cards" aria-live="polite">
             {%- for e in tm.events %}

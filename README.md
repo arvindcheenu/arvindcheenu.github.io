@@ -19,7 +19,7 @@ All content lives in **`src/_data/site.yaml`**: intro, biographies, news, public
 - Link to another entry on the page with `[text](#id)` or `ref: id`, so only an entry's own page leads outside (a talk links to its paper here; the paper links to its DOI). Links that leave the page get an external-link icon automatically.
 - `venues` describes each publication venue for readers outside the field and holds acceptance rates by year; a paper uses the rate for its own year.
 - `publications_note` is the paragraph under the Publications heading (conventions, acceptance rates, a pointer to Google Scholar).
-- `travel` feeds the map under Talks & travel: bases (`home`, `stay`) and trips (`talk`, `school`) with coordinates; trips are drawn from the base you were at. The slider and Play move through time.
+- `travel` feeds the map under Talks & travel: bases (`home`, `stay`) and trips (`talk`, `school`) with coordinates; trips are drawn from the base you were at. The slider and Play move through time; a small plane flies each route as it draws, with a soft whoosh in flight, a chime on landing and detent clicks while scrubbing (silent when sound is off).
 - Updates are Work unless marked `tag: life`; visitors switch between Work (the default) and Life. Updates from the last two months get a sparkle badge. `news_visible` and `service_visible` set how many show before "Show more"; in open source and certifications, entries marked `selected: true` show first. A project with `wip: true` gets a "Work in progress" badge.
 - Dated sections (news, experience, education, teaching, talks, service, grants, awards, publications) are sorted newest first on the page, whatever order they have in the file.
 - Teaching entries take `lead` for the person who runs the course.
