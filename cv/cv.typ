@@ -1,12 +1,20 @@
 // Research CV and industry résumé, built from src/_data/site.yaml by cv/build.py.
 // The view comes in as `--input view=research|industry`; the data as cv/build/<view>.json.
-// Plain on purpose: one text size, one line spacing, one gap between entries.
+//
+// Plain on purpose. Spacing follows three steps:
+//   tight  – lines within one entry
+//   entry  – between entries
+//   section – before a section heading
 
 #let view = sys.inputs.at("view", default: "research")
 #let d = json("build/" + view + ".json")
 
-#let grey = luma(90)
-#let gap = 0.9em // between entries, and between a heading and its first entry
+#let ink = luma(20)
+#let grey = luma(105)
+#let hair = luma(200)
+#let tight = 0.55em
+#let entry = 1.35em
+#let section = 2.2em
 
 // Helpers the prepared text calls; all plain.
 #let award(body) = body
@@ -19,54 +27,60 @@
 #set document(title: d.plain_name + " – " + d.doc, author: d.plain_name)
 #set page(
   paper: "a4",
-  margin: (x: 18mm, y: 18mm),
-  footer: context text(fill: grey)[
-    #rich(d.name) · #d.doc #h(1fr) #counter(page).display() / #counter(page).final().first()
-  ],
+  margin: (x: 22mm, top: 20mm, bottom: 22mm),
+  footer: context {
+    set text(size: 7.5pt, fill: grey)
+    rich(d.name) + [ · ] + d.doc
+    h(1fr)
+    counter(page).display() + [ of ] + str(counter(page).final().first())
+  },
 )
-#set text(font: "Inter", size: 9pt, lang: "en", hyphenate: false)
-#set par(justify: false, leading: 0.6em, spacing: 0.6em)
-#set list(indent: 0em, body-indent: 0.5em, spacing: 0.6em, marker: [–])
-#show strong: set text(weight: 600)
+#set text(font: "Inter", size: 9pt, fill: ink, lang: "en", hyphenate: false)
+#set par(justify: false, leading: 0.72em, spacing: tight)
+#set list(indent: 0em, body-indent: 0.55em, spacing: tight, marker: text(fill: grey)[–])
+#set strong(delta: 100) // regular 400 + 100 = Medium: firm, not heavy
 
 // ── Header ─────────────────────────────────────────────────────────────────
-#text(size: 16pt, weight: 600)[#rich(d.name)]
-
-#rich(d.role), #rich(d.affiliation), #rich(d.location)
-
-#d.links.map(l => link(l.url)[#rich(l.label)]).join(" · ")
-
-#if d.summary != "" [
-  #v(gap - 0.6em)
-  #rich(d.summary)
-]
-#if d.status != "" { parbreak(); rich(d.status) }
-
-// ── Building blocks ────────────────────────────────────────────────────────
-#let heading-for(s) = block(above: 1.6em, below: gap, sticky: true,
-  text(weight: 600)[#upper(rich(s.title))])
-
-#let when-col = 33mm
-#let row(when, body) = block(breakable: false, above: 0em, below: gap,
-  grid(columns: (when-col, 1fr), column-gutter: 4mm, row-gutter: 0em,
-    text(fill: grey)[#rich(when)], body))
-
-#let show-entry(e) = row(e.when, {
-  let parts = ()
-  if e.title != "" { parts.push(strong(rich(e.title))) }
-  if e.sub != "" { parts.push(rich(e.sub)) }
-  if e.body != "" { parts.push(rich(e.body)) }
-  if e.bullets.len() > 0 { parts.push(list(..e.bullets.map(b => rich(b)))) }
-  if e.meta != "" { parts.push(text(fill: grey)[#rich(e.meta)]) }
-  parts.join(parbreak())
-})
-
-#let show-pubs(groups) = for g in groups {
-  block(above: 0em, below: gap, sticky: true, emph(rich(g.title)))
-  for it in g.items { row(it.label, rich(it.text)) }
+#block(below: 0.9em, text(size: 20pt, weight: 500, tracking: -0.01em)[#rich(d.name)])
+#block(below: 0.45em, text(size: 10pt)[#rich(d.role) · #rich(d.affiliation)])
+#block(below: 0em, text(fill: grey)[
+  #rich(d.location) · #d.links.map(l => link(l.url)[#rich(l.label)]).join(" · ")
+])
+#if d.summary != "" {
+  block(above: entry + 0.2em, below: 0em, par(leading: 0.62em, rich(d.summary)))
+}
+#if d.status != "" {
+  block(above: 0.55em, below: 0em, text(fill: grey)[#rich(d.status)])
 }
 
-#let show-skills(groups) = for g in groups { row(g.group, rich(g.items)) }
+// ── Building blocks ────────────────────────────────────────────────────────
+#let heading-for(s) = block(above: section, below: entry, sticky: true, {
+  text(size: 8.2pt, weight: 500, tracking: 0.1em)[#upper(rich(s.title))]
+  v(0.35em, weak: false)
+  line(length: 100%, stroke: 0.5pt + hair)
+})
+
+// Title on the left, date on the right; everything else below it.
+#let show-entry(e) = block(breakable: false, above: 0em, below: entry, {
+  grid(columns: (1fr, auto), column-gutter: 1.2em,
+    if e.title != "" { strong(rich(e.title)) },
+    text(fill: grey)[#rich(e.when)])
+  if e.sub != "" { block(above: tight, below: 0em, text(fill: grey)[#rich(e.sub)]) }
+  if e.body != "" { block(above: tight + 0.2em, below: 0em, rich(e.body)) }
+  if e.bullets.len() > 0 { block(above: tight + 0.15em, below: 0em, list(..e.bullets.map(b => rich(b)))) }
+  if e.meta != "" { block(above: tight + 0.15em, below: 0em, text(size: 8.4pt, fill: grey)[#rich(e.meta)]) }
+})
+
+// Publications hang from a short label column (J3, C2 …).
+#let show-pubs(groups) = for (i, g) in groups.enumerate() {
+  block(above: if i == 0 { 0em } else { entry + 0.2em }, below: 0.6em, sticky: true,
+    text(fill: grey)[#emph(rich(g.title))])
+  grid(columns: (8mm, 1fr), row-gutter: 1em,
+    ..g.items.map(it => (text(fill: grey)[#it.label], rich(it.text))).flatten())
+}
+
+#let show-skills(groups) = grid(columns: (32mm, 1fr), row-gutter: 0.75em,
+  ..groups.map(g => (text(fill: grey)[#rich(g.group)], rich(g.items))).flatten())
 
 // ── Sections ───────────────────────────────────────────────────────────────
 #for s in d.sections {

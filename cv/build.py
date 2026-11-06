@@ -305,7 +305,7 @@ def main():
             json.dump(prepare(site, view), f, ensure_ascii=False, indent=1)
         out = os.path.join(args.out, pdf)
         typst.compile(os.path.join(HERE, "cv.typ"), output=out, root=ROOT,
-                      font_paths=[os.path.join(HERE, "fonts")], sys_inputs={"view": view})
+                      font_paths=[os.path.join(HERE, "fonts")], ignore_system_fonts=True, sys_inputs={"view": view})
         print("wrote", os.path.relpath(out, ROOT))
 
 
