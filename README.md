@@ -44,7 +44,7 @@ CSS and JS are inlined into the page at build time, so the site ships as one HTM
 ## Features
 
 - **Research / Industry** switch in the top bar reorders the page and changes its wording, biographies and printed CV.
-- **Download CV / Résumé** prints the page as A4 (save as PDF), following the view on screen.
+- **Download CV / Résumé** gets a PDF typeset with [Typst](https://typst.app) from the same `site.yaml`: the research CV in the academic order (`print_order`), the industry résumé in the Industry order with experience as bullet points. Printing the page still works too.
 - Grant amounts convert live into the visitor's currency (European Central Bank rates via frankfurter.dev).
 - The top bar hides while reading down and returns on the way up; floating email and back-to-top buttons appear on the way up.
 - QR code of any link on hover, for opening it on a phone.
@@ -59,9 +59,13 @@ CSS and JS are inlined into the page at build time, so the site ships as one HTM
 
 ```sh
 npm install
+pip install typst pyyaml   # for the PDFs
 npm run serve      # http://localhost:8080
-npm run build      # writes _site/
+npm run build      # writes _site/, then the PDFs
+npm run cv         # only the PDFs
 ```
+
+The PDFs come from `cv/build.py` (prepares the data for each view) and `cv/cv.typ` (the layout). Each view's `pdf` in `tailor.views` names its file. The deploy workflow installs Typst and builds them on every push. Fonts are Inter (OFL), kept in `cv/fonts`.
 
 `src/accrete/` and `src/chimistry/` are standalone apps copied through untouched.
 

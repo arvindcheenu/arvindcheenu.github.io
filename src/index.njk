@@ -90,7 +90,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </div>
       <button type="button" class="btn icon tac" data-action="sound" data-sfx="none" aria-label="Sound effects" title="Sound effects">{{ icon("volume-high", false, "i-on") }}{{ icon("volume-xmark", false, "i-off") }}</button>
       <button type="button" class="btn icon tac" data-action="theme" aria-label="Colour theme: system" title="Colour theme">{{ icon("circle-half-stroke", false, "i-system") }}{{ icon("sun", false, "i-light") }}{{ icon("moon", false, "i-dark") }}</button>
-      <button type="button" class="btn tac cv-btn" data-action="print" title="Save as PDF">{{ icon("file-arrow-down") }}<span class="cv-l">{{ perView("cv") }}</span></button>
+      {%- for k, v in views %}<a class="btn tac cv-btn" data-only="{{ k }}" href="{{ v.pdf }}" download title="Download {{ v.cv }} (PDF)">{{ icon("file-arrow-down") }}<span class="cv-l">{{ v.cv }}</span></a>{% endfor %}
     </div>
   </div>
 </header>
@@ -129,7 +129,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endif %}
     </div>
     <div class="actions no-print" style="--i:3">
-      <button type="button" class="btn tac primary" data-action="print">{{ icon("file-arrow-down") }}<span>Download {{ perView("cv") }}</span></button>
+      {%- for k, v in views %}<a class="btn tac primary" data-only="{{ k }}" href="{{ v.pdf }}" download>{{ icon("file-arrow-down") }}<span>Download {{ v.cv }}</span></a>{% endfor %}
       <ul class="profiles" aria-label="Profiles">
         {%- for l in s.links %}
         <li><a href="{{ l.url }}"{% if l.url.startsWith('http') %} rel="me noopener"{% endif %}>{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a></li>

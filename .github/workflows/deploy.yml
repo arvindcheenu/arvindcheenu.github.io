@@ -37,6 +37,12 @@ jobs:
           path: ./.cache
           key: ${{ runner.os }}-eleventy-fetch-cache
 
+      - name: Setup Python (Typst builds the CV and résumé PDFs)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install typst==0.15.2 pyyaml
+
       - run: npm install
       - run: npm run build-ghpages
 

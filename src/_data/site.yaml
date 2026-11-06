@@ -70,6 +70,7 @@ tailor:
       label: Research
       icon: flask
       cv: CV
+      pdf: Arvind-Srinivasan-CV.pdf        # built by cv/build.py with Typst
       status: Open to postdoc and research roles from January 2027
       order: [news, biography, publications, experience, talks, awards, grants, teaching, service, projects, education]
       print_order: [education, experience, publications, awards, grants, talks, teaching, service, projects]
@@ -83,6 +84,7 @@ tailor:
       label: Industry
       icon: briefcase
       cv: Résumé
+      pdf: Arvind-Srinivasan-Resume.pdf
       status: Open to research, software engineering and design roles from January 2027
       order: [news, biography, experience, projects, publications, skills, awards, talks, certifications, education]
       arranged: >-

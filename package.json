@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "serve": "npx @11ty/eleventy --serve --quiet",
-    "build": "rm -rf _site && npx @11ty/eleventy",
-    "build-ghpages": "rm -rf _site && npx @11ty/eleventy",
+    "build": "rm -rf _site && npx @11ty/eleventy && npm run cv",
+    "cv": "python3 cv/build.py || echo 'CV PDFs skipped: pip install typst pyyaml'",
+    "build-ghpages": "rm -rf _site && npx @11ty/eleventy && python3 cv/build.py",
     "clean": "rm -rf _site"
   },
   "author": "Arvind Srinivasan",
