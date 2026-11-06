@@ -97,10 +97,9 @@ affiliation: Center for Anytime Anywhere Analytics, Aarhus University
 ring: "Open to work · From January 2027 · "   # text spinning round the portrait
 bio:
   research:
-    - "I build systems that help people see, analyse and reason about data together, wherever they are: at a desk, in a headset, around a table with colleagues or alongside an AI system. My research spans ubiquitous analytics, collaborative immersive analytics, context-aware systems and human-centred AI, and asks how analysis can move with people across devices, places and collaborators while staying theirs to understand, question and share."
-    - "My PhD at the [Center for Anytime Anywhere Analytics (CA³)](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), takes on one part of that: what people attend to during analysis. Where someone looked is a record of how they reached a conclusion, and analytics tools discard it. I develop *attention-aware analytics*, systems that keep that record and show it back to the analyst, to collaborators sharing a mixed-reality space, to an observer reviewing the session afterwards and to a reader who receives only the findings. I build them myself for the web, Meta Quest 3 and HoloLens 2 and test them in user studies; two are IEEE VIS papers in IEEE TVCG, [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision)."
-    - Before that, for my master's in HCI at the [University of Maryland](https://umd.edu/) with [Joel Chan](https://joelchan.me/), I worked on how people find and reuse ideas from other domains, building tools for analogical search and running early studies of large language models as analogy generators; two of those papers received Best Paper Honorable Mentions at ACM Creativity & Cognition.
-    - "Looking ahead, I want to build for an immersive future in which data is part of the spaces people work in, and visualization, analysis and shared understanding are open to anyone, anytime, anywhere. That includes the AI systems now taking part in analysis: their work should be as visible and as open to question as a colleague's."
+    - "What people attend to shapes what they find, and in data analysis it disappears the moment it happens. I build systems that reflect attention back: where you have looked, what you passed over, where others looked before you. Seeing your own attention helps you manage it. Seeing someone else's lets you follow, question and build on their work without first sharing their expertise, which is what it takes to open analysis to anyone, anytime, anywhere."
+    - "My PhD at the [Center for Anytime Anywhere Analytics (CA³)](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), develops this as *attention-aware analytics*, on the web and in mixed reality, for the analyst at work, collaborators sharing a space, an observer reviewing the session afterwards and a reader who receives only the findings. Two of these systems are IEEE VIS papers in IEEE TVCG: [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision)."
+    - "The work spans ubiquitous analytics, collaborative immersive analytics, context-aware systems and human-centred AI. It began with my master's in HCI at the [University of Maryland](https://umd.edu/) with [Joel Chan](https://joelchan.me/), on helping people notice useful analogies, where two papers received Best Paper Honorable Mentions at ACM Creativity & Cognition. As AI systems take on more of the looking, the same questions reach them: what did they attend to, and what did they miss?"
   industry:
     - "I build interfaces for working with data across screens, headsets and teams. My focus is making that work traceable: recording what people attend to as they analyse and putting it to use, for the person at the screen, for collaborators in the same mixed-reality space, and for whoever picks up the analysis next."
     - "As a PhD fellow at the [Center for Anytime Anywhere Analytics](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), I write these systems end to end for the web, Meta Quest 3 and HoloLens 2: gaze capture, per-mark visibility tracking, event-logged back ends and the views that replay them. I run the user studies that test them, and two of the systems are published in IEEE TVCG. I am now building [heed](#project-heed), an open-source toolkit that brings the same recording to any web page."
@@ -114,83 +113,79 @@ biography:
     short:
       third: >-
         Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
-        advised by Niklas Elmqvist at the Center for Anytime Anywhere Analytics. He builds
-        systems that help people see, analyse and reason about data together, wherever they
-        are, and his research spans ubiquitous analytics, collaborative immersive analytics,
-        context-aware systems and human-centred AI. His thesis develops attention-aware
-        analytics: systems that capture where people look during analysis and show it back
-        to the analyst, to collaborators in mixed reality and to people who read the work
-        later. Two of these systems are IEEE VIS papers in IEEE TVCG. His earlier work at
-        the University of Maryland, on tools that help people find useful analogies,
-        received two Best Paper Honorable Mentions at ACM Creativity & Cognition.
+        advised by Niklas Elmqvist at the Center for Anytime Anywhere Analytics. He studies
+        attention in data analysis: what people look at shapes what they find, and tools
+        keep no record of it. His attention-aware systems, on the web and in mixed reality,
+        reflect that record back, helping analysts manage their own attention and letting
+        others follow, question and build on their work. Two are IEEE VIS papers in IEEE
+        TVCG. His earlier work at the University of Maryland, on helping people notice
+        useful analogies, received two Best Paper Honorable Mentions at ACM Creativity &
+        Cognition.
       first: >-
         I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
-        Elmqvist at the Center for Anytime Anywhere Analytics. I build systems that help
-        people see, analyse and reason about data together, wherever they are, and my
-        research spans ubiquitous analytics, collaborative immersive analytics,
-        context-aware systems and human-centred AI. My thesis develops attention-aware
-        analytics: systems that capture where people look during analysis and show it back
-        to the analyst, to collaborators in mixed reality and to people who read the work
-        later. Two of these systems are IEEE VIS papers in IEEE TVCG. My earlier work at the
-        University of Maryland, on tools that help people find useful analogies, received
-        two Best Paper Honorable Mentions at ACM Creativity & Cognition.
+        Elmqvist at the Center for Anytime Anywhere Analytics. I study attention in data
+        analysis: what people look at shapes what they find, and tools keep no record of it.
+        My attention-aware systems, on the web and in mixed reality, reflect that record
+        back, helping analysts manage their own attention and letting others follow,
+        question and build on their work. Two are IEEE VIS papers in IEEE TVCG. My earlier
+        work at the University of Maryland, on helping people notice useful analogies,
+        received two Best Paper Honorable Mentions at ACM Creativity & Cognition.
     long:
       third: |
         Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
         advised by Niklas Elmqvist, and one of the first hires at the Center for Anytime
-        Anywhere Analytics (CA³). He builds systems that help people see, analyse and reason
-        about data together, wherever they are: at a desk, in a headset, around a table with
-        colleagues or alongside an AI system. His research spans ubiquitous analytics,
-        collaborative immersive analytics, context-aware systems and human-centred AI.
+        Anywhere Analytics (CA³). He studies attention in data analysis. What people look at
+        shapes what they find, and it disappears the moment it happens. His systems reflect
+        it back: seeing their own attention helps analysts manage it, and seeing someone
+        else's lets people follow, question and build on work without first sharing the
+        expertise behind it. That is his route to analysis open to anyone, anytime,
+        anywhere.
 
-        His thesis develops attention-aware analytics. What people attend to during analysis
-        is a record of how they reached their conclusions, and analytics tools throw it
-        away; his systems keep that record and show it back, to the analyst who produced it,
-        to collaborators sharing a mixed-reality space, to an observer reviewing the session
-        afterwards and to a reader who receives only the findings. He builds them himself
-        for the web, Meta Quest 3 and HoloLens 2. Two are IEEE VIS papers in IEEE TVCG,
-        Attention-Aware Visualization (2024) and HeedVision (2026), and others have appeared
-        at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a
-        visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair,
-        studying where musicians look during band rehearsals.
+        His thesis develops attention-aware analytics on the web, Meta Quest 3 and
+        HoloLens 2, for the analyst at work, collaborators sharing a mixed-reality space, an
+        observer reviewing the session afterwards and a reader who receives only the
+        findings. Two of these systems are IEEE VIS papers in IEEE TVCG, Attention-Aware
+        Visualization (2024) and HeedVision (2026), and others have appeared at workshops of
+        ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a visiting researcher
+        at VISUS, University of Stuttgart, with Michael Sedlmair, studying where musicians
+        look during band rehearsals.
 
-        Before his PhD he earned an MS in Human-Computer Interaction at the University of
-        Maryland, working with Joel Chan on how people find and reuse ideas from other
-        domains: tools for analogical search and early studies of large language models as
-        analogy generators, which received Best Paper Honorable Mentions at ACM Creativity &
-        Cognition in 2023 and 2024. He wants to build for an immersive future in which data
-        is part of the spaces people work in, and visualization, analysis and shared
-        understanding are open to anyone, anytime, anywhere, including when AI systems take
-        part in the work. He reviews for ACM CHI, IEEE VIS and ACM Creativity & Cognition,
-        and is a teaching assistant on the Data Visualization course at Aarhus University.
+        His research spans ubiquitous analytics, collaborative immersive analytics,
+        context-aware systems and human-centred AI. It began with an MS in Human-Computer
+        Interaction at the University of Maryland, where he worked with Joel Chan on helping
+        people notice useful analogies, including early studies of large language models as
+        analogy generators; two of those papers received Best Paper Honorable Mentions at
+        ACM Creativity & Cognition. As AI systems take on more of the looking, he is asking
+        the same questions of them. He reviews for ACM CHI, IEEE VIS and ACM Creativity &
+        Cognition, and is a teaching assistant on the Data Visualization course at Aarhus
+        University.
       first: |
         I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
         Elmqvist, and one of the first hires at the Center for Anytime Anywhere Analytics
-        (CA³). I build systems that help people see, analyse and reason about data together,
-        wherever they are: at a desk, in a headset, around a table with colleagues or
-        alongside an AI system. My research spans ubiquitous analytics, collaborative
-        immersive analytics, context-aware systems and human-centred AI.
+        (CA³). I study attention in data analysis. What people look at shapes what they
+        find, and it disappears the moment it happens. My systems reflect it back: seeing
+        their own attention helps analysts manage it, and seeing someone else's lets people
+        follow, question and build on work without first sharing the expertise behind it.
+        That is my route to analysis open to anyone, anytime, anywhere.
 
-        My thesis develops attention-aware analytics. What people attend to during analysis
-        is a record of how they reached their conclusions, and analytics tools throw it
-        away; my systems keep that record and show it back, to the analyst who produced it,
-        to collaborators sharing a mixed-reality space, to an observer reviewing the session
-        afterwards and to a reader who receives only the findings. I build them myself for
-        the web, Meta Quest 3 and HoloLens 2. Two are IEEE VIS papers in IEEE TVCG,
-        Attention-Aware Visualization (2024) and HeedVision (2026), and others have appeared
-        at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 I was a
-        visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair,
-        studying where musicians look during band rehearsals.
+        My thesis develops attention-aware analytics on the web, Meta Quest 3 and
+        HoloLens 2, for the analyst at work, collaborators sharing a mixed-reality space, an
+        observer reviewing the session afterwards and a reader who receives only the
+        findings. Two of these systems are IEEE VIS papers in IEEE TVCG, Attention-Aware
+        Visualization (2024) and HeedVision (2026), and others have appeared at workshops of
+        ACM CHI and ACM ETRA. From October 2025 to February 2026 I was a visiting researcher
+        at VISUS, University of Stuttgart, with Michael Sedlmair, studying where musicians
+        look during band rehearsals.
 
-        Before my PhD I earned an MS in Human-Computer Interaction at the University of
-        Maryland, working with Joel Chan on how people find and reuse ideas from other
-        domains: tools for analogical search and early studies of large language models as
-        analogy generators, which received Best Paper Honorable Mentions at ACM Creativity &
-        Cognition in 2023 and 2024. I want to build for an immersive future in which data is
-        part of the spaces people work in, and visualization, analysis and shared
-        understanding are open to anyone, anytime, anywhere, including when AI systems take
-        part in the work. I review for ACM CHI, IEEE VIS and ACM Creativity & Cognition, and
-        I am a teaching assistant on the Data Visualization course at Aarhus University.
+        My research spans ubiquitous analytics, collaborative immersive analytics,
+        context-aware systems and human-centred AI. It began with an MS in Human-Computer
+        Interaction at the University of Maryland, where I worked with Joel Chan on helping
+        people notice useful analogies, including early studies of large language models as
+        analogy generators; two of those papers received Best Paper Honorable Mentions at
+        ACM Creativity & Cognition. As AI systems take on more of the looking, I am asking
+        the same questions of them. I review for ACM CHI, IEEE VIS and ACM Creativity &
+        Cognition, and I am a teaching assistant on the Data Visualization course at Aarhus
+        University.
   industry:
     short:
       third: >-
