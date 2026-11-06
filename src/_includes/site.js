@@ -890,7 +890,8 @@
     {
       const tc = $$(".tick", mapEl).map((tk) => `var(--c-${tk.dataset.c || "fuchsia"})`);
       // Ticks are inset by the thumb's radius (as the thumb's centre is), so the stops are too.
-      const pc = (k) => `calc(.5625rem + (100% - 1.125rem) * ${(k / Math.max(1, tc.length - 1)).toFixed(5)})`;
+      // Each boundary sits at the right edge of a dot (centre + .25rem), so a dot never shows two colours.
+      const pc = (k) => `calc(.8125rem + (100% - 1.125rem) * ${(k / Math.max(1, tc.length - 1)).toFixed(5)})`;
       const stops = tc.slice(1).map((c, k) => `${c} ${k ? pc(k) : "0%"} ${k === tc.length - 2 ? "100%" : pc(k + 1)}`);
       if (stops.length) range.style.setProperty("--segs", `linear-gradient(90deg,${stops.join(",")})`);
     }
