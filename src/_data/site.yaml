@@ -42,7 +42,7 @@ status: Open to postdoc and research roles from January 2027
 ring: "Open to work · From January 2027 · "   # text spinning round the portrait
 bio:
   - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later.
-  - My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, a capture, record and revisualize pipeline tested with single analysts, co-located pairs in mixed reality, musicians in rehearsal, and analysts handing work to one another. I build these systems myself for the web, Meta Quest 3 and HoloLens 2.
+  - "My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, systems that capture, record and revisualize where people look for four readers, each further from the moment it happened: the analyst during their own task, collaborators sharing a mixed-reality space, an observer reviewing the session afterwards, and a stranger who only receives the findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2."
   - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
 
 # Sections in page order. Remove a line to hide that section.
@@ -84,7 +84,7 @@ news:
   - date: 2026-08
     text: Teaching assistant for the Data Visualization course at Aarhus University this autumn.
   - date: 2026-06
-    text: Presented our mobile eye-tracking study of band rehearsals at ACM ETRA 2026 in Marrakesh.
+    text: Presented our mobile eye-tracking study of band rehearsals at the ETVIS 2026 workshop at ACM ETRA in Marrakesh.
     link: https://arxiv.org/abs/2606.03485
   - date: 2026-04
     text: Presented *The Attention-Aware Pipeline* at the SAXR workshop, CHI 2026.
@@ -94,6 +94,8 @@ news:
     link: https://arxiv.org/abs/2602.19809
   - date: 2025-10
     text: Began a five-month research stay at VISUS, University of Stuttgart, with Michael Sedlmair.
+  - date: 2024-06
+    text: Our team won the Distinguished Project Award at UBISS 2024 in Oulu, in the Tangible AI Interactions workshop.
   - date: 2024-06
     text: Best Paper Honorable Mention at ACM Creativity & Cognition 2024 for AnalogiLead.
   - date: 2024-01
@@ -143,8 +145,8 @@ publications:
   - id: srinivasan2026band
     title: Analyzing Visual Attention Patterns During Band Rehearsal with Mobile Eye Tracking
     authors: [Arvind Srinivasan, Tobias Rau, Michael Sedlmair]
-    venue: ACM ETRA 2026
-    venue_long: ACM Symposium on Eye Tracking Research and Applications (ETRA) 2026
+    venue: ETVIS 2026 at ACM ETRA
+    venue_long: Workshop on Eye Tracking and Visualization (ETVIS 2026), co-located with ACM ETRA 2026
     pages: 1–7
     year: 2026
     kind: short
@@ -379,7 +381,10 @@ teaching:
   - role: Teaching assistant, Data Visualization
     org: Aarhus University
     when: 2024 — 2026
-    detail: Three autumn semesters of TA sessions, weekly critique exercises and the mock oral exam. Developed [visualization.info](https://visualization.info/), the course's curated index of visualization teaching material (2025), and [Elicitation Lab](https://arvindchee.nu/elicitation-lab/), an offline client persona for requirements-elicitation practice (2026).
+    detail: Autumn 2024, a double load in autumn 2025, and a half load in autumn 2026. TA sessions, weekly critique exercises and the mock oral exam. Developed [visualization.info](https://visualization.info/), the course's curated index of visualization teaching material (2025), and [Elicitation Lab](https://arvindchee.nu/elicitation-lab/), an offline client persona for requirements-elicitation practice (2026).
+  - role: Teaching assistant, Implementation and Applications of Databases
+    org: Aarhus University
+    when: Spring 2025
   - role: Guest lecture, Information Visualization
     org: Aarhus University
     when: March 2024
@@ -393,11 +398,14 @@ talks:
     event: IEEE VIS 2026
     date: 2026-11
   - title: Analyzing Visual Attention Patterns During Band Rehearsal
-    event: ACM ETRA 2026, Marrakesh
+    event: ETVIS 2026 at ACM ETRA, Marrakesh
     date: 2026-06
   - title: "The Attention-Aware Pipeline: Design Tensions from Making Attention Visible in XR"
     event: SAXR Workshop, ACM CHI 2026, Barcelona
     date: 2026-04
+  - title: "Attention-Aware Visualization: Tracking and Responding to User Perception Over Time"
+    event: IEEE VIS 2024, virtual
+    date: 2024-10
   - title: Improving Selection of Analogical Inspirations through Chunking and Recombination
     event: ACM Creativity & Cognition 2024, Chicago
     date: 2024-06
@@ -439,6 +447,10 @@ awards:
     year: 2023
     for: "Fluid Transformers and Creative Analogies: Exploring Large Language Models' Capacity for Augmenting Cross-Domain Analogical Creativity"
     link: https://doi.org/10.1145/3591196.3593516
+  - title: Distinguished Project Award
+    by: UBI Summer School 2024, University of Oulu
+    year: 2024
+    for: Team project in the Tangible AI Interactions workshop
   - title: Jacob K. Goldhaber Travel Award
     by: University of Maryland
     year: 2022
@@ -451,9 +463,11 @@ skills:
   - group: Languages
     items: [TypeScript, JavaScript, Python, C#]
   - group: Interfaces
-    items: [React, React Three Fiber, Three.js, WebXR, D3.js, Svelte, Electron]
+    items: [React, Next.js, React Three Fiber, Three.js, WebXR, D3.js, Svelte, Electron]
   - group: Back end & data
-    items: [Node.js, FastAPI, MongoDB, Elasticsearch, WebSockets]
+    items: [Node.js, FastAPI, Supabase, MongoDB, Elasticsearch, WebSockets]
+  - group: Tooling
+    items: [Git, Docker]
   - group: XR & sensing
     items: [Meta Quest 3, HoloLens 2, Unity, Pupil Labs Neon, MediaPipe]
   - group: Research methods

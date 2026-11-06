@@ -199,7 +199,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media print{
   @page{size:A4;margin:15mm 16mm 16mm}
   :root,:root[data-theme="dark"]{--bg:#fff;--fg:#000;--muted:#555;--line:#ccc;--line-2:#bbb;color-scheme:light}
-  html{font-size:9pt}
+  html{font-size:8.8pt}
   body{background:#fff}
   *,*::before,*::after{animation:none!important;transition:none!important}
   body::before,.edge,.topbar,.no-print,.qr-pop,.toast,.skip,.avatar,#news,#elsewhere,.fold-row{display:none!important}
@@ -211,12 +211,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   .contact-line{margin-top:1.5mm;color:var(--muted)}
   .contact-line a,.bio a,.text a{text-decoration:none}
   .bio{max-width:none;gap:2mm}
-  .sec{padding-top:4.5mm}
+  .sec{padding-top:4mm}
   .sec-label{margin-bottom:2mm;color:#000;font-weight:600}
-  .list{gap:2mm}
+  .list{gap:1.7mm}
   .tech{display:none}
   body{line-height:1.45}
-  .item{grid-template-columns:24mm minmax(0,1fr);gap:0 5mm;break-inside:avoid}
+  .item{grid-template-columns:28mm minmax(0,1fr);gap:0 4mm;break-inside:avoid}
   .acts{display:none}
   .ref{color:var(--muted)}
   .ref:empty{display:none}
