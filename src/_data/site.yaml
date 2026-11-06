@@ -45,8 +45,40 @@ bio:
   - "My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, systems that capture, record and revisualize where people look for four readers, each further from the moment it happened: the analyst during their own task, collaborators sharing a mixed-reality space, an observer reviewing the session afterwards, and a stranger who only receives the findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2."
   - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
 
+# Third-person biographies for talk introductions, programmes and applications.
+# Each has a Copy button on the page. Separate paragraphs with a blank line.
+biography:
+  short: >-
+    Arvind Srinivasan is a PhD candidate at the Center for Anytime Anywhere Analytics,
+    Aarhus University, advised by Niklas Elmqvist. He builds systems that capture,
+    record and revisualize where people look, from a single analyst at a dashboard to
+    collaborators sharing a mixed-reality space. His work appears in IEEE TVCG and at
+    IEEE VIS and ACM Creativity & Cognition, where two of his papers received Best
+    Paper Honorable Mentions.
+  long: |
+    Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University. He
+    joined the Center for Anytime Anywhere Analytics (CA³) as one of its first hires and
+    is advised by Niklas Elmqvist. His research develops attention-aware analytics,
+    systems that capture where people look during analysis, record it, and show it back
+    to a reader. His thesis follows that record outward from the person who produced it,
+    to collaborators sharing a mixed-reality space, to an observer reviewing a session
+    afterwards, and to a stranger who receives only the findings. He builds these systems
+    himself for the web, Meta Quest 3 and HoloLens 2, and has published them in IEEE TVCG
+    and at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a
+    visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair, studying
+    gaze in band rehearsals with mobile eye tracking.
+
+    Before Aarhus, he earned an MS in Human-Computer Interaction at the University of
+    Maryland, where he worked with Joel Chan on creativity support tools for analogical
+    reasoning and on early studies of large language models as analogy generators. That
+    work received Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and
+    2024. He holds a BTech in Computer Science and Engineering from SRM Institute of
+    Science and Technology, and worked as a user experience intern at Tetrate. He
+    maintains open-source tools including heed, Elicitation Lab, SciFig and Matercolors,
+    and teaches on the Data Visualization course at Aarhus University.
+
 # Sections in page order. Remove a line to hide that section.
-order: [news, publications, projects, experience, teaching, talks, service, awards, education, skills]
+order: [news, biography, education, experience, publications, projects, skills, grants, awards, talks, teaching, service]
 
 # Links under the bio. The `primary: true` link becomes the filled button.
 links:
@@ -60,15 +92,17 @@ links:
 # ── Sections ────────────────────────────────────────────────────────────────
 sections:
   news: News
-  publications: Publications
-  experience: Experience
-  projects: Active OSS projects
-  teaching: Teaching
-  talks: Talks
-  service: Reviewing
-  awards: Awards
+  biography: Biography
   education: Education
+  experience: Experience
+  publications: Publications
+  projects: Active OSS projects
   skills: Skills
+  grants: Grants
+  awards: Honors & awards
+  talks: Talks
+  teaching: Teaching
+  service: Service
   elsewhere: Elsewhere
 
 # Newest first. The first `news_visible` items show; the rest fold away.
@@ -102,6 +136,18 @@ news:
     text: Started my PhD at CA³, Aarhus University.
 
 # ── Publications ────────────────────────────────────────────────────────────
+# Groups appear in this order. Entries with a prefix are numbered newest first
+# (J3, J2, J1); entries without one show their year. Items land in the first group
+# whose `kinds` include their kind; `status: under-review` goes to that group.
+pub_groups:
+  - { title: Journal articles, prefix: J, kinds: [journal, article] }
+  - { title: Conference papers, prefix: C, kinds: [conference] }
+  - { title: Workshop papers, prefix: W, kinds: [workshop, short] }
+  - { title: "Posters, demos and extended abstracts", prefix: P, kinds: [poster, demo, abstract] }
+  - { title: Under review, status: under-review }
+  - { title: Preprints, kinds: [preprint] }
+  - { title: Theses, kinds: [thesis] }
+
 # kind: journal | conference | article | short | workshop | abstract | demo | poster | preprint | thesis
 # status: published (default) | to-appear | under-review
 # equal: names that share first authorship (marked with †)
@@ -112,6 +158,7 @@ publications:
     title: "Amanuensis: Authoring Data Stories from an Analyst's Attention and Speech"
     authors: [Arvind Srinivasan, Niklas Elmqvist]
     venue: ACM CHI 2027
+    venue_long: ACM CHI Conference on Human Factors in Computing Systems (CHI 2027)
     year: 2027
     kind: conference
     status: under-review
@@ -122,6 +169,7 @@ publications:
     authors: [Arvind Srinivasan, Niklas Elmqvist]
     venue: IEEE TVCG (VIS 2026)
     venue_long: IEEE Transactions on Visualization and Computer Graphics
+    proc: IEEE VIS 2026
     year: 2026
     kind: journal
     status: to-appear
@@ -157,6 +205,7 @@ publications:
     title: "The Attention-Aware Pipeline: Design Tensions from Making Attention Visible in XR"
     authors: [Arvind Srinivasan, Niklas Elmqvist]
     venue: SAXR Workshop at ACM CHI 2026
+    venue_long: "SAXR '26: Shaping Future Human Connection: Social Augmentation through XR Technologies, Workshop at ACM CHI 2026"
     year: 2026
     kind: workshop
     links:
@@ -166,6 +215,7 @@ publications:
     title: "Participatory AI: A Scandinavian Approach to Human-Centered AI"
     authors: [Niklas Elmqvist, Eve Hoggan, Hans-Jörg Schulz, Marianne Graves Petersen, Peter Dalsgaard, Ira Assent, Olav W. Bertelsen, Akhil Arora, Kaj Grønbæk, Susanne Bødker, Clemens Nylandsted Klokmose, Rachel Charlotte Smith, Sebastian Hubenschmid, Christoph A. Johns, Gabriela Molina León, Anton Wolter, Johannes Ellemose, Vaishali Dhanoa, Simon Aagaard Enni, Mille Skovhus Lunding, Karl-Emil Kjær Bilstrup, Juan Sánchez Esquivel, Luke Connelly, Rafael Pablos Sarabia, Morten Birk, Joachim Nyborg, Stefanie Zollmann, Tobias Langlotz, Meredith Siang-Yun Chou, Jens Emil Sloth Grønbæk, Michael Wessely, Yijing Jiang, Caroline Berger, Duosi Dai, Michael Mose Biskjaer, Germán Leiva, Jonas Frich, Eva Eriksson, Kim Halskov, Thorbjørn Mikkelsen, Nearchos Potamitis, Michel Yildirim, Arvind Srinivasan, Jeanette Falk, Nanna Inie, Ole Sejer Iversen, Hugo Andersson]
     venue: arXiv preprint
+    venue_long: arXiv preprint
     year: 2025
     kind: preprint
     bibtex: false
@@ -178,6 +228,7 @@ publications:
     equal: [Arvind Srinivasan, Johannes Ellemose]
     venue: IEEE TVCG (VIS 2024)
     venue_long: IEEE Transactions on Visualization and Computer Graphics
+    proc: IEEE VIS 2024
     volume: "31"
     number: "1"
     pages: 1017–1027
@@ -194,7 +245,7 @@ publications:
     title: Improving Selection of Analogical Inspirations through Chunking and Recombination
     authors: [Arvind Srinivasan, Joel Chan]
     venue: ACM C&C 2024
-    venue_long: Proceedings of the 16th Conference on Creativity & Cognition
+    venue_long: Proceedings of the 16th ACM Conference on Creativity & Cognition (C&C '24)
     pages: 374–397
     year: 2024
     kind: conference
@@ -208,7 +259,7 @@ publications:
     title: "Fluid Transformers and Creative Analogies: Exploring Large Language Models' Capacity for Augmenting Cross-Domain Analogical Creativity"
     authors: [Zijian Ding, Arvind Srinivasan, Stephen MacNeil, Joel Chan]
     venue: ACM C&C 2023
-    venue_long: Proceedings of the 15th Conference on Creativity & Cognition
+    venue_long: Proceedings of the 15th ACM Conference on Creativity & Cognition (C&C '23)
     pages: 489–505
     year: 2023
     kind: conference
@@ -223,7 +274,7 @@ publications:
     title: "AnalogiLead: Improving Selection of Analogical Inspirations with Chunking and Recombination"
     authors: [Arvind Srinivasan, Joel Chan]
     venue: ACM C&C 2023
-    venue_long: Proceedings of the 15th Conference on Creativity & Cognition
+    venue_long: Proceedings of the 15th ACM Conference on Creativity & Cognition (C&C '23)
     pages: 338–341
     year: 2023
     kind: abstract
@@ -235,7 +286,7 @@ publications:
   - id: srinivasan2023thesis
     title: Improving Selection of Analogical Inspirations with Chunking and Recombination
     authors: [Arvind Srinivasan]
-    venue: MS thesis, University of Maryland
+    venue: MS thesis, University of Maryland, College Park
     year: 2023
     kind: thesis
     links:
@@ -385,12 +436,9 @@ teaching:
   - role: Teaching assistant, Implementation and Applications of Databases
     org: Aarhus University
     when: Spring 2025
-  - role: Guest lecture, Information Visualization
+  - role: Guest lecture, Summer School of Data Visualization
     org: Aarhus University
     when: March 2024
-  - role: Master's thesis censor
-    org: Aarhus University
-    when: ""
 
 # ── Talks ───────────────────────────────────────────────────────────────────
 talks:
@@ -413,8 +461,9 @@ talks:
     event: IEEE VIS 2022, Oklahoma City
     date: 2022-10
 
-# ── Reviewing ───────────────────────────────────────────────────────────────
-# Venue-level only. Submission numbers and review links stay private.
+# ── Service ─────────────────────────────────────────────────────────────────
+# Reviewing is venue-level only; submission numbers and review links stay private.
+# Entries with `reviews` render as reviewing; others take `role`, `org`, `detail`.
 service:
   - venue: ACM CHI 2027
     track: Papers
@@ -433,8 +482,29 @@ service:
   - venue: ACM Creativity & Cognition 2025
     track: Papers
     reviews: 1
+  - when: 2026
+    role: Organiser, research speed dating
+    org: Center for Anytime Anywhere Analytics, Aarhus University
+    detail: Grouped the centre's researchers by research problem to start collaborations.
 
-# ── Awards ──────────────────────────────────────────────────────────────────
+# ── Grants ──────────────────────────────────────────────────────────────────
+grants:
+  - title: International Mobility Grant
+    by: ""
+    amount: 20,000 DKK
+    year: 2025
+    for: Research stay at VISUS, University of Stuttgart, October 2025 to February 2026
+  - title: Jacob K. Goldhaber Travel Grant
+    by: Graduate School, University of Maryland
+    amount: US$400
+    year: 2022
+    for: Travel to IEEE VIS 2022, Oklahoma City
+  - title: Special Merit Scholarship
+    by: SRM Institute of Science and Technology
+    amount: 25% tuition waiver
+    year: 2016–2019
+
+# ── Honors & awards ─────────────────────────────────────────────────────────
 # `for` names the work the award was for; `link` makes it clickable.
 awards:
   - title: Best Paper Honorable Mention
@@ -442,21 +512,15 @@ awards:
     year: 2024
     for: Improving Selection of Analogical Inspirations through Chunking and Recombination
     link: https://doi.org/10.1145/3635636.3656207
+  - title: Distinguished Project Award
+    by: UBI Summer School 2024, University of Oulu
+    year: 2024
+    for: a team project in the Tangible AI Interactions workshop
   - title: Best Paper Honorable Mention
     by: ACM Creativity & Cognition
     year: 2023
     for: "Fluid Transformers and Creative Analogies: Exploring Large Language Models' Capacity for Augmenting Cross-Domain Analogical Creativity"
     link: https://doi.org/10.1145/3591196.3593516
-  - title: Distinguished Project Award
-    by: UBI Summer School 2024, University of Oulu
-    year: 2024
-    for: Team project in the Tangible AI Interactions workshop
-  - title: Jacob K. Goldhaber Travel Award
-    by: University of Maryland
-    year: 2022
-  - title: Special Merit Scholarship, 25% tuition waiver
-    by: SRM Institute of Science and Technology
-    year: 2016–2019
 
 # ── Skills ──────────────────────────────────────────────────────────────────
 skills:

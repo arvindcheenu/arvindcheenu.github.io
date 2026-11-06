@@ -104,12 +104,24 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 
   {%- for key in s.order %}
   {%- set title = s.sections[key] %}
-  {%- if s[key] and s[key].length %}
+  {%- if s[key] and (s[key].length or key == "biography") %}
   <section class="sec" id="{{ key }}" aria-labelledby="h-{{ key }}">
     <h2 class="sec-label rv" id="h-{{ key }}">{{ title | md | safe }}</h2>
     <div class="list">
 
-    {%- if key == "news" %}
+    {%- if key == "biography" %}
+      {%- for k, label in { short: "Short", long: "Long" } %}{% if s.biography[k] %}
+      {%- set ps = s.biography[k] | paras %}
+      <article class="item bio-item rv">
+        <div class="when">{{ label }}</div>
+        <div class="what"><div class="main">
+          {%- for para in ps %}<p class="text">{{ para }}</p>{% endfor %}
+          <p class="acts no-print"><button type="button" class="tl" data-action="copy" data-copy="{{ ps | join('\n\n') }}" data-toast="{{ label }} biography copied">Copy {{ label | lower }} biography</button><span class="wc">{{ ps | join(" ") | wordcount }} words</span></p>
+        </div></div>
+      </article>
+      {%- endif %}{% endfor %}
+
+    {%- elif key == "news" %}
       {%- for n in s.news %}
       <article class="item rv{% if loop.index > s.news_visible %} fold{% endif %}">
         <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time></div>
@@ -124,22 +136,19 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
       {%- endif %}
 
     {%- elif key == "publications" %}
-      {%- for row in s.publications | pubRows %}
-      {%- set p = row.p -%}
-      {%- set url = p | primaryUrl -%}
-      <article class="item rv{% if row.repR %} rep{% endif %}" data-kind="{{ p.kind }}">
+      {%- for g in s.publications | pubGroups(s.pub_groups) %}
+      <h3 class="subhead rv">{{ g.title }}</h3>
+      {%- for row in g.items %}
+      {%- set p = row.p %}
+      <article class="item cite rv" id="{{ p.id }}" data-kind="{{ p.kind }}">
         <div class="when">{{ row.label }}</div>
         <div class="what">
           <div class="main">
-            <h3 class="t">{% if url %}<a href="{{ url }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h3>
-            <p class="sub">{{ p.authors | authors(s.name, p.equal or []) | safe }}</p>
-            <p class="sub">{{ p.venue }}<span class="sep">·</span>{{ kinds[p.kind] or p.kind }}{% if statuses[p.status] %}<span class="sep">·</span>{{ statuses[p.status] }}{% endif %}{% if p.award %}<span class="sep">·</span><span class="hl">{{ p.award }}</span>{% endif %}</p>
-            <p class="print-only ref">{% if p.doi %}doi:{{ p.doi }}{% elif p.links and p.links.arxiv %}arXiv:{{ p.links.arxiv | replace("https://arxiv.org/abs/", "") }}{% endif %}</p>
-            {%- if p.doi or p.links or p.bibtex !== false %}
+            <p class="text">{{ p | cite(s.name) | safe }}</p>
+            {%- set hasActs = p.links or p.bibtex !== false %}
+            {%- if hasActs %}
             <p class="acts no-print">
-              {%- for k, u in p.links %}{% if k == "pdf" %}<a class="tl" href="{{ u }}">PDF</a>{% endif %}{% endfor %}
-              {%- if p.doi %}<a class="tl" href="https://doi.org/{{ p.doi }}">DOI</a>{% endif %}
-              {%- for k, u in p.links %}{% if k != "pdf" %}<a class="tl" href="{{ u }}">{{ actLabels[k] or k }}</a>{% endif %}{% endfor %}
+              {%- for k, u in p.links %}{% if k != "arxiv" or p.doi %}<a class="tl" href="{{ u }}">{{ actLabels[k] or k }}</a>{% endif %}{% endfor %}
               {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">BibTeX</button>{% endif %}
             </p>
             {%- endif %}
@@ -147,6 +156,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
           {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
+      {%- endfor %}
       {%- endfor %}
       {%- if s.publications | selectattr("equal") | length %}
       <p class="item foot-note rv"><span class="when"></span><span class="what">† Equal contribution</span></p>
@@ -201,8 +211,21 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
     {%- elif key == "service" %}
       {%- for r in s.service %}
       <article class="item rv">
+        {%- if r.reviews %}
         <div class="when">{{ r.venue | year4 }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="hl">{{ r.note }}</span>{% endif %}</p></div></div>
+        <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="hl">{{ r.note }}</span>{% endif %}</p></div></div>
+        {%- else %}
+        <div class="when">{{ r.when }}</div>
+        <div class="what"><div class="main"><h3 class="t">{{ r.role }}</h3>{% if r.org %}<p class="sub">{{ r.org }}</p>{% endif %}{% if r.detail %}<p class="text">{{ r.detail | md | safe }}</p>{% endif %}</div></div>
+        {%- endif %}
+      </article>
+      {%- endfor %}
+
+    {%- elif key == "grants" %}
+      {%- for g in s.grants %}
+      <article class="item rv">
+        <div class="when">{{ g.year }}</div>
+        <div class="what"><div class="main"><h3 class="t">{{ g.title }}{% if g.amount %}<span class="sep">·</span>{{ g.amount }}{% endif %}</h3>{% if g.by %}<p class="sub">{{ g.by }}</p>{% endif %}{% if g.for %}<p class="sub">{{ g.for | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 

@@ -150,6 +150,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .acts{display:flex;flex-wrap:wrap;gap:.25rem 1.125rem;margin-top:.5rem}
 .tl{padding:0;border:0;background:none;font:inherit;color:var(--muted);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.2em;text-decoration-color:var(--line-2);cursor:pointer;transition:color .15s,text-decoration-color .15s}
 .tl:hover{color:var(--fg);text-decoration-color:currentColor}
+.subhead{margin-top:1.25rem;font-weight:600}
+.list>.subhead:first-child{margin-top:0}
+.cite .text{color:var(--muted)}
+.cite .text i{font-style:italic}
+.cite .ct{color:var(--fg);font-weight:550;text-decoration:none;background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .3s ease}
+a.ct:hover{background-size:100% 1px}
+.cite .self{color:var(--fg);font-weight:550}
+.cid{color:inherit;overflow-wrap:anywhere}
+.wc{color:var(--muted)}
+.bio-item .text+.text{margin-top:.75rem}
 .fold{display:none}
 .folded-open .fold{display:grid}
 .foot-note .what{color:var(--muted)}
@@ -202,7 +212,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   html{font-size:8.8pt}
   body{background:#fff}
   *,*::before,*::after{animation:none!important;transition:none!important}
-  body::before,.edge,.topbar,.no-print,.qr-pop,.toast,.skip,.avatar,#news,#elsewhere,.fold-row{display:none!important}
+  body::before,.edge,.topbar,.no-print,.qr-pop,.toast,.skip,.avatar,#news,#biography,#elsewhere,.fold-row{display:none!important}
+  .subhead{margin-top:1.5mm;font-weight:600}
+  .cite .text{color:#333}
   .wrap{max-width:none;padding:0}
   .hero{gap:3.5mm;padding:0 0 1mm}
   .name{font-size:22pt}

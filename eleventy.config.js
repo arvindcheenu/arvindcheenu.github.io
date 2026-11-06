@@ -59,6 +59,61 @@ function authors(list, self, equal = []) {
     .join(", ");
 }
 
+// "A, B, and C" with the site owner in bold, as in ACM reference style.
+function authorList(list = [], self, equal = []) {
+  const fmt = (n) => {
+    const mark = equal.includes(n) ? "†" : "";
+    return n === self ? `<b class="self">${esc(n)}${mark}</b>` : `${esc(n)}${mark}`;
+  };
+  const a = list.map(fmt);
+  if (a.length <= 1) return a.join("");
+  if (a.length === 2) return `${a[0]} and ${a[1]}`;
+  return `${a.slice(0, -1).join(", ")}, and ${a[a.length - 1]}`;
+}
+
+// One publication as a citation: authors. year. title. venue details. award. doi.
+function cite(p, self) {
+  const md1 = (x) => md.renderInline(String(x));
+  const url = p.doi ? `https://doi.org/${p.doi}` : (p.links?.arxiv || p.links?.pdf || p.links?.web || "");
+  const title = url ? `<a class="ct" href="${esc(url)}">${esc(p.title)}</a>` : `<span class="ct">${esc(p.title)}</span>`;
+  const venue = esc(p.venue_long || p.venue || "");
+  const proc = p.proc ? ` (Proc. ${esc(p.proc)})` : "";
+  let where;
+  if (p.status === "under-review") where = `Submitted to <i>${venue}</i>.`;
+  else if (p.kind === "journal" || p.kind === "article") {
+    let vol = p.volume ? ` ${esc(p.volume)}` : "";
+    if (p.volume && p.number) vol += `, ${esc(p.number)}`;
+    const pages = p.pages ? `${p.volume ? ":" : ","} ${esc(p.pages)}` : "";
+    where = `<i>${venue}</i>${proc}${vol}${pages}.`;
+  } else if (p.kind === "preprint") where = `<i>${venue}</i>.`;
+  else if (p.kind === "thesis") where = `${venue}.`;
+  else where = `In <i>${venue}</i>${proc}${p.pages ? `, ${esc(p.pages)}` : ""}.`;
+  const status = p.status === "to-appear" ? " To appear." : "";
+  const award = p.award ? ` <span class="hl">${esc(p.award)}.</span>` : "";
+  let id = "";
+  if (p.doi) id = ` <a class="cid" href="https://doi.org/${esc(p.doi)}">doi:${esc(p.doi)}</a>`;
+  else if (p.links?.arxiv) id = ` <a class="cid" href="${esc(p.links.arxiv)}">arXiv:${esc(p.links.arxiv.replace(/.*\/abs\//, ""))}</a>`;
+  return `${authorList(p.authors, self, p.equal || [])}. ${esc(p.year)}. ${title}. ${where}${status}${award}${id}`;
+}
+
+// Splits publications into the configured groups and numbers each group newest first.
+function pubGroups(pubs = [], groups = []) {
+  const out = groups.map((g) => ({ ...g, items: [] }));
+  const find = (p) =>
+    out.find((g) => g.status && g.status === p.status) ||
+    out.find((g) => !g.status && (g.kinds || []).includes(p.kind) && p.status !== "under-review");
+  for (const p of pubs) {
+    const g = find(p);
+    if (g) g.items.push(p);
+  }
+  return out
+    .filter((g) => g.items.length)
+    .map((g) => ({
+      ...g,
+      items: g.items.map((p, i) => ({ p, label: g.prefix ? `${g.prefix}${g.items.length - i}` : String(p.year) })),
+    }));
+}
+
 function primaryUrl(p) {
   if (p.doi) return `https://doi.org/${p.doi}`;
   const l = p.links || {};
@@ -75,6 +130,9 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("bibtex", bibtex);
   eleventyConfig.addFilter("authors", authors);
   eleventyConfig.addFilter("primaryUrl", primaryUrl);
+  eleventyConfig.addFilter("cite", cite);
+  eleventyConfig.addFilter("pubGroups", pubGroups);
+  eleventyConfig.addFilter("paras", (s) => String(s ?? "").trim().split(/\n\s*\n/).map((x) => x.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean));
   eleventyConfig.addFilter("isOn", (v) => v === true || v === "on" || v === "true" || v === "yes");
   eleventyConfig.addFilter("year", (v) => String(v ?? "").slice(0, 4));
   // Ranges read as years, Swiss-style: "2022 — 2023", "2024 — Now".
