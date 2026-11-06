@@ -129,13 +129,18 @@ kbd{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;padding:
 .edge.bottom b{background:linear-gradient(to top,var(--bg) 0%,color-mix(in srgb,var(--bg) 55%,transparent) 30%,transparent 100%)}
 /* Smart: the top edge appears once the page scrolls, the bottom one leaves at the end. */
 .at-top .edge.top,.at-end .edge.bottom{opacity:0}
-.unpinned .edge.top{transform:translateY(-2.75rem)}
+/* The fade follows the bar: it only slides away when the bar does (not while a bar control has focus). */
+.unpinned:not(:has(.topbar:focus-within)) .edge.top{transform:translateY(-2.75rem)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.edge i{display:none}.edge.top b{background:linear-gradient(to bottom,var(--bg) 55%,transparent)}}
 @media (prefers-reduced-transparency:reduce){.edge i{display:none}.edge b{background:linear-gradient(var(--dir),var(--bg) 50%,transparent)}}
 
 /* ── Top bar: hides while reading down, returns on the way up ──────────────── */
 .topbar{position:sticky;top:0;z-index:30;padding-top:env(safe-area-inset-top,0px);transition:transform .35s var(--ease)}
 .unpinned .topbar:not(:focus-within){transform:translateY(-110%)}
+/* The bar carries its own backing, so page text never shows through its row
+   whatever the edge blur is doing; it fades to clear at the bar's lower edge. */
+.topbar::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(to bottom,var(--bg) 0%,var(--bg) 62%,transparent 100%);opacity:0;transition:opacity .25s}
+html:not(.at-top) .topbar::before{opacity:1}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;height:4rem}
 .brand{display:inline-flex;align-items:center;gap:.625rem;color:var(--fg);font-weight:600;min-width:0}
 .brand:hover{color:var(--fg)}
