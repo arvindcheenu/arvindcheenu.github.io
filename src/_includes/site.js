@@ -183,6 +183,14 @@
         s.classList.toggle("outside", out && !!o);
         if (o) main.insertBefore(s, contactSec || null);
       });
+    // A link to an entry this view leaves out reads as plain text until it is shown.
+    $$("#main a[href^='#'], #main a[data-href]").forEach((a) => {
+      const h = a.getAttribute("href") || a.dataset.href;
+      const t = h.length > 1 && document.getElementById(h.slice(1));
+      const sec = t && t.closest("#main > .sec");
+      if (sec && sec.hidden) { a.dataset.href = h; a.removeAttribute("href"); }
+      else if (!a.hasAttribute("href") && a.dataset.href) a.setAttribute("href", a.dataset.href);
+    });
   }
   function setExtra(on) {
     extra = on;

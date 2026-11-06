@@ -215,6 +215,7 @@ kbd{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;padding:
 .sec-label{display:inline-flex;align-items:center;gap:.6rem;font-size:var(--t-head);font-weight:700;letter-spacing:-.01em}
 .sec-note{flex-basis:100%;margin-top:-.25rem;color:var(--muted);font-size:var(--t-sm);text-wrap:pretty;line-height:1.6}
 .sec-note a{font-weight:500}
+#main a[data-href]:not([href]){color:inherit;cursor:text}
 /* "How this page is arranged": a quiet disclosure under the introduction */
 .arranged{max-width:40rem;font-size:var(--t-sm);color:var(--soft)}
 .arranged summary{display:inline-flex;align-items:center;gap:.5rem;padding:.25rem 0;color:var(--muted);font-weight:600;cursor:pointer;list-style:none;-webkit-tap-highlight-color:transparent;border-radius:6px}
