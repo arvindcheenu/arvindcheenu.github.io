@@ -24,6 +24,32 @@ function svgIcon(name, brand = false, cls = "") {
   }
   return `<svg class="ic${cls ? " " + cls : ""}" viewBox="0 0 ${def.w} ${def.h}" aria-hidden="true" focusable="false"><use href="#${def.id}"/></svg>`;
 }
+// Pixel size of a local image (WebP, PNG or JPEG), read from its header so the
+// gallery can reserve each picture's shape before it loads.
+const dimCache = new Map();
+function imgDims(src) {
+  if (dimCache.has(src)) return dimCache.get(src);
+  let out = null;
+  try {
+    const b = fs.readFileSync(new URL(`./src/${String(src).replace(/^\/+/, "")}`, import.meta.url));
+    if (b.toString("ascii", 0, 4) === "RIFF" && b.toString("ascii", 8, 12) === "WEBP") {
+      const t = b.toString("ascii", 12, 16);
+      if (t === "VP8X") out = [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)];
+      else if (t === "VP8 ") out = [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff];
+      else if (t === "VP8L") { const n = b.readUInt32LE(21); out = [(n & 0x3fff) + 1, ((n >> 14) & 0x3fff) + 1]; }
+    } else if (b.readUInt32BE(0) === 0x89504e47) out = [b.readUInt32BE(16), b.readUInt32BE(20)];
+    else if (b[0] === 0xff && b[1] === 0xd8) {
+      for (let i = 2; i < b.length - 9; ) {
+        if (b[i] !== 0xff) { i++; continue; }
+        const m = b[i + 1];
+        if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) { out = [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)]; break; }
+        i += 2 + b.readUInt16BE(i + 2);
+      }
+    }
+  } catch (e) { /* missing or unreadable: the gallery falls back to 4:3 */ }
+  dimCache.set(src, out);
+  return out;
+}
 const sprite = () =>
   `<svg class="sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">${[...usedIcons.values()]
     .map((i) => `<symbol id="${i.id}" viewBox="0 0 ${i.w} ${i.h}">${i.d.map((d) => `<path fill="currentColor" d="${d}"/>`).join("")}</symbol>`)
@@ -306,6 +332,7 @@ export default function (eleventyConfig) {
   // Selected entries first, then the rest, each group keeping its order.
   eleventyConfig.addFilter("selectedFirst", (list = []) => [...list.filter((e) => e.selected), ...list.filter((e) => !e.selected)]);
   // An update counts as new for two months after its date.
+  eleventyConfig.addFilter("imgDims", imgDims);
   eleventyConfig.addFilter("isNew", (v, months = 2) => {
     const m = String(v).match(/^(\d{4})-(\d{1,2})/);
     if (!m) return false;

@@ -881,6 +881,24 @@
     render();
   }
 
+  /* ── Image strips: edge blur while there is more to scroll, arrow buttons ── */
+  $$("[data-gal]").forEach((w) => {
+    const s = $(".gallery", w);
+    const upd = () => {
+      const max = s.scrollWidth - s.clientWidth;
+      w.classList.toggle("can-l", s.scrollLeft > 2);
+      w.classList.toggle("can-r", s.scrollLeft < max - 2);
+    };
+    s.addEventListener("scroll", upd, { passive: true });
+    if ("ResizeObserver" in window) new ResizeObserver(upd).observe(s);
+    $$("img", s).forEach((im) => im.complete || im.addEventListener("load", upd, { once: true }));
+    $$(".g-nav", w).forEach((b) => b.addEventListener("click", () => {
+      const step = Math.max(s.clientWidth * 0.75, 160) * Number(b.dataset.dir);
+      s.scrollBy({ left: step, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }));
+    upd();
+  });
+
   /* ── Image viewer for entries with several pictures ─────────────────────── */
   const lb = $(".lightbox");
   if (lb && typeof lb.showModal === "function") {

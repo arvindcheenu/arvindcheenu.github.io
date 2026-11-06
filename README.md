@@ -13,7 +13,7 @@ All content lives in **`src/_data/site.yaml`**: intro, biographies, news, public
 - In Experience, `summary` is the paragraph the Research view shows and `highlights` are the bullet points the Industry view shows.
 - Publications list by year; visitors can switch to grouping by type. `pub_groups` sets the type groups and their prefixes (J, C, W, P), numbered newest first. `url` sets where a title links.
 - BibTeX is generated from each publication's fields. `bibtex: false` hides the button.
-- `image:` adds one picture to a news item, publication or project. `images:` (a list of `src`, `alt`, `caption`) adds a strip of pictures that open full size; the Attention-Aware Visualization entry has an example.
+- `image:` adds one picture to a news item, publication or project. `images:` (a list of `src`, `alt`, `caption`) adds a strip of pictures that open full size; the Attention-Aware Visualization entry has an example. Each picture keeps its own shape (read from the file at build time); the strip scrolls sideways, and its edges blur progressively while there is more to see that way, with arrow buttons on hover.
 - Grant `amount`s written with a currency code or symbol (`20,000 DKK`, `US$400`) get a live conversion in brackets. `currency_default` and `currencies` set the default and the choices.
 - `sections` sets each section's heading, icon and colour. Links inside a section take its colour; a link to an entry in another section takes that section's colour.
 - Link to another entry on the page with `[text](#id)` or `ref: id`, so only an entry's own page leads outside (a talk links to its paper here; the paper links to its DOI). Links that leave the page get an external-link icon automatically.

@@ -226,10 +226,16 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
               <p class="sub">{{ p.authors | authorList(s.name, p.equal) | safe }}</p>
             </div>
             {%- if p.images %}
-            <div class="gallery no-print" data-gallery role="list" aria-label="Images for {{ p.title }}">
-              {%- for im in p.images %}
-              <button type="button" class="g-item" role="listitem" data-src="{{ im.src }}" data-cap="{{ im.caption or im.alt }}" aria-label="View image {{ loop.index }} of {{ p.images.length }}{% if im.alt %}: {{ im.alt }}{% endif %}"><img src="{{ im.src }}" alt="" decoding="async" fetchpriority="low"></button>
-              {%- endfor %}
+            <div class="gal no-print" data-gal>
+              <div class="gallery" role="list" aria-label="Images for {{ p.title }}">
+                {%- for im in p.images %}{% set dm = im.src | imgDims %}
+                <button type="button" class="g-item" role="listitem" data-src="{{ im.src }}" data-cap="{{ im.caption or im.alt }}"{% if dm %} style="--ar:{{ dm[0] }}/{{ dm[1] }}"{% endif %} aria-label="View image {{ loop.index }} of {{ p.images.length }}{% if im.alt %}: {{ im.alt }}{% endif %}"><img src="{{ im.src }}" alt=""{% if dm %} width="{{ dm[0] }}" height="{{ dm[1] }}"{% endif %} decoding="async" fetchpriority="low"></button>
+                {%- endfor %}
+              </div>
+              <div class="pb pb-l" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="pb pb-r" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+              <button type="button" class="g-nav tac g-prev" tabindex="-1" aria-hidden="true" data-dir="-1">{{ icon("chevron-left") }}</button>
+              <button type="button" class="g-nav tac g-next" tabindex="-1" aria-hidden="true" data-dir="1">{{ icon("chevron-right") }}</button>
             </div>
             {%- endif %}
             {%- if p.links or p.bibtex !== false %}
