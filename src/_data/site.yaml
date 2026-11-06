@@ -3,12 +3,6 @@
 #
 #  Editing rules of thumb
 #  • Text fields accept inline Markdown: **bold**, *italic*, [link](https://…).
-#  • Any entry can carry `only: research` or `only: industry` to appear in
-#    one CV mode. Leave it out and the entry shows in both.
-#  • A text field can be split per mode:
-#        summary:
-#          research: …
-#          industry: …
 #  • `image:` is optional on news, publications and projects. Put the file in
 #    src/assets/ and write `image: assets/name.webp`. Leave it out for none.
 #    Keep images small: about 640 px wide, WebP, under 80 KB.
@@ -26,7 +20,7 @@ work_email: arvind@cs.au.dk
 photo: assets/profile.webp        # remove to fall back to initials
 og_image: assets/profile-og.jpg    # preview image for link unfurls
 
-# The one accent colour. Used only for links, primary buttons, icon duotone
+# The one accent colour. Used only for links, the primary button, icon duotone
 # and a few typographic highlights. Light and dark need separate values so
 # links keep 4.5:1 contrast on both backgrounds.
 accent:
@@ -37,51 +31,48 @@ accent:
 # Leave blank to fall back to Font Awesome Free (solid icons, no duotone).
 fontawesome_kit: ""
 
+# Contact form. Get a free access key at web3forms.com (it emails you the key)
+# and paste it below; messages then arrive at the address you signed up with.
+# Any service that accepts a JSON POST works: put its URL in `endpoint`.
+# With no key and no endpoint the form opens the visitor's mail app instead.
+contact_form:
+  endpoint: https://api.web3forms.com/submit
+  access_key: ""
+  subject: New message from arvindchee.nu
+
 # Sounds play on button presses. Visitors can mute them; this is the default.
 sound_default: on
 
-# ── CV modes ────────────────────────────────────────────────────────────────
-# `order` decides which sections appear in a mode and in what sequence.
-default_mode: research
-modes:
-  research:
-    label: Research
-    icon: flask
-    role: PhD candidate in visualization and HCI, Aarhus University
-    status: Open to postdoc positions from January 2027
-    ring: "Open to work · Postdoc · From Jan 2027 · "   # text spinning round the portrait
-    bio:
-      - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later. My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, a capture, record and revisualize pipeline tested with single analysts, co-located pairs in mixed reality, musicians in rehearsal, and analysts handing work to one another.
-      - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
-    order: [news, publications, experience, teaching, talks, awards, education, projects, skills, elsewhere]
-  industry:
-    label: Industry
-    icon: briefcase
-    role: Research engineer for visualization, XR and human–AI interfaces
-    status: Open to research engineering and design-technologist roles from January 2027
-    ring: "Open to work · Engineering · From Jan 2027 · "
-    bio:
-      - I design and build interfaces for data, XR and human–AI collaboration, then test them with people. Since 2024 I have shipped attention-tracking systems for the web, Meta Quest 3 and HoloLens 2 at Aarhus University, covering rendering, gaze pipelines and study infrastructure, and published them at IEEE VIS, IEEE TVCG and ACM venues.
-      - I work across the stack in TypeScript and Python with React, React Three Fiber, WebXR, D3, Node and FastAPI. I maintain open-source libraries for colour, scientific figures and ambient-adaptive UI, and I prefer tools that load fast, work offline and explain what they are doing.
-    order: [news, experience, projects, skills, publications, education, awards, talks, teaching, elsewhere]
+# ── Introduction ────────────────────────────────────────────────────────────
+role: PhD candidate in visualization and HCI, Aarhus University
+status: Open to postdoc and research roles from January 2027
+ring: "Open to work · From January 2027 · "   # text spinning round the portrait
+bio:
+  - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later.
+  - My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, a capture, record and revisualize pipeline tested with single analysts, co-located pairs in mixed reality, musicians in rehearsal, and analysts handing work to one another. I build these systems myself for the web, Meta Quest 3 and HoloLens 2.
+  - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
 
-# Buttons under the name. The first `primary: true` link gets the accent fill.
+# Sections in page order. Remove a line to hide that section.
+order: [news, publications, projects, experience, teaching, talks, service, awards, education, skills, elsewhere]
+
+# Links under the bio. The `primary: true` link becomes the filled button.
 links:
   - { label: Email, url: "mailto:arvind@cheenu.net", icon: envelope, primary: true }
-  - { label: Google Scholar, url: "https://scholar.google.com/citations?user=lVhsLEMAAAAJ", icon: google-scholar, brand: true, only: research }
+  - { label: Google Scholar, url: "https://scholar.google.com/citations?user=lVhsLEMAAAAJ", icon: google-scholar, brand: true }
   - { label: GitHub, url: "https://github.com/arvindcheenu", icon: github, brand: true }
   - { label: LinkedIn, url: "https://www.linkedin.com/in/arvindcheenu", icon: linkedin, brand: true }
-  - { label: ORCID, url: "https://orcid.org/0000-0002-3409-6077", icon: orcid, brand: true, only: research }
+  - { label: ORCID, url: "https://orcid.org/0000-0002-3409-6077", icon: orcid, brand: true }
   - { label: Medium, url: "https://arvindcheenu.medium.com", icon: medium, brand: true }
 
 # ── Sections ────────────────────────────────────────────────────────────────
 sections:
   news: News
-  publications: { research: Publications, industry: Selected publications }
+  publications: Publications
   experience: Experience
   projects: Open source & projects
   teaching: Teaching
   talks: Talks
+  service: Reviewing
   awards: Awards
   education: Education
   skills: Skills
@@ -97,7 +88,6 @@ news:
     text: Released [heed](https://heed.arvindchee.nu), an open-source toolkit that records attention on any web page from cursor, viewport and webcam gaze.
   - date: 2026-09
     text: Submitted **Amanuensis**, data stories authored from an analyst's attention and speech, to ACM CHI 2027.
-    only: research
   - date: 2026-08
     text: Teaching assistant for the Data Visualization course at Aarhus University this autumn.
   - date: 2026-06
@@ -118,7 +108,6 @@ news:
 # kind: journal | conference | article | short | workshop | demo | poster | preprint | thesis
 # status: published (default) | to-appear | under-review
 # equal: names that share first authorship (marked with †)
-# selected: true → shown in Industry mode
 # links: any of pdf, doi, arxiv, code, video, blog, supplement, poster, web
 # bibtex: generated automatically; set `bibtex: false` to hide the button
 publications:
@@ -130,7 +119,6 @@ publications:
     kind: conference
     status: under-review
     bibtex: false
-    only: research
 
   - id: srinivasan2026heedvision
     title: "HeedVision: Attention Awareness in Collaborative Immersive Analytics Environments"
@@ -140,7 +128,6 @@ publications:
     year: 2026
     kind: conference
     status: to-appear
-    selected: true
     links:
       arxiv: https://arxiv.org/abs/2505.07069
 
@@ -162,7 +149,6 @@ publications:
     venue_long: ACM Symposium on Eye Tracking Research and Applications (ETRA) 2026
     year: 2026
     kind: short
-    selected: true
     links:
       arxiv: https://arxiv.org/abs/2606.03485
 
@@ -181,7 +167,6 @@ publications:
     venue: arXiv preprint
     year: 2025
     kind: preprint
-    only: research
     bibtex: false
     links:
       arxiv: https://arxiv.org/abs/2509.12752
@@ -198,7 +183,6 @@ publications:
     year: 2025
     kind: journal
     doi: 10.1109/TVCG.2024.3456300
-    selected: true
     # image: assets/pubs/srinivasan2025attention.webp
     links:
       pdf: https://arxiv.org/pdf/2404.10732
@@ -215,7 +199,6 @@ publications:
     kind: conference
     doi: 10.1145/3635636.3656207
     award: Best Paper Honorable Mention
-    selected: true
     # image: assets/pubs/srinivasan2023improving.webp
     links:
       pdf: https://dl.acm.org/doi/pdf/10.1145/3635636.3656207
@@ -230,7 +213,6 @@ publications:
     kind: conference
     doi: 10.1145/3591196.3593516
     award: Best Paper Honorable Mention
-    selected: true
     # image: assets/pubs/ding2023fluid.webp
     links:
       pdf: https://dl.acm.org/doi/pdf/10.1145/3591196.3593516
@@ -254,7 +236,6 @@ publications:
     venue: MS thesis, University of Maryland
     year: 2023
     kind: thesis
-    only: research
     links:
       web: https://www.proquest.com/openview/5c1d854b35961b28251685dd7095fcba/
 
@@ -276,9 +257,7 @@ experience:
     place: Aarhus, Denmark
     start: 2024-01
     end: present
-    summary:
-      research: One of the centre's first hires. Developed attention-aware visualization from a single-user web prototype to co-located WebXR collaboration and asynchronous handoff between analysts, and ran the user studies behind each step.
-      industry: One of the centre's first hires. Built and evaluated attention-tracking interfaces for the web, Meta Quest 3 (WebXR) and HoloLens 2 (Unity), including gaze capture, per-mark visibility tracking and an event-logged analysis backend on MongoDB.
+    summary: One of the centre's first hires. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step.
     tags: [WebXR, React Three Fiber, Unity, eye tracking, user studies]
 
   - role: Visiting PhD Researcher
@@ -368,7 +347,6 @@ projects:
     kind: research
     summary: Python package for chart reading grounded in the IVL visualization-literacy framework, with a companion agent skill.
     tech: [Python]
-    only: research
   - name: Dragon Drop
     kind: tool
     summary: Human-centred, AI-assisted brainstorming tool built on Gestalt principles.
@@ -415,8 +393,35 @@ talks:
     event: IEEE VIS 2022, Oklahoma City
     date: 2022-10
 
+# ── Reviewing ───────────────────────────────────────────────────────────────
+# Venue-level only. Submission numbers and review links stay private.
+service:
+  - venue: ACM CHI 2027
+    track: Papers
+    reviews: 3
+    note: Special Recognition for Outstanding Review
+  - venue: ACM CHI 2026
+    track: Papers
+    reviews: 3
+    note: Special Recognition for Outstanding Review
+  - venue: IEEE VIS 2026
+    track: Short Papers
+    reviews: 1
+  - venue: ACM CHI 2025
+    track: Papers
+    reviews: 1
+  - venue: ACM Creativity & Cognition 2025
+    track: Papers
+    reviews: 1
+
 # ── Awards ──────────────────────────────────────────────────────────────────
 awards:
+  - title: Special Recognition for Outstanding Review
+    by: ACM CHI
+    year: 2027
+  - title: Special Recognition for Outstanding Review
+    by: ACM CHI
+    year: 2026
   - title: Best Paper Honorable Mention
     by: ACM Creativity & Cognition
     year: 2024

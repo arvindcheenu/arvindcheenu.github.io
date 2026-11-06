@@ -7,8 +7,6 @@
     get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
   };
-  const MODES = ["research", "industry"];
-  const DEFAULT_MODE = d.dataset.defaultMode || "research";
 
   /* ── Sound: tiny synthesized clicks, no audio files ─────────────────────── */
   let ctx = null;
@@ -78,24 +76,6 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove("on"), 1800);
   }
 
-  /* ── CV mode ────────────────────────────────────────────────────────────── */
-  function setMode(m, fromUser) {
-    if (!MODES.includes(m)) return;
-    d.dataset.mode = m;
-    $$("[data-set-mode]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.setMode === m)));
-    if (!fromUser) return;
-    store.set("cv-mode", m);
-    try {
-      const u = new URL(location.href);
-      if (m === DEFAULT_MODE) u.searchParams.delete("cv"); else u.searchParams.set("cv", m);
-      history.replaceState(null, "", u);
-    } catch (e) {}
-    play("mode");
-    const label = $(`[data-set-mode="${m}"] span`);
-    toast(`${label ? label.textContent : m} view`);
-  }
-  setMode(d.dataset.mode, false);
-
   /* ── Theme: system → light → dark ───────────────────────────────────────── */
   const THEMES = ["system", "light", "dark"];
   const themeBtn = $('[data-action="theme"]');
@@ -126,8 +106,6 @@
   }
 
   document.addEventListener("click", async (e) => {
-    const modeBtn = e.target.closest("[data-set-mode]");
-    if (modeBtn) { if (modeBtn.dataset.setMode !== d.dataset.mode) setMode(modeBtn.dataset.setMode, true); return; }
     const a = e.target.closest("[data-action]");
     if (!a) return;
     const act = a.dataset.action;
@@ -153,11 +131,50 @@
 
   // Printing titles the PDF after the mode on screen.
   const baseTitle = document.title;
-  window.addEventListener("beforeprint", () => {
-    const label = $(`[data-set-mode="${d.dataset.mode}"] span`);
-    document.title = `Arvind Srinivasan — CV${label ? ` (${label.textContent})` : ""}`;
-  });
+  window.addEventListener("beforeprint", () => { document.title = "Arvind Srinivasan — CV"; });
   window.addEventListener("afterprint", () => { document.title = baseTitle; });
+
+  /* ── Contact form ───────────────────────────────────────────────────────── */
+  const form = $("#contact-form");
+  if (form) {
+    const status = $(".form-status", form), submit = $('button[type="submit"]', form);
+    const say = (msg, kind) => { status.textContent = msg; status.className = `form-status${kind ? " " + kind : ""}`; };
+    form.addEventListener("input", (e) => { const f = e.target.closest(".field"); if (f) f.classList.remove("invalid"); });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fields = $$("input[required], textarea[required]", form);
+      const looksLikeEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+      const bad = fields.filter((el) => !el.checkValidity() || (el.type === "email" && !looksLikeEmail(el.value)));
+      fields.forEach((el) => el.closest(".field").classList.toggle("invalid", bad.includes(el)));
+      if (bad.length) {
+        const el = bad[0];
+        say(el.type === "email" && el.value ? "Check the email address." : `Add your ${el.name === "message" ? "message" : el.name}.`, "err");
+        el.focus(); return;
+      }
+      const data = Object.fromEntries(new FormData(form));
+      const to = form.dataset.to, subject = form.dataset.subject || "Message from arvindchee.nu";
+      if (data.botcheck) { form.reset(); say("Sent.", "ok"); return; }
+      if (form.dataset.preview) { say(`This preview doesn't send. On the site, messages go to ${to}.`); return; }
+      const endpoint = form.dataset.endpoint;
+      if (!endpoint) {
+        const body = `${data.message}\n\n${data.name} <${data.email}>`;
+        location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        say(`Your mail app should open with the message. If it doesn't, write to ${to}.`);
+        return;
+      }
+      submit.disabled = true; say("Sending…");
+      try {
+        const payload = { name: data.name, email: data.email, message: data.message, subject, from_name: "arvindchee.nu" };
+        if (form.dataset.key) payload.access_key = form.dataset.key;
+        const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(payload) });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || json.success === false) throw new Error(json.message || res.status);
+        form.reset(); play("copy"); say(`Sent. I'll reply to ${data.email}.`, "ok");
+      } catch (err) {
+        say(`It didn't send. Write to ${to} instead.`, "err");
+      } finally { submit.disabled = false; }
+    });
+  }
 
   /* ── Top bar border once the page scrolls ───────────────────────────────── */
   const bar = $("#topbar");

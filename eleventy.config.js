@@ -120,7 +120,14 @@ export default function (eleventyConfig) {
     const i = (order || []).indexOf(key);
     return i < 0 ? 0 : i + 1;
   });
-  eleventyConfig.addFilter("pad2", (n) => String(n).padStart(2, "0"));
+  eleventyConfig.addFilter("year4", (v) => (String(v).match(/\b(19|20)\d{2}\b/) || [""])[0]);
+  eleventyConfig.addFilter("noYear", (v) => String(v).replace(/\s*\b(19|20)\d{2}\b\s*/, " ").trim());
+  // The form posts only when it has somewhere to go: a Web3Forms key, or another service's URL.
+  eleventyConfig.addFilter("formEndpoint", (cf = {}) => {
+    if (!cf || !cf.endpoint) return "";
+    if (/web3forms/.test(cf.endpoint) && !cf.access_key) return "";
+    return cf.endpoint;
+  });
   eleventyConfig.addShortcode("buildDate", () => {
     const d = new Date();
     return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
