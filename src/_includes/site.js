@@ -942,6 +942,20 @@
     }
   }
 
+  /* ── Scroll progress for browsers without scroll-driven animations ──────── */
+  if (!(window.CSS && CSS.supports && CSS.supports("animation-timeline: scroll()"))) {
+    const bar = $(".progress i");
+    let queued = false;
+    const paint = () => {
+      queued = false;
+      const max = document.documentElement.scrollHeight - innerHeight;
+      if (bar) bar.style.setProperty("--sp", max > 0 ? Math.min(1, scrollY / max).toFixed(4) : "0");
+    };
+    addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(paint); } }, { passive: true });
+    addEventListener("resize", paint);
+    paint();
+  }
+
   /* ── Image strips: edge blur while there is more to scroll, arrow buttons ── */
   $$("[data-gal]").forEach((w) => {
     const s = $(".gallery", w);

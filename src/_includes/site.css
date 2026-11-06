@@ -64,6 +64,16 @@
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html{font-size:clamp(1rem,.93rem + .3vw,1.125rem);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:5rem}
+/* No page scrollbar; a thin bar along the top shows how far down the page you are.
+   CSS scroll-driven where supported, otherwise the script sets --sp. */
+html{scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+.progress{position:fixed;inset:0 0 auto;z-index:60;height:3px;pointer-events:none}
+.progress i{display:block;height:100%;background:var(--link);transform-origin:0 50%;transform:scaleX(var(--sp,0));will-change:transform}
+@supports (animation-timeline:scroll()){
+  .progress i{animation:sp-grow linear both;animation-timeline:scroll(root block)}
+}
+@keyframes sp-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 1rem/1.65 var(--font);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-kerning:normal}
 h1,h2,h3,h4,p,figure{margin:0;font-size:inherit;font-weight:inherit}
 ul{margin:0;padding:0}
