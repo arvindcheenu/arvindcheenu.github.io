@@ -97,15 +97,14 @@ affiliation: Center for Anytime Anywhere Analytics, Aarhus University
 ring: "Open to work · From January 2027 · "   # text spinning round the portrait
 bio:
   research:
-    - Where people look while they analyse data is a record of how they reached their conclusions, and most tools discard it when the session ends. I build systems that keep that record and show it back to the analyst, their collaborators and whoever reads the work later.
-    - "My PhD at the [Center for Anytime Anywhere Analytics (CA³)](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics* and follows that record outward from the person who produced it: to collaborators sharing a mixed-reality space, to an observer reviewing the session afterwards, and to a reader who receives only the findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2 and test them in user studies; two are IEEE VIS papers in IEEE TVCG, [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision)."
-    - The question underneath, what people notice and what they miss, goes back to my master's in HCI at the [University of Maryland](https://umd.edu/) with [Joel Chan](https://joelchan.me/), where I built tools that help people find useful analogies; two of those papers received Best Paper Honorable Mentions at ACM Creativity & Cognition. Next, I want to ask it of analysis that people share with AI agents, where a record of what was examined and what was skipped is what makes a finding checkable.
-    - Away from research I write poems and songs in Tamil and English.
+    - "I design and build systems for working with data wherever people are: at a desk, in a headset, around a table with colleagues, or alongside an AI agent. My research spans ubiquitous analytics, collaborative immersive analytics, context-aware systems and human-centred AI."
+    - "The thread through it is attention. What people attend to while they analyse data says how they reached their conclusions, and most tools discard it. My PhD at the [Center for Anytime Anywhere Analytics (CA³)](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*: systems that capture where people look and show it back to the analyst, to collaborators sharing a mixed-reality space, to an observer reviewing the session afterwards and to a reader who receives only the findings. I build them myself for the web, Meta Quest 3 and HoloLens 2 and test them in user studies; two are IEEE VIS papers in IEEE TVCG, [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision)."
+    - The question underneath, what people notice and what they miss, goes back to my master's in HCI at the [University of Maryland](https://umd.edu/) with [Joel Chan](https://joelchan.me/), where I built tools that help people find useful analogies and ran early studies of large language models as analogy generators; two of those papers received Best Paper Honorable Mentions at ACM Creativity & Cognition.
+    - "I want analysis that anyone can do and share, anytime and anywhere, with AI agents as partners that people can check and steer. Part of that is treating agents as attenders too: a person who can see what an agent read and what it skipped can judge its findings, and an agent that knows what people have already examined can look where they have not."
   industry:
-    - "Most analytics tools keep the result of an analysis and lose how it was reached. I build interfaces that record where people look as they work and put that record to use: for the person at the screen, for collaborators in the same mixed-reality space, and for whoever picks up the analysis next."
-    - "As a PhD fellow at the [Center for Anytime Anywhere Analytics](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), I write these systems end to end for the web, Meta Quest 3 and HoloLens 2: gaze capture, per-mark visibility tracking, event-logged back ends and the views that replay them. I run the user studies that test them, and two of the systems are published in IEEE TVCG. I am now building [heed](#project-heed), an open-source toolkit that brings the same recording to any web page."
-    - Before Aarhus I did a master's in HCI at the [University of Maryland](https://umd.edu/), building a paper-processing pipeline and Elasticsearch-based analogical search as a research assistant, and worked as a UX intern at [Tetrate](https://tetrate.io/). I work mostly in TypeScript, React, WebXR, Python and Unity, and I want to build products where people and AI agents analyse data together.
-    - Away from research I write poems and songs in Tamil and English.
+    - "I build interfaces for working with data across screens, headsets and teams, more and more alongside AI agents. My focus is making that work traceable: recording what people attend to as they analyse and putting it to use, for the person at the screen, for collaborators in the same mixed-reality space, and for whoever picks up the analysis next."
+    - "As a PhD fellow at the [Center for Anytime Anywhere Analytics](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), I write these systems end to end for the web, Meta Quest 3 and HoloLens 2: gaze capture, per-mark visibility tracking, event-logged back ends and the views that replay them. I run the user studies that test them, and two of the systems are published in IEEE TVCG. I am now building [heed](#project-heed), an open-source toolkit that brings the same recording to any web page and is designed to record what AI agents attend to alongside people."
+    - Before Aarhus I did a master's in HCI at the [University of Maryland](https://umd.edu/), building a paper-processing pipeline and Elasticsearch-based analogical search as a research assistant, and worked as a UX intern at [Tetrate](https://tetrate.io/). I work mostly in TypeScript, React, WebXR, Python and Unity. I want to build products where people can see what an AI agent looked at and what it skipped, and steer it before they act on its results.
 
 # Biographies for talk introductions, programmes and applications. The page has
 # Short / Long and First / Third person switches; the Research / Industry switch
@@ -115,92 +114,104 @@ biography:
     short:
       third: >-
         Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
-        advised by Niklas Elmqvist at the Center for Anytime Anywhere Analytics. Where people
-        look during analysis is a record of how they reached their conclusions; his research
-        builds systems that keep that record and show it back to the analyst, to
-        collaborators in mixed reality and to people who read the work later. Two of these
-        systems are IEEE VIS papers in IEEE TVCG. His earlier work at the University of
-        Maryland, on tools that help people find useful analogies, received two Best Paper
-        Honorable Mentions at ACM Creativity & Cognition.
+        advised by Niklas Elmqvist at the Center for Anytime Anywhere Analytics. His research
+        spans ubiquitous analytics, collaborative immersive analytics, context-aware systems
+        and human-centred AI, with attention as its thread: he builds systems that capture
+        where people look during analysis and show it back to the analyst, to collaborators
+        in mixed reality and to people who read the work later, and he is extending them to
+        the AI agents people work with. Two of these systems are IEEE VIS papers in IEEE
+        TVCG. His earlier work at the University of Maryland, on tools that help people find
+        useful analogies, received two Best Paper Honorable Mentions at ACM Creativity &
+        Cognition.
       first: >-
         I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
-        Elmqvist at the Center for Anytime Anywhere Analytics. Where people look during
-        analysis is a record of how they reached their conclusions; my research builds
-        systems that keep that record and show it back to the analyst, to collaborators in
-        mixed reality and to people who read the work later. Two of these systems are IEEE
-        VIS papers in IEEE TVCG. My earlier work at the University of Maryland, on tools that
-        help people find useful analogies, received two Best Paper Honorable Mentions at ACM
-        Creativity & Cognition.
+        Elmqvist at the Center for Anytime Anywhere Analytics. My research spans ubiquitous
+        analytics, collaborative immersive analytics, context-aware systems and human-centred
+        AI, with attention as its thread: I build systems that capture where people look
+        during analysis and show it back to the analyst, to collaborators in mixed reality
+        and to people who read the work later, and I am extending them to the AI agents
+        people work with. Two of these systems are IEEE VIS papers in IEEE TVCG. My earlier
+        work at the University of Maryland, on tools that help people find useful analogies,
+        received two Best Paper Honorable Mentions at ACM Creativity & Cognition.
     long:
       third: |
         Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
         advised by Niklas Elmqvist, and one of the first hires at the Center for Anytime
-        Anywhere Analytics (CA³). His research starts from a plain observation: where people
-        look during analysis is a record of how they reached their conclusions, and analytics
-        tools throw it away. His thesis develops attention-aware analytics, systems that keep
-        that record and show it back, and follows it outward from the analyst who produced
-        it, to collaborators sharing a mixed-reality space, to an observer reviewing the
-        session afterwards, and to a reader who receives only the findings. He builds these
-        systems himself for the web, Meta Quest 3 and HoloLens 2. Two of them are IEEE VIS
-        papers in IEEE TVCG, Attention-Aware Visualization (2024) and HeedVision (2026), and
-        others have appeared at workshops of ACM CHI and ACM ETRA. From October 2025 to
-        February 2026 he was a visiting researcher at VISUS, University of Stuttgart, with
-        Michael Sedlmair, studying where musicians look during band rehearsals.
+        Anywhere Analytics (CA³). His research spans ubiquitous analytics, collaborative
+        immersive analytics, context-aware systems and human-centred AI, with attention as
+        its thread: what people attend to during analysis is a record of how they reached
+        their conclusions, and analytics tools throw it away. His thesis develops
+        attention-aware analytics, systems that keep that record and show it back, and
+        follows it outward from the analyst who produced it, to collaborators sharing a
+        mixed-reality space, to an observer reviewing the session afterwards, and to a reader
+        who receives only the findings. He builds these systems himself for the web, Meta
+        Quest 3 and HoloLens 2. Two of them are IEEE VIS papers in IEEE TVCG,
+        Attention-Aware Visualization (2024) and HeedVision (2026), and others have appeared
+        at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a
+        visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair,
+        studying where musicians look during band rehearsals.
 
         The question running through his work, what people notice and what they miss, began
         with his MS in Human-Computer Interaction at the University of Maryland. There he
         worked with Joel Chan on tools that help people find useful analogies and on early
         studies of large language models as analogy generators, work that received Best
-        Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and 2024. He now wants
-        to carry the question into analysis that people share with AI agents. He reviews for
-        ACM CHI, IEEE VIS and ACM Creativity & Cognition, and is a teaching assistant on the
-        Data Visualization course at Aarhus University. Away from research he writes poems
-        and songs in Tamil and English.
+        Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and 2024. He wants
+        analysis that anyone can do and share, anytime and anywhere, with AI agents as
+        partners that people can check and steer, and is extending his work to agents:
+        showing people what an agent read and what it skipped, and showing agents what
+        people have already examined. He reviews for ACM CHI, IEEE VIS and ACM Creativity &
+        Cognition, and is a teaching assistant on the Data Visualization course at Aarhus
+        University.
       first: |
         I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
         Elmqvist, and one of the first hires at the Center for Anytime Anywhere Analytics
-        (CA³). My research starts from a plain observation: where people look during
-        analysis is a record of how they reached their conclusions, and analytics tools throw
-        it away. My thesis develops attention-aware analytics, systems that keep that record
-        and show it back, and follows it outward from the analyst who produced it, to
-        collaborators sharing a mixed-reality space, to an observer reviewing the session
-        afterwards, and to a reader who receives only the findings. I build these systems
-        myself for the web, Meta Quest 3 and HoloLens 2. Two of them are IEEE VIS papers in
-        IEEE TVCG, Attention-Aware Visualization (2024) and HeedVision (2026), and others
-        have appeared at workshops of ACM CHI and ACM ETRA. From October 2025 to February
-        2026 I was a visiting researcher at VISUS, University of Stuttgart, with Michael
-        Sedlmair, studying where musicians look during band rehearsals.
+        (CA³). My research spans ubiquitous analytics, collaborative immersive analytics,
+        context-aware systems and human-centred AI, with attention as its thread: what
+        people attend to during analysis is a record of how they reached their conclusions,
+        and analytics tools throw it away. My thesis develops attention-aware analytics,
+        systems that keep that record and show it back, and follows it outward from the
+        analyst who produced it, to collaborators sharing a mixed-reality space, to an
+        observer reviewing the session afterwards, and to a reader who receives only the
+        findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2. Two
+        of them are IEEE VIS papers in IEEE TVCG, Attention-Aware Visualization (2024) and
+        HeedVision (2026), and others have appeared at workshops of ACM CHI and ACM ETRA.
+        From October 2025 to February 2026 I was a visiting researcher at VISUS, University
+        of Stuttgart, with Michael Sedlmair, studying where musicians look during band
+        rehearsals.
 
         The question running through my work, what people notice and what they miss, began
         with my MS in Human-Computer Interaction at the University of Maryland. There I
         worked with Joel Chan on tools that help people find useful analogies and on early
         studies of large language models as analogy generators, work that received Best
-        Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and 2024. I now want to
-        carry the question into analysis that people share with AI agents. I review for ACM
-        CHI, IEEE VIS and ACM Creativity & Cognition, and I am a teaching assistant on the
-        Data Visualization course at Aarhus University. Away from research I write poems and
-        songs in Tamil and English.
+        Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and 2024. I want
+        analysis that anyone can do and share, anytime and anywhere, with AI agents as
+        partners that people can check and steer, and I am extending my work to agents:
+        showing people what an agent read and what it skipped, and showing agents what
+        people have already examined. I review for ACM CHI, IEEE VIS and ACM Creativity &
+        Cognition, and I am a teaching assistant on the Data Visualization course at Aarhus
+        University.
   industry:
     short:
       third: >-
-        Arvind Srinivasan builds analytics interfaces that record where people look and put
-        that record to use. As a PhD fellow at the Center for Anytime Anywhere Analytics,
-        Aarhus University, he builds these systems end to end for the web, Meta Quest 3 and
-        HoloLens 2 and runs the user studies that test them; two are published in IEEE TVCG.
-        He works mostly in TypeScript, React, WebXR, Python and Unity, and is building heed,
-        an open-source toolkit that brings attention recording to any web page.
+        Arvind Srinivasan builds interfaces for working with data across screens, headsets
+        and teams, more and more alongside AI agents, and records what people attend to so
+        that work can be traced and handed on. As a PhD fellow at the Center for Anytime
+        Anywhere Analytics, Aarhus University, he builds these systems end to end for the
+        web, Meta Quest 3 and HoloLens 2 and runs the user studies that test them; two are
+        published in IEEE TVCG. He works mostly in TypeScript, React, WebXR, Python and
+        Unity.
       first: >-
-        I build analytics interfaces that record where people look and put that record to
-        use. As a PhD fellow at the Center for Anytime Anywhere Analytics, Aarhus University,
-        I build these systems end to end for the web, Meta Quest 3 and HoloLens 2 and run
-        the user studies that test them; two are published in IEEE TVCG. I work mostly in
-        TypeScript, React, WebXR, Python and Unity, and I am building heed, an open-source
-        toolkit that brings attention recording to any web page.
+        I build interfaces for working with data across screens, headsets and teams, more
+        and more alongside AI agents, and I record what people attend to so that work can be
+        traced and handed on. As a PhD fellow at the Center for Anytime Anywhere Analytics,
+        Aarhus University, I build these systems end to end for the web, Meta Quest 3 and
+        HoloLens 2 and run the user studies that test them; two are published in IEEE TVCG.
+        I work mostly in TypeScript, React, WebXR, Python and Unity.
     long:
       third: |
-        Arvind Srinivasan builds analytics interfaces that record where people look and put
-        that record to use. Most analytics tools keep the result of an analysis and lose how
-        it was reached; his keep the trail. As a PhD fellow at the Center for Anytime
+        Arvind Srinivasan builds interfaces for working with data across screens, headsets
+        and teams, more and more alongside AI agents, and records what people attend to so
+        that work can be traced and handed on. As a PhD fellow at the Center for Anytime
         Anywhere Analytics (CA³), Aarhus University, where he was one of the first hires, he
         took attention-aware visualization from a single-user web prototype to co-located
         collaboration in WebXR on Meta Quest 3 and to asynchronous handoff between analysts.
@@ -216,11 +227,12 @@ biography:
         research assistant; that line of work received two Best Paper Honorable Mentions at
         ACM Creativity & Cognition. Earlier, as a UX intern at Tetrate, he redesigned the
         company's core platform for a new brand identity. He wants to build products where
-        people and AI agents analyse data together.
+        people can see what an AI agent looked at and what it skipped, and steer it before
+        they act on its results.
       first: |
-        I build analytics interfaces that record where people look and put that record to
-        use. Most analytics tools keep the result of an analysis and lose how it was reached;
-        mine keep the trail. As a PhD fellow at the Center for Anytime Anywhere Analytics
+        I build interfaces for working with data across screens, headsets and teams, more
+        and more alongside AI agents, and I record what people attend to so that work can be
+        traced and handed on. As a PhD fellow at the Center for Anytime Anywhere Analytics
         (CA³), Aarhus University, where I was one of the first hires, I took attention-aware
         visualization from a single-user web prototype to co-located collaboration in WebXR
         on Meta Quest 3 and to asynchronous handoff between analysts. I wrote the gaze
@@ -236,7 +248,8 @@ biography:
         research assistant; that line of work received two Best Paper Honorable Mentions at
         ACM Creativity & Cognition. Earlier, as a UX intern at Tetrate, I redesigned the
         company's core platform for a new brand identity. I want to build products where
-        people and AI agents analyse data together.
+        people can see what an AI agent looked at and what it skipped, and steer it before
+        they act on its results.
 
 # Profile links under the introduction and in the footer.
 links:
