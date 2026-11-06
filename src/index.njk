@@ -21,9 +21,9 @@ permalink: /index.html
     <div class="sec-head rv">
       <div class="sec-title">
         <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}<span>{{ sec.title | md | safe }}</span></h2>
-        {%- if note %}<p class="sec-note">{{ note | safe }}</p>{% endif %}
       </div>
       {%- if caller %}{{ caller() }}{% endif %}
+      {%- if note %}<p class="sec-note">{{ note | safe }}</p>{% endif %}
     </div>
 {%- endmacro -%}
 <!doctype html>
@@ -153,8 +153,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </div>
     {%- endcall %}
     {%- elif key == "publications" %}
-    {%- set pnote = ("† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
-    {%- if citations.total %}{% set pnote = pnote + (" · " if pnote else "") + '<a href="' + citations.profile + '">' + (citations.total | string) + " citations" + (", h-index " + citations.h if citations.h else "") + " on Google Scholar</a>" %}{% endif %}
+    {%- set pnote = (s.publications_note | md) if s.publications_note else ("† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
     {%- call head(key, sec, pnote) %}
       <div class="sec-ctl no-print">
         <div class="seg sm" role="radiogroup" aria-label="List publications by">
@@ -194,7 +193,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </article>
       {%- endfor %}
       {%- if s.news.length > s.news_visible %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
+      <div class="item fold-row no-print"><div class="when"></div><div class="what">{%- set nMore = (s.news.length - s.news_visible) %}<button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show {{ nMore }} more {{ "update" if nMore == 1 else "updates" }}</span></button></div></div>
       {%- endif %}
 
     {%- elif key == "publications" %}
@@ -207,18 +206,14 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         <div class="when pn" title="{{ r.group }}">{% if r.label %}{{ r.label }}{% else %}{{ icon(r.icon or "file") }}<span class="sr">{{ r.group }}</span>{% endif %}</div>
         <div class="what">
           <div class="main">
-            <p class="text cite-r" data-only="research">{{ p | cite(s.name, awardRefs) | safe }}</p>
+            {%- set rt = p | rateFor(s.venues) %}
+            <p class="text cite-r" data-only="research">{{ p | cite(s.name, awardRefs) | safe }}{% if rt %} <span class="vrate">[{{ rt.rate }} acc. rate{% if rt.year %}, {{ rt.year }}{% endif %}]</span>{% endif %}</p>
             {%- set u = p | titleUrl %}
             <div class="cite-i" data-only="industry">
               <h4 class="t">{% if u %}<a href="{{ u }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h4>
-              <p class="venue">{{ p | venueLine(awardRefs) | safe }}</p>
+              <p class="venue">{{ p | venueLine(awardRefs) | safe }}{% if rt %}<span class="sep">·</span><span class="vrate">{{ rt.rate }} acceptance rate</span>{% endif %}</p>
               <p class="sub">{{ p.authors | authorList(s.name, p.equal) | safe }}</p>
             </div>
-            {%- set vn = s.venues[p.venue_key] if (s.venues and p.venue_key) else null %}
-            {%- set rt = p | rateFor(s.venues) %}
-            {%- if (vn and vn.about) or rt %}
-            <p class="vnote">{% if vn and vn.about %}<span class="vabout">{{ vn.about }}</span>{% endif %}{% if rt %} <span class="vrate">Acceptance rate {{ rt.rate }}{% if rt.year %} in {{ rt.year }}{% endif %}.</span>{% endif %}</p>
-            {%- endif %}
             {%- if p.images %}
             <div class="gallery no-print" data-gallery role="list" aria-label="Images for {{ p.title }}">
               {%- for im in p.images %}
@@ -226,10 +221,9 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
               {%- endfor %}
             </div>
             {%- endif %}
-            {%- if p.links or p.bibtex !== false or citations.counts[p.id] %}
+            {%- if p.links or p.bibtex !== false %}
             <p class="acts no-print">
               {%- for k, l in p.links %}<a class="tl" href="{{ l }}">{{ icon(actIcons[k] or "link") }}{{ actLabels[k] or k }}</a>{% endfor %}
-              {%- if citations.counts[p.id] %}<a class="tl cites" href="{{ citations.links[p.id] or citations.profile }}" title="Cited by, on Google Scholar ({{ citations.date | ymd }})">{{ icon("quote-left") }}{{ citations.counts[p.id] }} citation{% if citations.counts[p.id] != 1 %}s{% endif %}</a>{% endif %}
               {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">{{ icon("quote-right") }}BibTeX</button>{% endif %}
             </p>
             {%- endif %}
@@ -257,7 +251,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </article>
       {%- endfor %}
       {%- if anySel and anySel < s.projects.length %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
+      <div class="item fold-row no-print"><div class="when"></div><div class="what">{%- set nMore = (s.projects.length - anySel) %}<button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show {{ nMore }} more {{ "project" if nMore == 1 else "projects" }}</span></button></div></div>
       {%- endif %}
 
     {%- elif key == "experience" %}
@@ -344,7 +338,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </article>
       {%- endfor %}
       {%- if s.service_visible and s.service.length > s.service_visible %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
+      <div class="item fold-row no-print"><div class="when"></div><div class="what">{%- set nMore = (s.service.length - s.service_visible) %}<button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show {{ nMore }} more {{ "review" if nMore == 1 else "reviews" }}</span></button></div></div>
       {%- endif %}
 
     {%- elif key == "grants" %}
@@ -390,7 +384,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </article>
       {%- endfor %}
       {%- if anySel and anySel < s.certifications.length %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show more</span></button></div></div>
+      <div class="item fold-row no-print"><div class="when"></div><div class="what">{%- set nMore = (s.certifications.length - anySel) %}<button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show {{ nMore }} more {{ "certification" if nMore == 1 else "certifications" }}</span></button></div></div>
       {%- endif %}
 
     {%- elif key == "skills" %}

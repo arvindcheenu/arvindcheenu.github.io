@@ -5,7 +5,7 @@ on:
     branches:
       - main
   pull_request:
-  # Rebuild every day so citation counts and the exchange-rate fallback stay current.
+  # Rebuild every day so "New" badges and the exchange-rate fallback stay current.
   schedule:
     - cron: "23 5 * * *"
   workflow_dispatch:

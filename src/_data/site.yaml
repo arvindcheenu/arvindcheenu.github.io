@@ -281,25 +281,34 @@ pub_groups:
   - { title: Preprints, kinds: [preprint], icon: file-lines }
   - { title: Theses, kinds: [thesis], icon: scroll }
 
-# What each venue is, shown under its publications for readers outside the field.
-# A publication names its venue with `venue_key`. Acceptance rates change every year,
-# so they are listed by year; a paper uses the rate for the year it appeared at the
-# venue (the year in `proc` or `venue`). A `rate` on the publication overrides it.
+# Shown under the Publications heading, after Niklas Elmqvist's CV.
+publications_note: >-
+  In all publications, my name is in bold, and authors who contributed equally are
+  marked with a dagger (†). I follow the convention where the first author is the
+  lead author, and the last author is often the most senior author with a supervisory
+  role in the project. My primary area of publication is computer science, where
+  conference papers are often counted as having equal or higher prominence to journal
+  publications. These conference papers are strictly peer-reviewed with at least three
+  external reviewers and typically have acceptance rates of 30% or lower. Acceptance
+  rates are given for all conference papers (if known); these are specific to each
+  year. IEEE VIS is the leading international conference on visualization, and its
+  full papers appear in IEEE TVCG. ACM CHI is the leading international conference on
+  human-computer interaction. ACM Creativity & Cognition is the ACM conference on
+  creativity research and the tools that support it. ETVIS is the visualization
+  workshop of ACM ETRA, the main conference on eye-tracking research. For citations
+  and other metrics, please refer to my
+  [Google Scholar](https://scholar.google.com/citations?user=lVhsLEMAAAAJ).
+
+# Acceptance rates by venue and year. A publication names its venue with `venue_key`
+# and shows the rate for the year it appeared there (the year in `proc` or `venue`),
+# as [22.4% acc. rate, 2024]. A `rate` on the publication overrides it.
 venues:
   vis:
-    about: "IEEE VIS is the leading international conference on visualization; its full papers appear in IEEE TVCG."
     rates:
       2024: "22.4%"   # full papers; IEEE VIS Area Curation Committee summary for 2024
       # 2026: 145 papers accepted; the submission count is not published yet
-  vis_posters: { about: "A poster at IEEE VIS, the leading international conference on visualization." }
-  chi: { about: "ACM CHI is the leading international conference on human-computer interaction." }
-  chi_workshop: { about: "A workshop at ACM CHI, the leading international conference on human-computer interaction." }
   cc:
-    about: "ACM Creativity & Cognition is the ACM conference on creativity research and the tools that support it."
-    # The ACM Digital Library lists no paper acceptance rate for 2023 or 2024.
-    rates: {}
-  cga: { about: "IEEE Computer Graphics and Applications is the IEEE Computer Society's magazine for graphics and visualization." }
-  etvis: { about: "ETVIS is the visualization workshop of ACM ETRA, the main conference on eye-tracking research." }
+    rates: {}         # the ACM Digital Library lists no paper acceptance rate for 2023 or 2024
 
 # kind: journal | conference | article | short | workshop | abstract | demo | poster | preprint | thesis
 # status: published (default) | to-appear | under-review
