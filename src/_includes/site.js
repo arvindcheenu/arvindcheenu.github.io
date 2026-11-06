@@ -22,6 +22,7 @@
       requestAnimationFrame(() => requestAnimationFrame(() => els.forEach((el) => el.classList.remove("out"))));
     }, 170);
   };
+  const CHECK = ($("#ic-check") || {}).innerHTML || "";
   const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   // Places a popover under its anchor, or above it when there is no room below.
   const placePop = (pop, anchor, minW) => {
@@ -73,6 +74,7 @@
     off: () => { tone(990, 0.05, { gain: 0.045 }); tone(620, 0.08, { gain: 0.045, delay: 0.06 }); },
     copy: () => { tone(880, 0.05, { gain: 0.045 }); tone(1320, 0.1, { gain: 0.045, delay: 0.06 }); },
     open: () => { tick(0.01, 0.05, 2600); tone(700, 0.07, { type: "triangle", gain: 0.035, to: 940 }); },
+    cookie: () => { [0, 0.05, 0.11, 0.16].forEach((t, i) => tick(0.018, 0.07 - i * 0.012, 1800 + i * 500, t)); },
   };
   const play = (name, force) => {
     if (!force && d.dataset.sound === "off") return;
@@ -264,7 +266,7 @@
     $(".fx-head", fxMenu).textContent = `${money(v, c)} in`;
     $(".fx-list", fxMenu).innerHTML = fx.list
       .filter((code) => code === c || conv(v, c, code) !== null)
-      .map((code) => `<button type="button" class="fx-row" role="menuitemradio" aria-checked="${code === curC}" data-code="${code}"><span class="code">${code}</span><span class="val">${money(code === c ? v : conv(v, c, code), code)}</span><i class="fa-solid fa-check chk" aria-hidden="true"></i></button>`)
+      .map((code) => `<button type="button" class="fx-row" role="menuitemradio" aria-checked="${code === curC}" data-code="${code}"><span class="code">${code}</span><span class="val">${money(code === c ? v : conv(v, c, code), code)}</span>${CHECK}</button>`)
       .join("");
     $(".fx-note", fxMenu).textContent = `European Central Bank reference rates, ${fxDate()}${fxLive ? "" : ", last saved"}. Via frankfurter.dev.`;
   }
@@ -331,7 +333,12 @@
   document.addEventListener("click", async (e) => {
     const t = e.target;
     const tailorBtn = t.closest("[data-set-tailor]");
-    if (tailorBtn) { if (tailorBtn.getAttribute("aria-checked") !== "true") setTailor(tailorBtn.dataset.setTailor, true); return; }
+    if (tailorBtn) {
+      const other = $$("[data-set-tailor]").find((b) => b !== tailorBtn);
+      if (tailorBtn.getAttribute("aria-checked") !== "true") setTailor(tailorBtn.dataset.setTailor, true);
+      else if (other && !other.offsetParent) setTailor(other.dataset.setTailor, true);
+      return;
+    }
     const bioBtn = t.closest("[data-bio]");
     if (bioBtn) {
       if (bio[bioBtn.dataset.bio] !== bioBtn.dataset.val) {
@@ -389,7 +396,7 @@
       $(".dd-val", ddBtn).innerHTML = `${esc(o.value)}<span> · ${esc(o.dataset.label || "")}</span>`;
       $$(".dd-opt", dd).forEach((b) => b.setAttribute("aria-selected", String(+b.dataset.i === sel.selectedIndex)));
     };
-    dd.innerHTML = opts.map((o, i) => `<button type="button" class="dd-opt" role="option" data-i="${i}" aria-selected="false">${face ? `<img src="${face.getAttribute("src")}" alt="">` : ""}<span class="dd-txt"><b>${esc(o.value)}</b><span>${esc(o.dataset.label || "")}</span></span><i class="fa-solid fa-check chk" aria-hidden="true"></i></button>`).join("");
+    dd.innerHTML = opts.map((o, i) => `<button type="button" class="dd-opt" role="option" data-i="${i}" aria-selected="false">${face ? `<img src="${face.getAttribute("src")}" alt="">` : ""}<span class="dd-txt"><b>${esc(o.value)}</b><span>${esc(o.dataset.label || "")}</span></span>${CHECK}</button>`).join("");
     syncDd();
     placeDd = () => { if (ddOpen && !placePop(dd, chip, 256)) closeDd(); };
     const openDd = () => {
@@ -472,6 +479,22 @@
   // The floating email and back-to-top buttons show on the way up, past the
   // introduction, and step aside once the contact form or the footer is on screen.
   const bar = $("#topbar"), floats = $(".floats");
+  // The portrait and name appear in the bar once the large name has scrolled away.
+  const bigName = $(".hero .name");
+  const nameIO = bar && bigName && "IntersectionObserver" in window
+    ? new IntersectionObserver(([e]) => bar.classList.toggle("scrolled", !e.isIntersecting), { rootMargin: "-64px 0px 0px 0px" })
+    : null;
+  if (nameIO) nameIO.observe(bigName);
+  // The bar shows the full name when it fits, the first name when it doesn't, and none when even that won't fit.
+  const bn = $(".brand-name");
+  const fitName = () => {
+    if (!bn) return;
+    bn.classList.remove("first", "none");
+    if (bn.scrollWidth > bn.clientWidth + 1) bn.classList.add("first");
+    if (bn.scrollWidth > bn.clientWidth + 1) { bn.classList.remove("first"); bn.classList.add("none"); }
+  };
+  fitName();
+  if (bn && "ResizeObserver" in window) new ResizeObserver(fitName).observe(bar);
   let lastY = window.scrollY, travel = 0, pinned = true, nearEnd = false, ticking = false;
   const onScroll = () => {
     ticking = false;
@@ -485,7 +508,7 @@
     d.classList.toggle("at-top", y < 4);
     d.classList.toggle("at-end", y >= end - 4);
     d.classList.toggle("unpinned", !pinned);
-    if (bar) bar.classList.toggle("scrolled", y > 140);
+    if (bar && !nameIO) bar.classList.toggle("scrolled", y > 140);
     const show = pinned && y > innerHeight * 0.75 && !nearEnd;
     d.classList.toggle("show-floats", show);
     if (floats) floats.inert = !show;
@@ -513,6 +536,214 @@
     const tickClock = () => { if (fmt) { const s = `${fmt.format(new Date())} local time`; clocks.forEach((c) => { c.textContent = s; }); } };
     tickClock(); setInterval(tickClock, 30000);
   }
+
+  /* ── Links inside the page: go to the entry, light it up, offer a way back ─ */
+  const backChip = $(".back-chip");
+  let backFrom = null;
+  const secName = (el) => {
+    const sec = el && el.closest(".sec, .hero");
+    if (!sec) return "";
+    if (sec.classList.contains("hero")) return "introduction";
+    const l = $(".sec-label span:last-child", sec);
+    return l ? l.textContent.trim() : "";
+  };
+  const flash = (el) => { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 2300); };
+  function goTo(target, from) {
+    try { history.replaceState({ ...(history.state || {}), y: window.scrollY }, ""); history.pushState({ to: target.id }, "", `#${target.id}`); } catch (e) {}
+    backFrom = { y: window.scrollY, el: from, name: secName(from) };
+    target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+    flash(target);
+    if (backChip) { $("span", backChip).textContent = backFrom.name ? `Back to ${backFrom.name}` : "Back"; backChip.hidden = false; }
+  }
+  const hideBack = () => { if (backChip) backChip.hidden = true; backFrom = null; };
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const id = decodeURIComponent(a.getAttribute("href").slice(1));
+    if (!id || id === "top" || id === "main" || id === "contact" || a.closest(".topbar, .floats, .skip")) return;
+    const target = document.getElementById(id);
+    if (!target || target.closest("[hidden]")) return;
+    e.preventDefault();
+    goTo(target, a);
+  });
+  window.addEventListener("popstate", (e) => {
+    const st = e.state || {};
+    if (typeof st.y === "number") {
+      window.scrollTo({ top: st.y, behavior: reduced ? "auto" : "smooth" });
+      if (backFrom && backFrom.el) { backFrom.el.focus({ preventScroll: true }); flash(backFrom.el.closest(".item, p, li") || backFrom.el); }
+      hideBack();
+    } else if (st.to && document.getElementById(st.to)) {
+      const t = document.getElementById(st.to); t.scrollIntoView({ block: "center" }); flash(t);
+    }
+  });
+  if (backChip) backChip.addEventListener("click", () => {
+    if (history.state && history.state.to) history.back();
+    else if (backFrom) { window.scrollTo({ top: backFrom.y, behavior: reduced ? "auto" : "smooth" }); hideBack(); }
+  });
+  // Arriving with #id in the address lights that entry up.
+  if (location.hash.length > 1) {
+    const t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (t && t.classList.contains("item")) setTimeout(() => { t.scrollIntoView({ block: "center" }); flash(t); }, 300);
+  }
+
+  /* ── Keyboard: hold ⌘ or Ctrl to show codes on everything you can use ───── */
+  // Type a code to click it, Shift and the code to focus it, a number to jump to
+  // a section, the arrow keys (or J and K) to move between sections, Esc to close.
+  const kb = $(".kb"), kbLayer = kb && $(".kb-layer", kb);
+  const ALPHA = "asdfghlqweruiopzxcvbnmty";
+  let kbOn = false, kbTyped = "", kbTargets = [], holdKey = null, holdTimer = 0, kbRedraw = 0;
+  const typing = () => { const a = document.activeElement; return a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) && !a.readOnly; };
+  const visibleSecs = () => $$("#main > .sec:not([hidden])");
+  const usable = (el) => {
+    if (el.closest("[hidden], [inert], .kb") || el.disabled || el.tabIndex < 0) return false;
+    const r = el.getBoundingClientRect();
+    // Entries tucked under the top bar are out of sight; the bar's own controls are not.
+    const inBar = !!el.closest(".topbar"), barB = !inBar && bar && !d.classList.contains("unpinned") ? bar.getBoundingClientRect().bottom : 0;
+    if (!r.width || !r.height || r.bottom < barB + 4 || r.top > innerHeight - 8 || r.right < 0 || r.left > innerWidth) return false;
+    const cs = getComputedStyle(el);
+    return cs.visibility !== "hidden" && +cs.opacity > 0.05;
+  };
+  const codesFor = (n) => {
+    if (n <= ALPHA.length) return ALPHA.slice(0, n).split("");
+    const out = [];
+    for (const a of ALPHA) for (const b of ALPHA) { out.push(a + b); if (out.length === n) return out; }
+    return out;
+  };
+  function drawKb() {
+    if (!kbOn) return;
+    kbTyped = "";
+    const els = $$('a[href], button, input:not(.hp):not([type="hidden"]), textarea, [tabindex="0"]').filter(usable);
+    const codes = codesFor(els.length);
+    kbTargets = els.map((el, i) => ({ el, code: codes[i] }));
+    const frag = document.createDocumentFragment();
+    kbTargets.forEach((t) => {
+      const r = t.el.getBoundingClientRect(), h = document.createElement("span");
+      h.className = "kb-hint"; h.textContent = t.code; h.style.left = `${Math.max(4, r.left)}px`; h.style.top = `${Math.max(4, r.top)}px`;
+      t.hint = h; frag.append(h);
+    });
+    visibleSecs().forEach((sec, i) => {
+      if (i > 9) return;
+      const head = $(".sec-label", sec); if (!head) return;
+      const r = head.getBoundingClientRect(); if (r.bottom < 56 || r.top > innerHeight) return;
+      const h = document.createElement("span");
+      h.className = "kb-hint kb-sec"; h.dataset.c = sec.dataset.c || ""; h.textContent = String((i + 1) % 10);
+      h.style.left = `${Math.max(28, r.left)}px`; h.style.top = `${r.top}px`; frag.append(h);
+    });
+    kbLayer.replaceChildren(frag);
+  }
+  function openKb() { if (!kb || kbOn) return; kbOn = true; kb.hidden = false; drawKb(); play("open"); }
+  function closeKb() { if (!kbOn) return; kbOn = false; kb.hidden = true; kbLayer.replaceChildren(); kbTargets = []; kbTyped = ""; }
+  const jumpTo = (sec) => {
+    if (!sec) return;
+    const head = $(".sec-head", sec) || sec;
+    head.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    const label = $(".sec-label", sec); if (label) { label.tabIndex = -1; label.focus({ preventScroll: true }); }
+  };
+  const currentSec = () => { const secs = visibleSecs(); let cur = -1; secs.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * 0.35) cur = i; }); return cur; };
+  if (kb) {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Control" || e.key === "Meta") {
+        if (!e.repeat && !kbOn && !typing()) { holdKey = e.key; clearTimeout(holdTimer); holdTimer = setTimeout(() => { if (holdKey) openKb(); }, 320); }
+        return;
+      }
+      if (holdKey) { clearTimeout(holdTimer); holdKey = null; }
+      if (!kbOn) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) { closeKb(); return; } // a browser shortcut, not a code
+      const k = e.key;
+      if (k === "Escape") { e.preventDefault(); closeKb(); return; }
+      const secs = visibleSecs();
+      if (/^[0-9]$/.test(k)) { e.preventDefault(); jumpTo(secs[(+k + 9) % 10]); return; }
+      if (k === "ArrowDown" || k === "j" || k === "J") { e.preventDefault(); jumpTo(secs[Math.min(secs.length - 1, currentSec() + 1)]); return; }
+      if (k === "ArrowUp" || k === "k" || k === "K") { e.preventDefault(); jumpTo(secs[Math.max(0, currentSec() - (currentSec() >= 0 && secs[currentSec()].getBoundingClientRect().top > -40 ? 1 : 0))]); return; }
+      if (k === "Backspace") { e.preventDefault(); kbTyped = kbTyped.slice(0, -1); }
+      else if (/^[a-z]$/i.test(k)) { e.preventDefault(); kbTyped += k.toLowerCase(); }
+      else return;
+      const hit = kbTargets.filter((t) => t.code.startsWith(kbTyped));
+      if (!hit.length) { kbTyped = ""; }
+      kbTargets.forEach((t) => {
+        const on = !kbTyped || t.code.startsWith(kbTyped);
+        t.hint.classList.toggle("off", !on);
+        t.hint.innerHTML = on && kbTyped ? `<b>${kbTyped}</b>${t.code.slice(kbTyped.length)}` : t.code;
+      });
+      const exact = kbTargets.find((t) => t.code === kbTyped);
+      if (exact) {
+        const el = exact.el; closeKb();
+        el.focus({ preventScroll: true });
+        if (!e.shiftKey && !/^(INPUT|TEXTAREA)$/.test(el.tagName)) el.click();
+      }
+    }, true);
+    document.addEventListener("keyup", (e) => { if (e.key === holdKey) { clearTimeout(holdTimer); holdKey = null; } });
+    window.addEventListener("blur", () => { clearTimeout(holdTimer); holdKey = null; });
+    document.addEventListener("pointerdown", () => closeKb());
+    const redraw = () => { if (!kbOn) return; kbLayer.replaceChildren(); clearTimeout(kbRedraw); kbRedraw = setTimeout(drawKb, 160); };
+    window.addEventListener("scroll", redraw, { passive: true });
+    window.addEventListener("resize", redraw, { passive: true });
+  }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && backChip && !backChip.hidden && !kbOn) hideBack(); });
+
+  /* ── Analytics: Google Tag Manager, only after a yes ─────────────────────── */
+  // Nothing loads from Google and no cookie is set until someone agrees. The answer
+  // is remembered in this browser; "Cookie settings" in the footer asks again.
+  // Only the live site sends anything; previews and local copies never do.
+  (function () {
+    const GTM = d.dataset.gtm, HOST = d.dataset.gtmHost, box = $(".consent");
+    if (!GTM || !box) return;
+    const KEY = "analytics";
+    const choice = () => store.get(KEY);
+    let started = false;
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { window.dataLayer.push(arguments); }
+    function start() {
+      if (started) { gtag("consent", "update", { analytics_storage: "granted" }); return; }
+      started = true;
+      gtag("consent", "default", { analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
+      gtag("js", new Date());
+      window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+      if (location.hostname !== HOST && location.hostname !== `www.${HOST}`) return;
+      const tag = document.createElement("script");
+      tag.async = true; tag.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM)}`;
+      document.head.appendChild(tag);
+    }
+    function stop() {
+      if (started) gtag("consent", "update", { analytics_storage: "denied" });
+      document.cookie.split(";").forEach((c) => {
+        const name = c.split("=")[0].trim();
+        if (!/^_g(a|id|at)/.test(name)) return;
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=${location.hostname}`;
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=.${location.hostname.replace(/^www\./, "")}`;
+        document.cookie = `${name}=; Max-Age=0; path=/`;
+      });
+    }
+    // A handful of crumbs from the button that said yes.
+    function crumbs(from) {
+      if (reduced || !from) return;
+      const r = from.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      for (let i = 0; i < 12; i++) {
+        const c = document.createElement("i"); c.className = "crumb";
+        c.style.left = `${cx}px`; c.style.top = `${cy}px`; document.body.appendChild(c);
+        const a = Math.random() * Math.PI * 2, dist = 30 + Math.random() * 50;
+        c.animate([{ transform: "translate(-50%,-50%) rotate(0)", opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * dist}px), calc(-50% + ${Math.sin(a) * dist + 24}px)) rotate(${Math.random() * 360}deg)`, opacity: 0 }], { duration: 600 + Math.random() * 300, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => c.remove();
+      }
+    }
+    let returnTo = null;
+    function ask(from) {
+      returnTo = from || null;
+      box.hidden = false; d.classList.add("consent-open");
+      if (from) $("[data-consent=yes]", box).focus();
+    }
+    function done(v, btn) {
+      store.set(KEY, v);
+      if (v === "yes") { play("cookie"); crumbs(btn); }
+      box.hidden = true; d.classList.remove("consent-open");
+      if (v === "yes") start(); else stop();
+      toast(v === "yes" ? "Thanks. Analytics on" : "No cookies. Analytics off");
+      if (returnTo && returnTo.isConnected) returnTo.focus({ preventScroll: true });
+    }
+    box.addEventListener("click", (e) => { const b = e.target.closest("[data-consent]"); if (b) done(b.dataset.consent, b); });
+    $$("[data-cookie-settings]").forEach((b) => b.addEventListener("click", () => ask(b)));
+    if (choice() === "yes") start();
+    else if (choice() === null) setTimeout(() => ask(), 900);
+  })();
 
   /* ── Image viewer for entries with several pictures ─────────────────────── */
   const lb = $(".lightbox");
@@ -599,11 +830,4 @@
   }
   window.addEventListener("scroll", () => { if (menuFor) placeMenu(); placeDd(); }, { passive: true });
 
-  /* ── Icon fallback: if the icon font never loads, show text labels ──────── */
-  window.addEventListener("load", () => setTimeout(() => {
-    const i = $("i.fa-solid, i.fa-duotone");
-    if (!i) return;
-    const st = getComputedStyle(i, "::before").content;
-    if (!st || st === "none" || st === "normal" || st === '""') d.classList.add("no-fa");
-  }, 2500));
 })();

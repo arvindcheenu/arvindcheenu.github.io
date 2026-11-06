@@ -15,7 +15,10 @@ All content lives in **`src/_data/site.yaml`**: intro, biographies, news, public
 - BibTeX is generated from each publication's fields. `bibtex: false` hides the button.
 - `image:` adds one picture to a news item, publication or project. `images:` (a list of `src`, `alt`, `caption`) adds a strip of pictures that open full size; the Attention-Aware Visualization entry has an example.
 - Grant `amount`s written with a currency code or symbol (`20,000 DKK`, `US$400`) get a live conversion in brackets. `currency_default` and `currencies` set the default and the choices.
-- `sections` sets each section's heading and icon.
+- `sections` sets each section's heading, icon and colour. Links inside a section take its colour; a link to an entry in another section takes that section's colour.
+- Link to another entry on the page with `[text](#id)` or `ref: id`, so only an entry's own page leads outside (a talk links to its paper here; the paper links to its DOI). Links that leave the page get an external-link icon automatically.
+- `venues` describes each publication venue for readers outside the field and holds acceptance rates by year; a paper uses the rate for its own year.
+- Citation counts come from Semantic Scholar on every build, and the site rebuilds daily (`schedule` in the deploy workflow). `src/_data/citations.js` keeps a snapshot for builds without network.
 - Dated sections (news, experience, education, teaching, talks, service, grants, awards, publications) are sorted newest first on the page, whatever order they have in the file.
 - Teaching entries take `lead` for the person who runs the course.
 - Empty fields are skipped, so a half-filled entry never shows a placeholder.
@@ -26,7 +29,8 @@ Look and feel:
 
 | What | Where |
 | --- | --- |
-| Font Awesome Pro kit | `fontawesome_kit` in `site.yaml` (blank uses Font Awesome Free) |
+| Icons | Font Awesome Free, built into the page at build time; only the icons used are included |
+| Analytics | `analytics.gtm` in `site.yaml` (Google Tag Manager, loaded only after a visitor agrees) |
 | Default sound | `sound_default` in `site.yaml` |
 | Colours (links, awards, availability), type scale and layout | `src/_includes/site.css`, tokens at the top |
 | Behaviour (views, switches, currency, form, viewer) | `src/_includes/site.js` |
@@ -42,6 +46,9 @@ CSS and JS are inlined into the page at build time, so the site ships as one HTM
 - Grant amounts convert live into the visitor's currency (European Central Bank rates via frankfurter.dev).
 - The top bar hides while reading down and returns on the way up; floating email and back-to-top buttons appear on the way up.
 - QR code of any link on hover, for opening it on a phone.
+- Hold ⌘ or Ctrl: every visible link and button gets a short code to type; numbers jump to sections, arrow keys move between them.
+- Links to other entries scroll there, light the entry up and offer a way back.
+- Google Analytics only after a yes in the cookie question; "Cookie settings" in the footer changes the answer.
 - Contact form laid out as an email, with a recipient menu, a spam honeypot and a mail-app fallback.
 - Light, dark or system theme; synthesized button sounds with a mute toggle. Choices are remembered per visitor.
 
@@ -55,4 +62,4 @@ npm run build      # writes _site/
 
 `src/accrete/` and `src/chimistry/` are standalone apps copied through untouched.
 
-qrcode-generator is © Kazuhiko Arase, MIT. Exchange rates: European Central Bank via frankfurter.dev.
+Icons: Font Awesome Free (CC BY 4.0). qrcode-generator is © Kazuhiko Arase, MIT. Citations: Semantic Scholar. Exchange rates: European Central Bank via frankfurter.dev.

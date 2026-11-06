@@ -12,7 +12,9 @@
   "author": "Arvind Srinivasan",
   "license": "MIT",
   "devDependencies": {
-    "@11ty/eleventy": "^3.1.2"
+    "@11ty/eleventy": "^3.1.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",

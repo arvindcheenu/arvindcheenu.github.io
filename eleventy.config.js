@@ -1,9 +1,41 @@
 import fs from "node:fs";
 import yaml from "js-yaml";
 import markdownIt from "markdown-it";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { fab } from "@fortawesome/free-brands-svg-icons";
 
 const md = markdownIt({ html: true, typographer: true });
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+// Icons are Font Awesome Free paths built into the page as one SVG sprite that
+// holds only the icons the page uses; each icon is a <use> of its symbol.
+const usedIcons = new Map();
+const pascal = (n) => "fa" + String(n).split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join("");
+function svgIcon(name, brand = false, cls = "") {
+  const key = `${brand ? "b" : "s"}-${name}`;
+  let def = usedIcons.get(key);
+  if (!def) {
+    const fa = (brand ? fab : fas)[pascal(name)] || fas[pascal(name)] || fab[pascal(name)];
+    if (!fa) throw new Error(`Unknown icon "${name}"`);
+    const [w, h, , , d] = fa.icon;
+    def = { id: `i-${key}`, w, h, d: Array.isArray(d) ? d : [d] };
+    usedIcons.set(key, def);
+  }
+  return `<svg class="ic${cls ? " " + cls : ""}" viewBox="0 0 ${def.w} ${def.h}" aria-hidden="true" focusable="false"><use href="#${def.id}"/></svg>`;
+}
+const sprite = () =>
+  `<svg class="sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">${[...usedIcons.values()]
+    .map((i) => `<symbol id="${i.id}" viewBox="0 0 ${i.w} ${i.h}">${i.d.map((d) => `<path fill="currentColor" d="${d}"/>`).join("")}</symbol>`)
+    .join("")}</svg>`;
+
+const slug = (t) => String(t ?? "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+// The id an entry answers to: its own `id`, award-<ref> for awards, or prefix-<name>.
+function entryId(e, prefix) {
+  if (!e) return "";
+  if (e.id) return e.id;
+  if (prefix === "award" && e.ref) return `award-${e.ref}`;
+  return `${prefix}-${slug(e.name || e.title || e.role || e.degree || e.venue || "")}`;
+}
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const MODES = ["research", "industry"];
 
@@ -61,7 +93,7 @@ function authorList(list = [], self, equal = []) {
 }
 
 // One publication as a citation: authors. year. title. venue details. award. doi.
-function cite(p, self) {
+function cite(p, self, refs) {
   const md1 = (x) => md.renderInline(String(x));
   const url = titleUrl(p);
   const title = url ? `<a class="ct" href="${esc(url)}">${esc(p.title)}</a>` : `<span class="ct">${esc(p.title)}</span>`;
@@ -78,7 +110,7 @@ function cite(p, self) {
   else if (p.kind === "thesis") where = `${venue}.`;
   else where = `In <i>${venue}</i>${proc}${p.pages ? `, ${esc(p.pages)}` : ""}.`;
   const status = p.status === "to-appear" ? " To appear." : "";
-  const award = p.award ? ` ${awardBadge(p.award)}` : "";
+  const award = p.award ? ` ${awardBadge(p.award, awardHref(p, refs))}` : "";
   let id = "";
   if (p.doi) id = ` <a class="cid" href="https://doi.org/${esc(p.doi)}">doi:${esc(p.doi)}</a>`;
   else if (p.links?.arxiv) id = ` <a class="cid" href="${esc(p.links.arxiv)}">arXiv:${esc(p.links.arxiv.replace(/.*\/abs\//, ""))}</a>`;
@@ -127,18 +159,20 @@ function pubRows(pubs = [], groups = []) {
 }
 
 // The publication as industry readers scan it: venue, year and award on one line.
-function venueLine(p) {
+function venueLine(p, refs) {
   const bits = [esc(p.venue || p.venue_long || "")];
   if (p.status === "under-review") bits[0] = `Submitted to ${bits[0]}`;
   else if (!String(p.venue || "").includes(String(p.year))) bits.push(esc(p.year));
   if (p.status === "to-appear") bits.push("To appear");
-  if (p.award) bits.push(awardBadge(p.award));
+  if (p.award) bits.push(awardBadge(p.award, awardHref(p, refs)));
   return bits.filter(Boolean).join('<span class="sep">·</span>');
 }
 
-function awardBadge(text) {
-  return `<span class="award"><i class="fa-solid fa-trophy" aria-hidden="true"></i>${esc(text)}</span>`;
+function awardBadge(text, href) {
+  const inner = `${svgIcon("trophy")}${esc(text)}`;
+  return href ? `<a class="award" href="${href}">${inner}</a>` : `<span class="award">${inner}</span>`;
 }
+const awardHref = (p, refs) => ((refs || []).includes(p.id) ? `#award-${p.id}` : "");
 
 // A sort key from whatever dates an entry carries: "2026-11", "Spring 2025",
 // "2024 — 2026", "ACM CHI 2027", end: present. Later is larger.
@@ -215,6 +249,18 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("posIn", (order, key) => (order || []).indexOf(key) + 1);
   // "arvind@cheenu.net" → "arvind [at] cheenu.net"
   eleventyConfig.addFilter("newestFirst", newestFirst);
+  // The acceptance rate for the year a paper appeared at its venue.
+  eleventyConfig.addFilter("rateFor", (p, venues) => {
+    if (p.rate) return { rate: p.rate, year: "" };
+    const v = venues && p.venue_key ? venues[p.venue_key] : null;
+    const year = (String(p.proc || p.venue || "").match(/\b(19|20)\d{2}\b/) || [String(p.year)])[0];
+    const rate = v && v.rates ? v.rates[year] : "";
+    return rate ? { rate, year } : null;
+  });
+  eleventyConfig.addFilter("svgIcon", svgIcon);
+  eleventyConfig.addFilter("entryId", entryId);
+  eleventyConfig.addFilter("pluck", (list = [], key) => list.map((e) => e && e[key]).filter(Boolean));
+  eleventyConfig.addFilter("ymd", (v) => { const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${+m[3]} ${MONTHS[+m[2] - 1]} ${m[1]}` : String(v); });
   eleventyConfig.addFilter("keys", (o) => Object.keys(o || {}));
   eleventyConfig.addFilter("atSign", (e) => String(e).replace("@", " [at] "));
   eleventyConfig.addFilter("paras", (s) => String(s ?? "").trim().split(/\n\s*\n/).map((x) => x.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean));
@@ -233,6 +279,28 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("sameAs", (links = []) => JSON.stringify(links.map((l) => l.url).filter((u) => /^https?:/.test(u))));
   eleventyConfig.addFilter("year4", (v) => (String(v).match(/\b(19|20)\d{2}\b/) || [""])[0]);
   eleventyConfig.addFilter("noYear", (v) => String(v).replace(/\s*\b(19|20)\d{2}\b\s*/, " ").trim());
+  eleventyConfig.on("eleventy.before", () => usedIcons.clear());
+
+  // Last pass over the page:
+  // 1. every link to the web gets an external-link icon (email links do not);
+  // 2. a link to an entry on the page takes the colour of the section it points into;
+  // 3. the icon sprite goes in, holding only the icons used.
+  eleventyConfig.addTransform("links-and-icons", function (html) {
+    if (!String(this.page?.outputPath || "").endsWith(".html")) return html;
+    const ext = svgIcon("arrow-up-right-from-square", false, "ext");
+    html = html.replace(/<a\b([^>]*\shref="https?:[^"]*"[^>]*)>([\s\S]*?)<\/a>/g, (all, attrs, inner) =>
+      /class="[^"]*\b(btn|no-ext)\b/.test(attrs) ? all : `<a${attrs}>${inner}${ext}</a>`);
+    const colourOf = {};
+    for (const m of html.matchAll(/<section\b[^>]*?\sid="([^"]+)"[^>]*?\sdata-c="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g)) {
+      const [, sid, c, body] = m;
+      colourOf[sid] = c;
+      for (const x of body.matchAll(/\sid="([^"]+)"/g)) if (!colourOf[x[1]]) colourOf[x[1]] = c;
+    }
+    html = html.replace(/<a\b([^>]*?)\shref="#([^"]+)"([^>]*)>/g, (all, pre, id, post) =>
+      /\sdata-c=/.test(pre + post) || !colourOf[id] ? all : `<a${pre} href="#${id}"${post} data-c="${colourOf[id]}">`);
+    return html.replace("<body>", `<body>\n${sprite()}`);
+  });
+
   eleventyConfig.addShortcode("buildDate", () => {
     const d = new Date();
     return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;

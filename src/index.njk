@@ -7,10 +7,11 @@ permalink: /index.html
 {%- set dv = s.tailor.default or "research" -%}
 {%- set cur = s.currency_default or "EUR" -%}
 {%- set bioR = s.bio.research or s.bio -%}
+{%- set awardRefs = s.awards | pluck("ref") -%}
 {%- set projectKinds = { library: "Library", tool: "Tool", research: "Research", game: "Game", infrastructure: "Infrastructure" } -%}
 {%- set actLabels = { pdf: "PDF", doi: "DOI", arxiv: "arXiv", code: "Code", video: "Video", blog: "Blog", supplement: "Supplement", poster: "Poster", web: "Project page", proquest: "ProQuest" } -%}
 {%- set actIcons = { pdf: "file-pdf", doi: "link", arxiv: "file-lines", code: "code", video: "circle-play", blog: "pen-nib", supplement: "folder-open", poster: "image", web: "globe", proquest: "book" } -%}
-{%- macro icon(name, brand=false, cls="") -%}<i class="{% if brand %}fa-brands{% elif site.fontawesome_kit %}fa-duotone fa-solid{% else %}fa-solid{% endif %} fa-{{ name }}{% if cls %} {{ cls }}{% endif %}" aria-hidden="true"></i>{%- endmacro -%}
+{%- macro icon(name, brand=false, cls="") -%}{{ name | svgIcon(brand, cls) | safe }}{%- endmacro -%}
 {%- macro edge(pos) -%}<div class="edge {{ pos }}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><b></b></div>{%- endmacro -%}
 {%- macro perView(field) -%}{% for k, v in views %}<span data-only="{{ k }}">{{ v[field] }}</span>{% endfor %}{%- endmacro -%}
 {%- macro head(key, sec, note="") -%}
@@ -23,7 +24,7 @@ permalink: /index.html
     </div>
 {%- endmacro -%}
 <!doctype html>
-<html lang="en" class="at-top" data-tailor="{{ dv }}" data-default-tailor="{{ dv }}" data-sound="{{ 'on' if (s.sound_default | isOn) else 'off' }}" data-currency="{{ cur }}" data-base="{{ s.url }}" data-tz="{{ s.timezone }}">
+<html lang="en" class="at-top" data-tailor="{{ dv }}" data-default-tailor="{{ dv }}" data-sound="{{ 'on' if (s.sound_default | isOn) else 'off' }}" data-currency="{{ cur }}" data-base="{{ s.url }}" data-tz="{{ s.timezone }}"{% if s.analytics and s.analytics.gtm %} data-gtm="{{ s.analytics.gtm }}" data-gtm-host="{{ s.analytics.host }}"{% endif %}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -55,11 +56,11 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
 <style>
 {% inline "site.css" %}
 </style>
-{%- if s.fontawesome_kit %}
-<script src="https://kit.fontawesome.com/{{ s.fontawesome_kit }}.js" crossorigin="anonymous" async></script>
-{%- else %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" media="print" onload="this.media='all'" crossorigin="anonymous" referrerpolicy="no-referrer">
-{%- endif %}
+{%- if s.photo %}
+<link rel="preload" as="image" href="{{ s.photo }}" fetchpriority="high">{% endif %}
+{%- if s.avatar %}
+<link rel="preload" as="image" href="{{ s.avatar }}">{% endif %}
+<script src="assets/vendor/qrcode.min.js" defer></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":{{ s.name | json | safe }},"url":{{ s.url | json | safe }},"email":{{ ("mailto:" + s.email) | json | safe }},"jobTitle":{{ s.role | json | safe }},"affiliation":{"@type":"CollegeOrUniversity","name":"Aarhus University"},"address":{"@type":"PostalAddress","addressLocality":"Aarhus","addressCountry":"DK"},"sameAs":{{ s.links | sameAs | safe }}}
 </script>
@@ -73,7 +74,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
   <div class="wrap bar">
     <a class="brand" href="#top" aria-label="{{ s.name }}, back to top">
       {%- if s.avatar or s.photo %}<img class="mono" src="{{ s.avatar or s.photo }}" alt="" width="32" height="32" decoding="async">{% else %}<span class="mono" aria-hidden="true">{{ s.short }}</span>{% endif -%}
-      <span class="brand-name">{{ s.name }}</span>
+      {%- set nparts = s.name.split(" ") -%}<span class="brand-name"><span class="bn-first">{{ nparts[0] }}</span>{% if nparts.length > 1 %}<span class="bn-rest"> {{ nparts.slice(1).join(" ") }}</span>{% endif %}</span>
     </a>
     <div class="controls">
       <div class="seg tailor" role="radiogroup" aria-label="Tailor this page for">
@@ -81,8 +82,8 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         <button type="button" class="seg-b tac" role="radio" aria-checked="{{ 'true' if k == dv else 'false' }}" data-set-tailor="{{ k }}" data-sfx="none" title="Tailor for {{ v.label | lower }}">{{ icon(v.icon) }}<span class="seg-l">{{ v.label }}</span></button>
         {%- endfor %}
       </div>
-      <button type="button" class="btn icon tac" data-action="sound" data-sfx="none" aria-label="Sound effects" title="Sound effects">{{ icon("volume-high", false, "i-on") }}{{ icon("volume-xmark", false, "i-off") }}<span class="fb">Sound</span></button>
-      <button type="button" class="btn icon tac" data-action="theme" aria-label="Colour theme: system" title="Colour theme">{{ icon("circle-half-stroke", false, "i-system") }}{{ icon("sun", false, "i-light") }}{{ icon("moon", false, "i-dark") }}<span class="fb">Theme</span></button>
+      <button type="button" class="btn icon tac" data-action="sound" data-sfx="none" aria-label="Sound effects" title="Sound effects">{{ icon("volume-high", false, "i-on") }}{{ icon("volume-xmark", false, "i-off") }}</button>
+      <button type="button" class="btn icon tac" data-action="theme" aria-label="Colour theme: system" title="Colour theme">{{ icon("circle-half-stroke", false, "i-system") }}{{ icon("sun", false, "i-light") }}{{ icon("moon", false, "i-dark") }}</button>
       <button type="button" class="btn tac cv-btn" data-action="print" title="Save as PDF">{{ icon("file-arrow-down") }}<span class="cv-l">{{ perView("cv") }}</span></button>
     </div>
   </div>
@@ -134,7 +135,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
   {%- for key in s.tailor | sectionKeys %}
   {%- set sec = s.sections[key] or { title: key } %}
   {%- if s[key] and (s[key].length or key == "biography") %}
-  <section class="sec" id="{{ key }}" aria-labelledby="h-{{ key }}"{% for k, v in views %} data-o-{{ k }}="{{ v.order | posIn(key) }}"{% endfor %}{% if (views[dv].order | posIn(key)) == 0 %} hidden{% endif %}>
+  <section class="sec" id="{{ key }}" data-c="{{ sec.color or 'blue' }}" aria-labelledby="h-{{ key }}"{% for k, v in views %} data-o-{{ k }}="{{ v.order | posIn(key) }}"{% endfor %}{% if (views[dv].order | posIn(key)) == 0 %} hidden{% endif %}>
     {%- if key == "biography" %}
     {%- call head(key, sec) %}
       <div class="sec-ctl no-print">
@@ -149,7 +150,9 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </div>
     {%- endcall %}
     {%- elif key == "publications" %}
-    {%- call head(key, sec, "† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
+    {%- set pnote = ("† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
+    {%- if citations.total %}{% set pnote = pnote + (" · " if pnote else "") + (citations.total | string) + " citations on Semantic Scholar, " + (citations.date | ymd) %}{% endif %}
+    {%- call head(key, sec, pnote) %}
       <div class="sec-ctl no-print">
         <div class="seg sm" role="radiogroup" aria-label="List publications by">
           <button type="button" class="seg-b tac" role="radio" aria-checked="true" data-pubsort="year">{{ icon("calendar") }}<span>Year</span></button>
@@ -182,8 +185,8 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       <article class="item rv{% if loop.index > s.news_visible %} fold{% endif %}">
         <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time></div>
         <div class="what">
-          <div class="main"><p class="text">{{ n.text | md | safe }}{% if n.link %} <a class="more" href="{{ n.link }}" aria-label="Read more">↗</a>{% endif %}</p></div>
-          {%- if n.image %}<img class="thumb" src="{{ n.image }}" alt="{{ n.image_alt or '' }}" loading="lazy" decoding="async">{% endif %}
+          <div class="main"><p class="text">{{ n.text | md | safe }}{% if n.link %} <a href="{{ n.link }}">More</a>{% endif %}</p></div>
+          {%- if n.image %}<img class="thumb" src="{{ n.image }}" alt="{{ n.image_alt or '' }}" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
@@ -201,28 +204,34 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         <div class="when pn" title="{{ r.group }}">{% if r.label %}{{ r.label }}{% else %}{{ icon(r.icon or "file") }}<span class="sr">{{ r.group }}</span>{% endif %}</div>
         <div class="what">
           <div class="main">
-            <p class="text cite-r" data-only="research">{{ p | cite(s.name) | safe }}</p>
+            <p class="text cite-r" data-only="research">{{ p | cite(s.name, awardRefs) | safe }}</p>
             {%- set u = p | titleUrl %}
             <div class="cite-i" data-only="industry">
               <h4 class="t">{% if u %}<a href="{{ u }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h4>
-              <p class="venue">{{ p | venueLine | safe }}</p>
+              <p class="venue">{{ p | venueLine(awardRefs) | safe }}</p>
               <p class="sub">{{ p.authors | authorList(s.name, p.equal) | safe }}</p>
             </div>
+            {%- set vn = s.venues[p.venue_key] if (s.venues and p.venue_key) else null %}
+            {%- set rt = p | rateFor(s.venues) %}
+            {%- if (vn and vn.about) or rt %}
+            <p class="vnote">{% if vn and vn.about %}<span class="vabout">{{ vn.about }}</span>{% endif %}{% if rt %} <span class="vrate">Acceptance rate {{ rt.rate }}{% if rt.year %} in {{ rt.year }}{% endif %}.</span>{% endif %}</p>
+            {%- endif %}
             {%- if p.images %}
             <div class="gallery no-print" data-gallery role="list" aria-label="Images for {{ p.title }}">
               {%- for im in p.images %}
-              <button type="button" class="g-item" role="listitem" data-src="{{ im.src }}" data-cap="{{ im.caption or im.alt }}" aria-label="View image {{ loop.index }} of {{ p.images.length }}{% if im.alt %}: {{ im.alt }}{% endif %}"><img src="{{ im.src }}" alt="" loading="lazy" decoding="async"></button>
+              <button type="button" class="g-item" role="listitem" data-src="{{ im.src }}" data-cap="{{ im.caption or im.alt }}" aria-label="View image {{ loop.index }} of {{ p.images.length }}{% if im.alt %}: {{ im.alt }}{% endif %}"><img src="{{ im.src }}" alt="" decoding="async" fetchpriority="low"></button>
               {%- endfor %}
             </div>
             {%- endif %}
             {%- if p.links or p.bibtex !== false %}
             <p class="acts no-print">
               {%- for k, l in p.links %}<a class="tl" href="{{ l }}">{{ icon(actIcons[k] or "link") }}{{ actLabels[k] or k }}</a>{% endfor %}
+              {%- if citations.counts[p.id] !== undefined %}<a class="tl cites" href="{{ citations.links[p.id] or ('https://www.semanticscholar.org/search?q=' + (p.title | urlencode)) }}" title="Citations on Semantic Scholar, {{ citations.date }}">{{ icon("quote-left") }}{{ citations.counts[p.id] }} citation{% if citations.counts[p.id] != 1 %}s{% endif %}</a>{% endif %}
               {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">{{ icon("quote-right") }}BibTeX</button>{% endif %}
             </p>
             {%- endif %}
           </div>
-          {%- if p.image and not p.images %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
+          {%- if p.image and not p.images %}<img class="thumb" src="{{ p.image }}" alt="" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
@@ -230,7 +239,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     {%- elif key == "projects" %}
       {%- for p in s.projects %}
       {%- set purl = (p.links.web if p.links else "") or (p.links.code if p.links else "") -%}
-      <article class="item rv">
+      <article class="item rv" id="{{ p | entryId('project') }}">
         <div class="when">{{ projectKinds[p.kind] or p.kind }}</div>
         <div class="what">
           <div class="main">
@@ -239,14 +248,14 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
             {%- if p.tech %}<p class="tech">{{ p.tech | join(" · ") }}</p>{% endif %}
             {%- if p.links %}<p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{% if k == "code" and "github.com" in u %}{{ icon("github", true) }}{% else %}{{ icon(actIcons[k] or "link") }}{% endif %}{{ "Live" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>{% endif %}
           </div>
-          {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
+          {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" decoding="async">{% endif %}
         </div>
       </article>
       {%- endfor %}
 
     {%- elif key == "experience" %}
       {%- for e in s.experience | newestFirst %}
-      <article class="item rv">
+      <article class="item rv" id="{{ e | entryId('experience') }}">
         <div class="when">{{ e | period }}</div>
         <div class="what"><div class="main">
           <h3 class="t">{{ e.role }}</h3>
@@ -260,7 +269,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
 
     {%- elif key == "teaching" %}
       {%- for t in s.teaching | newestFirst %}
-      <article class="item rv">
+      <article class="item rv" id="{{ t | entryId('teaching') }}">
         <div class="when">{{ t.when }}</div>
         <div class="what"><div class="main"><h3 class="t">{{ t.role }}</h3><p class="sub">{{ t.org }}{% if t.lead %}<span class="sep">·</span>Course led by {{ t.lead }}{% endif %}</p>{% if t.detail %}<p class="text">{{ t.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
@@ -268,15 +277,15 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
 
     {%- elif key == "talks" %}
       {%- for t in s.talks | newestFirst %}
-      <article class="item rv">
+      <article class="item rv" id="{{ t | entryId('talk') }}">
         <div class="when">{{ t.date | ym }}</div>
-        <div class="what"><div class="main"><h3 class="t">{% if t.link %}<a href="{{ t.link }}">{{ t.title }}</a>{% else %}{{ t.title }}{% endif %}</h3><p class="sub">{{ t.event }}</p></div></div>
+        <div class="what"><div class="main"><h3 class="t">{% if t.ref %}<a href="#{{ t.ref }}">{{ t.title }}</a>{% elif t.link %}<a href="{{ t.link }}">{{ t.title }}</a>{% else %}{{ t.title }}{% endif %}</h3><p class="sub">{{ t.event }}</p></div></div>
       </article>
       {%- endfor %}
 
     {%- elif key == "service" %}
       {%- for r in s.service | newestFirst %}
-      <article class="item rv">
+      <article class="item rv" id="{{ r | entryId('service') }}">
         {%- if r.reviews %}
         <div class="when">{{ r.venue | year4 }}</div>
         <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="award">{{ icon("medal") }}{{ r.note }}</span>{% endif %}</p></div></div>
@@ -290,7 +299,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     {%- elif key == "grants" %}
       {%- for g in s.grants | newestFirst %}
       {%- set m = g.amount | money %}
-      <article class="item rv">
+      <article class="item rv" id="{{ g | entryId('grant') }}">
         <div class="when">{{ g.year }}</div>
         <div class="what"><div class="main">
           <h3 class="t">{{ g.title }}</h3>
@@ -307,17 +316,25 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
 
     {%- elif key == "awards" %}
       {%- for a in s.awards | newestFirst %}
-      <article class="item rv">
+      <article class="item rv" id="{{ a | entryId('award') }}">
         <div class="when">{{ a.year }}</div>
-        <div class="what"><div class="main"><h3 class="t award-t">{{ icon("trophy") }}<span>{{ a.title }}</span></h3><p class="sub">{{ a.by }}</p>{% if a.for %}<p class="sub">For {% if a.link %}<a href="{{ a.link }}">{{ a.for }}</a>{% else %}{{ a.for }}{% endif %}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><h3 class="t">{{ a.title }}</h3><p class="sub">{{ a.by }}</p>{% if a.for %}<p class="sub">For {% if a.ref %}<a href="#{{ a.ref }}">{{ a.for }}</a>{% elif a.link %}<a href="{{ a.link }}">{{ a.for }}</a>{% else %}{{ a.for }}{% endif %}</p>{% endif %}{% if a.detail %}<p class="text">{{ a.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 
     {%- elif key == "education" %}
       {%- for e in s.education | newestFirst %}
-      <article class="item rv">
+      <article class="item rv" id="{{ e | entryId('education') }}">
         <div class="when">{{ e | period }}</div>
         <div class="what"><div class="main"><h3 class="t">{{ e.degree }}</h3><p class="sub">{{ e.org }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>{% if e.detail %}<p class="text">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
+      </article>
+      {%- endfor %}
+
+    {%- elif key == "certifications" %}
+      {%- for c in s.certifications | newestFirst %}
+      <article class="item rv" id="{{ c | entryId('cert') }}">
+        <div class="when">{{ c.year }}</div>
+        <div class="what"><div class="main"><h3 class="t">{% if c.url %}<a href="{{ c.url }}">{{ c.title }}</a>{% else %}{{ c.title }}{% endif %}</h3><p class="sub">{{ c.by }}</p>{% if c.detail %}<p class="text">{{ c.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 
@@ -337,14 +354,14 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
 
   {%- set cf = s.contact_form or {} %}
   {%- set csec = s.sections.contact or { title: "Contact", icon: "envelope" } %}
-  <section class="sec contact no-print" id="contact" aria-labelledby="h-contact">
+  <section class="sec contact no-print" id="contact" data-c="{{ csec.color or 'blue' }}" aria-labelledby="h-contact">
     {{ head("contact", csec) }}
     <form class="mail rv" id="contact-form" novalidate data-endpoint="{{ cf.endpoint }}" data-subject="{{ cf.subject }}">
       <div class="mail-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="mail-title">New message</span></div>
       <div class="mail-row">
         <label class="mail-k" for="cf-to" id="cf-to-label">To</label>
         <div class="to-chip">
-          {%- if s.avatar or s.photo %}<img src="{{ s.avatar or s.photo }}" alt="" width="24" height="24" loading="lazy">{% endif %}
+          {%- if s.avatar or s.photo %}<img src="{{ s.avatar or s.photo }}" alt="" width="24" height="24">{% endif %}
           <select id="cf-to" name="to">
             {%- for r in cf.recipients or [{ label: "Email", email: s.email }] %}
             <option value="{{ r.email }}" data-key="{{ r.access_key }}" data-label="{{ r.label }}">{{ r.email }} · {{ r.label }}</option>
@@ -392,7 +409,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </ul>
       <p class="foot-col foot-muted">{{ s.footer | md | safe }}</p>
     </div>
-    <p class="foot-meta">© {% buildYear %} {{ s.name }}<span class="sep">·</span>Updated {% buildDate %}<span class="sep">·</span><span data-clock>&nbsp;</span></p>
+    <p class="foot-meta">© {% buildYear %} {{ s.name }}<span class="sep">·</span>Updated {% buildDate %}<span class="sep">·</span><span data-clock>&nbsp;</span>{% if s.analytics and s.analytics.gtm %}<span class="sep">·</span><button type="button" class="tl cookie-link" data-cookie-settings>Cookie settings</button>{% endif %}<span class="kb-note"><span class="sep">·</span>Hold <kbd>⌘</kbd> or <kbd>Ctrl</kbd> to move around by keyboard</span></p>
   </div>
 </footer>
 
@@ -416,6 +433,16 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
   <button type="button" class="btn icon tac lb-close" aria-label="Close">{{ icon("xmark") }}</button>
 </dialog>
 
+<div class="kb" aria-hidden="true" hidden><div class="kb-layer"></div><p class="kb-legend"><span><kbd>a</kbd>–<kbd>z</kbd> click</span><span><kbd>⇧</kbd> + code focus</span><span><kbd>1</kbd>–<kbd>9</kbd> section</span><span><kbd>↑</kbd><kbd>↓</kbd> previous, next</span><span><kbd>Esc</kbd> close</span></p></div>
+<button type="button" class="back-chip" hidden>{{ icon("arrow-left") }}<span>Back</span></button>
+{%- if s.analytics and s.analytics.gtm %}
+<section class="consent" aria-labelledby="consent-title" hidden>
+  <div class="consent-head">{{ icon("cookie-bite", false, "consent-ic") }}<h2 id="consent-title">Would you like some cookies?</h2></div>
+  <p>Just the Google Analytics kind. They show me how people find this site, and Google handles the data. No ads, and everything works the same if you say no. <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">How Google uses this<span class="sr"> (opens in a new tab)</span></a></p>
+  <div class="consent-row"><button type="button" class="btn tac primary" data-consent="yes">Yes, please</button><button type="button" class="btn tac" data-consent="no">No, thanks</button></div>
+</section>
+{%- endif %}
+<template id="ic-check">{{ icon("check", false, "chk") }}</template>
 <div class="qr-pop" aria-hidden="true"><div class="qr-code"></div><div class="qr-cap"></div></div>
 <div class="toast" role="status" aria-live="polite"></div>
 

@@ -5,6 +5,10 @@ on:
     branches:
       - main
   pull_request:
+  # Rebuild every day so citation counts and the exchange-rate fallback stay current.
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -38,7 +42,7 @@ jobs:
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
