@@ -329,7 +329,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
             <div class="map-ticks" aria-hidden="true">
               {%- set lastY = "" %}
               {%- for e in tm.events %}
-              <span class="tick" style="left:{{ (loop.index0 / (nEv - 1) * 100) | round(2) }}%" data-c="{{ kindColor[e.kind] }}"><i></i>{% if loop.first or tm.events[loop.index0 - 1].year != e.year %}<b>{{ e.year }}</b>{% endif %}</span>
+              <span class="tick" style="left:{{ (loop.index0 / (nEv - 1) * 100) | round(2) }}%" data-c="{{ kindColor[e.kind] }}"><i></i>{% if loop.first or tm.events[loop.index0 - 1].year != e.year %}<b><span class="yl">{{ e.year }}</span><span class="ys">’{{ ("" ~ e.year).slice(2) }}</span></b>{% endif %}</span>
               {%- endfor %}
             </div>
           </div>

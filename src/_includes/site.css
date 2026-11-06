@@ -472,7 +472,7 @@ a.award:hover{color:color-mix(in srgb,var(--c-amber) 78%,var(--fg))}
 .i-pause{display:none}
 .playing .i-play{display:none}
 .playing .i-pause{display:inline-block}
-.map-track{position:relative;padding-bottom:1.15rem}
+.map-track{position:relative;padding-bottom:1.15rem;container-type:inline-size}
 .map-range{-webkit-appearance:none;appearance:none;display:block;width:100%;height:1.5rem;margin:0;background:transparent;cursor:pointer;position:relative;z-index:1}
 .map-range::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--c-fuchsia) var(--p,100%),var(--line-2) var(--p,100%))}
 .map-range::-moz-range-track{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--c-fuchsia) var(--p,100%),var(--line-2) var(--p,100%))}
@@ -483,7 +483,11 @@ a.award:hover{color:color-mix(in srgb,var(--c-amber) 78%,var(--fg))}
 .map-ticks{position:absolute;left:.5625rem;right:.5625rem;top:0;height:100%;pointer-events:none}
 .tick{position:absolute;top:.5rem;transform:translateX(-50%)}
 .tick i{display:block;width:.5rem;height:.5rem;margin:0 auto;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--bg)}
-.tick b{position:absolute;top:1.15rem;left:50%;transform:translateX(-50%);font-size:var(--t-xs);font-weight:600;color:var(--muted)}
+.tick b{position:absolute;top:1.15rem;left:50%;transform:translateX(-50%);font-size:var(--t-xs);font-weight:600;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+/* A narrow slider shortens years to ’16; the script hides any label that
+   would still touch its neighbour, always keeping the latest year. */
+.tick .ys{display:none}
+@container (max-width:21rem){.tick .yl{display:none}.tick .ys{display:inline}.tick b{letter-spacing:-.01em}}
 .map-legend{grid-column:1/-1;list-style:none;display:flex;flex-wrap:wrap;gap:.25rem 1rem;font-size:var(--t-xs);color:var(--muted)}
 .map-legend li{display:inline-flex;align-items:center;gap:.35rem}
 .map-legend .ic{color:var(--c)}

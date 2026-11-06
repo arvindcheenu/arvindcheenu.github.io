@@ -879,6 +879,29 @@
     $$(".tick", mapEl).forEach((tk, i) => tk.addEventListener("click", () => { stop(); glide(i, 800); }));
     if ("ResizeObserver" in window) new ResizeObserver(queueRender).observe(view);
     render();
+
+    // Year labels under the slider never overlap: left to right, a label that
+    // would touch the last one shown is hidden; the latest year always shows.
+    const labels = $$(".tick b", mapEl);
+    const fitTicks = () => {
+      labels.forEach((l) => { l.style.visibility = ""; });
+      const shown = [];
+      labels.forEach((l) => {
+        const r = l.getBoundingClientRect(), prev = shown[shown.length - 1];
+        if (prev && r.left < prev.r.right + 3) l.style.visibility = "hidden"; else shown.push({ l, r });
+      });
+      const last = labels[labels.length - 1];
+      if (last && last.style.visibility === "hidden" && shown.length > 1) {
+        const lr = last.getBoundingClientRect();
+        while (shown.length > 1 && shown[shown.length - 1].r.right + 3 > lr.left) shown.pop().l.style.visibility = "hidden";
+        last.style.visibility = "";
+      }
+    };
+    if (labels.length) {
+      fitTicks();
+      if ("ResizeObserver" in window) new ResizeObserver(fitTicks).observe($(".map-track", mapEl));
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTicks);
+    }
   }
 
   /* ── Image strips: edge blur while there is more to scroll, arrow buttons ── */
