@@ -243,7 +243,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
               <p class="sub">{{ p.authors | authorList(s.name, p.equal) | safe }}</p>
             </div>
             {%- if p.images %}
-            <div class="gal no-print" data-gal>
+            <div class="gal no-print{% if p.images.length == 1 %} one{% endif %}" data-gal>
               <div class="g-view">
               <div class="gallery" role="group" aria-label="Images for {{ p.title }}">
                 {%- for im in p.images %}{% set dm = im.src | imgDims %}

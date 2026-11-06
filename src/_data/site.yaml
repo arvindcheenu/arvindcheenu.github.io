@@ -6,8 +6,8 @@
 #  • `image:` is optional on news, publications and projects. Put the file in
 #    src/assets/ and write `image: assets/name.webp`. Leave it out for none.
 #    Keep images small: about 640 px wide, WebP, under 80 KB.
-#  • `images:` (a list) shows a strip of pictures that open full size, as on the
-#    Attention-Aware Visualization publication below. Keep each under 1200 px.
+#  • `images:` (a list of `src`, `alt`, `caption`) shows a strip of pictures that
+#    open full size. A single picture fits the column. Keep each under 1200 px.
 #  • Dates are YYYY-MM (or YYYY). Use `end: present` for ongoing roles.
 #  • Empty values are skipped, so a half-filled entry never shows "[todo]".
 #  • A field written as { research: …, industry: … } shows the matching text
@@ -98,8 +98,9 @@ ring: "Open to work · From January 2027 · "   # text spinning round the portra
 bio:
   research:
     - "What people attend to shapes what they find, and in data analysis it disappears the moment it happens. I build systems that reflect attention back: where you have looked, what you passed over, where others looked before you. Seeing your own attention helps you manage it. Seeing someone else's lets you follow, question and build on their work without first sharing their expertise, which is what it takes to open analysis to anyone, anytime, anywhere."
-    - "My PhD at the [Center for Anytime Anywhere Analytics (CA³)](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), develops this as *attention-aware analytics*, on the web and in mixed reality, for the analyst at work, collaborators sharing a space, an observer reviewing the session afterwards and a reader who receives only the findings. Two of these systems are IEEE VIS papers in IEEE TVCG: [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision)."
-    - "The work spans ubiquitous analytics, collaborative immersive analytics, context-aware systems and human-centred AI. It began with my master's in HCI at the [University of Maryland](https://umd.edu/) with [Joel Chan](https://joelchan.me/), on helping people notice useful analogies, where two papers received Best Paper Honorable Mentions at ACM Creativity & Cognition. As AI systems take on more of the looking, the same questions reach them: what did they attend to, and what did they miss?"
+    - "My PhD at the [Center for Anytime Anywhere Analytics (CA³)](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), develops this as *attention-aware analytics* on the web and in mixed reality, following attention from the analyst at work to collaborators sharing a space, an observer reviewing the session afterwards and a reader who receives only the findings. The first two systems, [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision), appeared at IEEE VIS and in IEEE TVCG."
+    - "It began with my master's in HCI at the [University of Maryland](https://umd.edu/) with [Joel Chan](https://joelchan.me/), where I studied how people notice useful analogies; that work earned two Best Paper Honorable Mentions at ACM Creativity & Cognition. It now runs across ubiquitous analytics, collaborative immersive analytics, context-aware systems and human-centred AI."
+    - "As AI systems take on more of the looking for us, the same questions reach them: what did they attend to, and what did they miss? And with us humans in the loop, how would we know if they did? Making attention visible on both sides is how people keep their cognitive autonomy, deciding for themselves where to look, what to trust and what to conclude."
   industry:
     - "I build interfaces for working with data across screens, headsets and teams. My focus is making that work traceable: recording what people attend to as they analyse and putting it to use, for the person at the screen, for collaborators in the same mixed-reality space, and for whoever picks up the analysis next."
     - "As a PhD fellow at the [Center for Anytime Anywhere Analytics](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), I write these systems end to end for the web, Meta Quest 3 and HoloLens 2: gaze capture, per-mark visibility tracking, event-logged back ends and the views that replay them. I run the user studies that test them, and two of the systems are published in IEEE TVCG. I am now building [heed](#project-heed), an open-source toolkit that brings the same recording to any web page."
@@ -114,22 +115,27 @@ biography:
       third: >-
         Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
         advised by Niklas Elmqvist at the Center for Anytime Anywhere Analytics. He studies
-        attention in data analysis: what people look at shapes what they find, and tools
-        keep no record of it. His attention-aware systems, on the web and in mixed reality,
-        reflect that record back, helping analysts manage their own attention and letting
-        others follow, question and build on their work. Two are IEEE VIS papers in IEEE
-        TVCG. His earlier work at the University of Maryland, on helping people notice
-        useful analogies, received two Best Paper Honorable Mentions at ACM Creativity &
-        Cognition.
+        attention in data analysis: what people look at shapes what they find, yet
+        analytics tools keep no record of it. His attention-aware systems, on the web and in
+        mixed reality, reflect that record back, so analysts can manage their own attention
+        and others can follow, question and build on their work; the first two appeared at
+        IEEE VIS and in IEEE TVCG. The interest began at the University of Maryland, where
+        his work on how people notice useful analogies earned two Best Paper Honorable
+        Mentions at ACM Creativity & Cognition. He now brings the same questions to the AI
+        systems that do more of our looking: what did they attend to, what did they miss,
+        and how would the people relying on them know?
       first: >-
         I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
         Elmqvist at the Center for Anytime Anywhere Analytics. I study attention in data
-        analysis: what people look at shapes what they find, and tools keep no record of it.
-        My attention-aware systems, on the web and in mixed reality, reflect that record
-        back, helping analysts manage their own attention and letting others follow,
-        question and build on their work. Two are IEEE VIS papers in IEEE TVCG. My earlier
-        work at the University of Maryland, on helping people notice useful analogies,
-        received two Best Paper Honorable Mentions at ACM Creativity & Cognition.
+        analysis: what people look at shapes what they find, yet analytics tools keep no
+        record of it. My attention-aware systems, on the web and in mixed reality, reflect
+        that record back, so analysts can manage their own attention and others can follow,
+        question and build on their work; the first two appeared at IEEE VIS and in IEEE
+        TVCG. The interest began at the University of Maryland, where my work on how people
+        notice useful analogies earned two Best Paper Honorable Mentions at ACM Creativity &
+        Cognition. I now bring the same questions to the AI systems that do more of our
+        looking: what did they attend to, what did they miss, and how would the people
+        relying on them know?
     long:
       third: |
         Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University,
@@ -142,23 +148,26 @@ biography:
         anywhere.
 
         His thesis develops attention-aware analytics on the web, Meta Quest 3 and
-        HoloLens 2, for the analyst at work, collaborators sharing a mixed-reality space, an
-        observer reviewing the session afterwards and a reader who receives only the
-        findings. Two of these systems are IEEE VIS papers in IEEE TVCG, Attention-Aware
-        Visualization (2024) and HeedVision (2026), and others have appeared at workshops of
-        ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a visiting researcher
-        at VISUS, University of Stuttgart, with Michael Sedlmair, studying where musicians
-        look during band rehearsals.
+        HoloLens 2, following attention from the analyst at work to collaborators sharing a
+        mixed-reality space, an observer reviewing the session afterwards and a reader who
+        receives only the findings. The first two systems, Attention-Aware Visualization
+        (2024) and HeedVision (2026), appeared at IEEE VIS and in IEEE TVCG, and related work
+        has appeared at workshops of ACM CHI and ACM ETRA. As a visiting researcher at VISUS,
+        University of Stuttgart, with Michael Sedlmair from October 2025 to February 2026, he
+        studied where musicians look during band rehearsals.
 
-        His research spans ubiquitous analytics, collaborative immersive analytics,
-        context-aware systems and human-centred AI. It began with an MS in Human-Computer
-        Interaction at the University of Maryland, where he worked with Joel Chan on helping
-        people notice useful analogies, including early studies of large language models as
-        analogy generators; two of those papers received Best Paper Honorable Mentions at
-        ACM Creativity & Cognition. As AI systems take on more of the looking, he is asking
-        the same questions of them. He reviews for ACM CHI, IEEE VIS and ACM Creativity &
-        Cognition, and is a teaching assistant on the Data Visualization course at Aarhus
-        University.
+        The interest began with an MS in Human-Computer Interaction at the University of
+        Maryland, where he worked with Joel Chan on how people notice useful analogies,
+        including early studies of large language models as analogy generators; that work
+        earned Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and 2024.
+        It now runs across ubiquitous analytics, collaborative immersive analytics,
+        context-aware systems and human-centred AI. As AI systems take on more of the
+        looking for us, he asks the same questions of them: what did they attend to, what
+        did they miss, and how would the people in the loop know? Making attention visible
+        on both sides is how he sees people keeping their cognitive autonomy, deciding for
+        themselves where to look, what to trust and what to conclude. He reviews for ACM
+        CHI, IEEE VIS and ACM Creativity & Cognition, and is a teaching assistant on the
+        Data Visualization course at Aarhus University.
       first: |
         I am a PhD candidate in Computer Science at Aarhus University, advised by Niklas
         Elmqvist, and one of the first hires at the Center for Anytime Anywhere Analytics
@@ -169,23 +178,26 @@ biography:
         That is my route to analysis open to anyone, anytime, anywhere.
 
         My thesis develops attention-aware analytics on the web, Meta Quest 3 and
-        HoloLens 2, for the analyst at work, collaborators sharing a mixed-reality space, an
-        observer reviewing the session afterwards and a reader who receives only the
-        findings. Two of these systems are IEEE VIS papers in IEEE TVCG, Attention-Aware
-        Visualization (2024) and HeedVision (2026), and others have appeared at workshops of
-        ACM CHI and ACM ETRA. From October 2025 to February 2026 I was a visiting researcher
-        at VISUS, University of Stuttgart, with Michael Sedlmair, studying where musicians
-        look during band rehearsals.
+        HoloLens 2, following attention from the analyst at work to collaborators sharing a
+        mixed-reality space, an observer reviewing the session afterwards and a reader who
+        receives only the findings. The first two systems, Attention-Aware Visualization
+        (2024) and HeedVision (2026), appeared at IEEE VIS and in IEEE TVCG, and related work
+        has appeared at workshops of ACM CHI and ACM ETRA. As a visiting researcher at VISUS,
+        University of Stuttgart, with Michael Sedlmair from October 2025 to February 2026, I
+        studied where musicians look during band rehearsals.
 
-        My research spans ubiquitous analytics, collaborative immersive analytics,
-        context-aware systems and human-centred AI. It began with an MS in Human-Computer
-        Interaction at the University of Maryland, where I worked with Joel Chan on helping
-        people notice useful analogies, including early studies of large language models as
-        analogy generators; two of those papers received Best Paper Honorable Mentions at
-        ACM Creativity & Cognition. As AI systems take on more of the looking, I am asking
-        the same questions of them. I review for ACM CHI, IEEE VIS and ACM Creativity &
-        Cognition, and I am a teaching assistant on the Data Visualization course at Aarhus
-        University.
+        The interest began with an MS in Human-Computer Interaction at the University of
+        Maryland, where I worked with Joel Chan on how people notice useful analogies,
+        including early studies of large language models as analogy generators; that work
+        earned Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and 2024.
+        It now runs across ubiquitous analytics, collaborative immersive analytics,
+        context-aware systems and human-centred AI. As AI systems take on more of the
+        looking for us, I ask the same questions of them: what did they attend to, what did
+        they miss, and how would the people in the loop know? Making attention visible on
+        both sides is how I see people keeping their cognitive autonomy, deciding for
+        themselves where to look, what to trust and what to conclude. I review for ACM CHI,
+        IEEE VIS and ACM Creativity & Cognition, and I am a teaching assistant on the Data
+        Visualization course at Aarhus University.
   industry:
     short:
       third: >-
@@ -451,11 +463,6 @@ publications:
     kind: journal
     doi: 10.1109/TVCG.2024.3456300
     # Sample of several images on one entry: the teaser and its three panels.
-    images:
-      - { src: assets/pubs/aav/aav-teaser.webp, alt: "Teaser figure of Attention-Aware Visualization", caption: "Attention-aware visualization in 3D on Meta Quest 3 and in 2D with a Pupil Labs Neon eye tracker." }
-      - { src: assets/pubs/aav/aav-techniques.webp, alt: "Explicit heatmap, implicit desaturation and always-on heatmap techniques", caption: "Three ways of showing attention: explicit heatmap, implicit desaturation and an always-on heatmap." }
-      - { src: assets/pubs/aav/aav-devices.webp, alt: "Input signals for 3D and 2D attention tracking", caption: "Orientation, rotation and location drive the 3D version; gaze, pointer and keys drive the 2D one." }
-      - { src: assets/pubs/aav/aav-frames.webp, alt: "Bar, area and heat frames around a chart", caption: "Bar, area and heat frames summarise cumulative attention along each axis." }
     links:
       pdf: https://arxiv.org/pdf/2404.10732
       supplement: https://osf.io/8mfhp/

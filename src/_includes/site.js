@@ -982,35 +982,25 @@
     }
   }
 
-  /* ── Scroll progress in section colours ──────────────────────────────────
-     A section's colour starts at the scroll position where its top reaches
-     a third of the way down the window. Recomputed whenever the page height
-     changes (view switch, "Show more", images loading). */
+  /* ── Scroll progress in the colour of the section in view ───────────────
+     The current section is the last one whose top has passed a third of the
+     way down the window; before the first, the bar keeps the link colour. */
   const pbar = $(".progress i");
   if (pbar) {
-    let segQ = false;
-    const segs = () => {
-      segQ = false;
-      const max = document.documentElement.scrollHeight - innerHeight;
-      if (max <= 0) return;
+    let pq = false;
+    const paint = () => {
+      pq = false;
       const line = innerHeight / 3;
-      const stops = [];
-      let prevC = "var(--link)", prevP = 0;
+      let c = "";
       $$("#main .sec, .sec.contact").forEach((s) => {
-        if (s.hidden || !s.offsetParent) return;
-        const p = Math.max(0, Math.min(100, ((s.getBoundingClientRect().top + scrollY - line) / max) * 100));
-        if (p > prevP) stops.push(`${prevC} ${prevP.toFixed(2)}% ${p.toFixed(2)}%`);
-        prevC = `var(--c-${s.dataset.c || "blue"})`;
-        prevP = Math.max(prevP, p);
+        if (!s.hidden && s.offsetParent && s.getBoundingClientRect().top <= line) c = s.dataset.c || "";
       });
-      stops.push(`${prevC} ${prevP.toFixed(2)}% 100%`);
-      pbar.style.setProperty("--segs", `linear-gradient(90deg,${stops.join(",")})`);
+      if (pbar.dataset.c !== c) { if (c) pbar.dataset.c = c; else delete pbar.dataset.c; }
     };
-    const qSegs = () => { if (!segQ) { segQ = true; requestAnimationFrame(segs); } };
-    if ("ResizeObserver" in window) new ResizeObserver(qSegs).observe(document.body);
-    addEventListener("resize", qSegs);
-    addEventListener("load", qSegs);
-    segs();
+    const qPaint = () => { if (!pq) { pq = true; requestAnimationFrame(paint); } };
+    addEventListener("scroll", qPaint, { passive: true });
+    addEventListener("resize", qPaint);
+    paint();
   }
 
   /* ── Scroll progress for browsers without scroll-driven animations ──────── */
