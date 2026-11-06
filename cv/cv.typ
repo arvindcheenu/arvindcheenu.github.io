@@ -12,6 +12,7 @@
 #let ink = luma(20)
 #let grey = luma(105)
 #let hair = luma(200)
+#let linkc = rgb("#1d4ed8") // links are the one colour on the page, so they read as clickable
 #let tight = 0.55em
 #let entry = 1.35em
 #let section = 2.2em
@@ -20,6 +21,7 @@
 #let award(body) = body
 #let tint(url, body) = link(url, body)
 #let ident(url, body) = link(url, body)
+#show link: set text(fill: linkc)
 #let rate(body) = [[#body]]
 #let wip(body) = text(fill: grey)[(#body)]
 #let rich(s) = eval(s, mode: "markup", scope: (award: award, ident: ident, tint: tint, rate: rate, wip: wip))
@@ -41,11 +43,18 @@
 #set strong(delta: 100) // regular 400 + 100 = Medium: firm, not heavy
 
 // ── Header ─────────────────────────────────────────────────────────────────
-#block(below: 0.9em, text(size: 20pt, weight: 500, tracking: -0.01em)[#rich(d.name)])
-#block(below: 0.45em, text(size: 10pt)[#rich(d.role) · #rich(d.affiliation)])
-#block(below: 0em, text(fill: grey)[
-  #rich(d.location) · #d.links.map(l => link(l.url)[#rich(l.label)]).join(" · ")
-])
+#grid(columns: (1fr, auto), column-gutter: 6mm, align: (left + bottom, right + bottom),
+  [
+    #block(below: 0.9em, text(size: 20pt, weight: 500, tracking: -0.01em)[#rich(d.name)])
+    #block(below: 0.45em, text(size: 10pt)[#rich(d.role) \ #rich(d.affiliation) · #rich(d.location)])
+    #block(below: 0em, text(fill: grey)[
+      #d.links.map(l => link(l.url)[#rich(l.label)]).join(" · ")
+    ])
+  ],
+  if d.site_qr != "" {
+    link(d.site_url, box(width: 17mm, image(d.site_qr, width: 17mm)))
+  },
+)
 #if d.summary != "" {
   block(above: entry + 0.2em, below: 0em, par(leading: 0.62em, rich(d.summary)))
 }
@@ -75,8 +84,13 @@
 #let show-pubs(groups) = for (i, g) in groups.enumerate() {
   block(above: if i == 0 { 0em } else { entry + 0.2em }, below: 0.6em, sticky: true,
     text(fill: grey)[#emph(rich(g.title))])
-  grid(columns: (8mm, 1fr), row-gutter: 1em,
-    ..g.items.map(it => (text(fill: grey)[#it.label], rich(it.text))).flatten())
+  // Each paper gets a small QR code to its page, for reading the printed CV with a phone.
+  grid(columns: (8mm, 1fr, 12mm), column-gutter: (0mm, 5mm), row-gutter: 1em,
+    ..g.items.map(it => (
+      text(fill: grey)[#it.label],
+      rich(it.text),
+      if it.qr != "" { link(it.url, image(it.qr, width: 12mm)) },
+    )).flatten())
 }
 
 #let show-skills(groups) = grid(columns: (32mm, 1fr), row-gutter: 0.75em,

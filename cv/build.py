@@ -7,13 +7,14 @@ JSON file per view and compiles cv/cv.typ for each:
     python3 cv/build.py            # writes the `pdf` file of each view into _site/
     python3 cv/build.py --out dir  # somewhere else
 
-Needs `pip install typst pyyaml`. Text fields keep their inline Markdown
+Needs `pip install typst pyyaml segno`. Text fields keep their inline Markdown
 (**bold**, *italic*, [link](url)); it is turned into Typst markup here. Links to
 entries on the page ([text](#id)) become plain text, as a PDF has no page to
 scroll to.
 """
 import argparse, datetime, json, os, re, sys
 
+import segno
 import typst
 import yaml
 
@@ -21,6 +22,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
 FILES = {"research": "CV", "industry": "Resume"}
+QR_DIR = os.path.join(HERE, "build", "qr")
+
+
+def qr(url):
+    """Write a QR code for `url` as SVG; return its path relative to cv.typ ('' if no url)."""
+    if not url:
+        return ""
+    os.makedirs(QR_DIR, exist_ok=True)
+    name = re.sub(r"[^A-Za-z0-9]+", "-", url).strip("-")[-80:] + ".svg"
+    path = os.path.join(QR_DIR, name)
+    if not os.path.exists(path):
+        segno.make(url, error="m", micro=False).save(path, kind="svg", border=0, dark="#222", xmldecl=False)
+    return "build/qr/" + name
 
 # ── Text ────────────────────────────────────────────────────────────────────
 SPECIAL = re.compile(r'([\\*_#$\[\]<>@`~/=+"\'-])')
@@ -189,7 +203,8 @@ def publications(site):
         pre = g.get("prefix")
         out.append({
             "title": g["title"],
-            "items": [{"label": f"{pre}{len(ps) - i}" if pre else "", "text": cite(p, site["name"], site.get("venues"))}
+            "items": [{"label": f"{pre}{len(ps) - i}" if pre else "", "text": cite(p, site["name"], site.get("venues")),
+                       "qr": qr(title_url(p)), "url": title_url(p)}
                       for i, p in enumerate(ps)],
         })
     return out
@@ -283,6 +298,8 @@ def prepare(site, view):
         "status": esc(v.get("status", "")),
         "summary": md(" ".join(str(bio.get("first", "")).split())),
         "links": links,
+        "site_qr": qr(site["url"]),
+        "site_url": site["url"],
         "updated": datetime.date.today().strftime("%B %Y"),
         "sections": secs,
     }

@@ -59,13 +59,13 @@ CSS and JS are inlined into the page at build time, so the site ships as one HTM
 
 ```sh
 npm install
-pip install typst pyyaml   # for the PDFs
+pip install typst pyyaml segno   # for the PDFs
 npm run serve      # http://localhost:8080
 npm run build      # writes _site/, then the PDFs
 npm run cv         # only the PDFs
 ```
 
-The PDFs come from `cv/build.py` (prepares the data for each view) and `cv/cv.typ` (the layout). Each view's `pdf` in `tailor.views` names its file. The deploy workflow installs Typst and builds them on every push. Fonts are Inter (OFL), kept in `cv/fonts`.
+The PDFs come from `cv/build.py` (prepares the data for each view) and `cv/cv.typ` (the layout). Each view's `pdf` in `tailor.views` names its file. The deploy workflow installs Typst and builds them on every push. Links in the PDFs are blue and clickable; a QR code next to the header leads to the website and one next to each publication to its page. Fonts are Inter (OFL), kept in `cv/fonts`.
 
 `src/accrete/` and `src/chimistry/` are standalone apps copied through untouched.
 
