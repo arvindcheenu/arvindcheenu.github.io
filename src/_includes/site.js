@@ -854,8 +854,9 @@
     // Track colours: the stretch leading up to each place is that place's colour.
     {
       const tc = $$(".tick", mapEl).map((tk) => `var(--c-${tk.dataset.c || "fuchsia"})`);
-      const pc = (k) => ((k / Math.max(1, tc.length - 1)) * 100).toFixed(3);
-      const stops = tc.slice(1).map((c, k) => `${c} ${pc(k)}% ${pc(k + 1)}%`);
+      // Ticks are inset by the thumb's radius (as the thumb's centre is), so the stops are too.
+      const pc = (k) => `calc(.5625rem + (100% - 1.125rem) * ${(k / Math.max(1, tc.length - 1)).toFixed(5)})`;
+      const stops = tc.slice(1).map((c, k) => `${c} ${k ? pc(k) : "0%"} ${k === tc.length - 2 ? "100%" : pc(k + 1)}`);
       if (stops.length) range.style.setProperty("--segs", `linear-gradient(90deg,${stops.join(",")})`);
     }
     // Route lengths, measured on first use (the map may not be rendered at load).
@@ -918,7 +919,7 @@
       if (cur !== lastCur) { if (lastCur !== null && scrubbing) sound("detent"); lastCur = cur; }
       cards.forEach((c, i) => { c.hidden = i !== cur; });
       range.value = String(t);
-      range.style.setProperty("--p", `${(t / (N - 1)) * 100}%`);
+      range.style.setProperty("--p", `calc(.5625rem + (100% - 1.125rem) * ${(t / (N - 1)).toFixed(5)})`);
       const pc = pins[cur];
       range.setAttribute("aria-valuetext", pc ? pc.getAttribute("aria-label") : "");
     }
