@@ -295,7 +295,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         <div class="when">{{ e | period }}</div>
         <div class="what"><div class="main">
           <h3 class="t">{{ e.role }}</h3>
-          <p class="sub">{{ e.org }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>
+          <p class="sub">{{ e.org | md | safe }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>
           {%- if e.summary %}<p class="text"{% if e.highlights %} data-only="research"{% endif %}>{{ e.summary | md | safe }}</p>{% endif %}
           {%- if e.highlights %}<ul class="bullets"{% if e.summary %} data-only="industry"{% endif %}>{% for h in e.highlights %}<li>{{ h | md | safe }}</li>{% endfor %}</ul>{% endif %}
           {%- if e.tags %}<p class="tech">{{ e.tags | join(" · ") }}</p>{% endif %}
@@ -307,7 +307,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- for t in s.teaching | newestFirst %}
       <article class="item rv" id="{{ t | entryId('teaching') }}">
         <div class="when">{{ t.when }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ t.role }}</h3><p class="sub">{{ t.org }}{% if t.lead %}<span class="sep">·</span>Course led by {{ t.lead }}{% endif %}</p>{% if t.detail %}<p class="text">{{ t.detail | md | safe }}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><h3 class="t">{{ t.role }}</h3><p class="sub">{{ t.org | md | safe }}{% if t.lead %}<span class="sep">·</span>Course led by {{ t.lead | md | safe }}{% endif %}</p>{% if t.detail %}<p class="text">{{ t.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 
@@ -368,7 +368,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="award">{{ icon("medal") }}{{ r.note }}</span>{% endif %}</p></div></div>
         {%- else %}
         <div class="when">{{ r.when }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ r.role }}</h3>{% if r.org %}<p class="sub">{{ r.org }}</p>{% endif %}{% if r.detail %}<p class="text">{{ r.detail | md | safe }}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><h3 class="t">{{ r.role }}</h3>{% if r.org %}<p class="sub">{{ r.org | md | safe }}</p>{% endif %}{% if r.detail %}<p class="text">{{ r.detail | md | safe }}</p>{% endif %}</div></div>
         {%- endif %}
       </article>
       {%- endfor %}
@@ -406,7 +406,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- for e in s.education | newestFirst %}
       <article class="item rv" id="{{ e | entryId('education') }}">
         <div class="when">{{ e | period }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ e.degree }}</h3><p class="sub">{{ e.org }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>{% if e.detail %}<p class="text">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><h3 class="t">{{ e.degree }}</h3><p class="sub">{{ e.org | md | safe }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>{% if e.detail %}<p class="text">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 

@@ -262,6 +262,10 @@ kbd{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;padding:
 .t a{color:inherit}
 .t a:hover{color:var(--c,var(--link));text-decoration:none}
 .sub{color:var(--muted);text-wrap:pretty}
+/* Institutions and course leads link out quietly: the line keeps its grey and
+   takes the section colour on hover; the external-link icon marks the link. */
+.sub a{color:var(--soft);transition:color .15s}
+.sub a:hover{color:var(--c,var(--link))}
 .text{text-wrap:pretty;color:var(--soft)}
 .main .text:not(:first-child),.main .bullets{margin-top:.5rem}
 .tech{margin-top:.5rem;font-size:var(--t-sm);color:var(--muted);letter-spacing:.005em}
