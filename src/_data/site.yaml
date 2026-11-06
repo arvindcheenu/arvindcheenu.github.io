@@ -124,7 +124,7 @@ biography:
         2024. He holds a BTech in Computer Science and Engineering from SRM Institute of
         Science and Technology, and worked as a user experience intern at Tetrate. He
         maintains open-source tools including heed, Elicitation Lab, SciFig and Matercolors,
-        and teaches on the Data Visualization course at Aarhus University.
+        and is a teaching assistant on the Data Visualization course at Aarhus University.
       first: |
         I am a PhD candidate in Computer Science at Aarhus University. I joined the Center
         for Anytime Anywhere Analytics (CA³) as one of its first hires, and I am advised by
@@ -144,8 +144,8 @@ biography:
         work received Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and
         2024. I hold a BTech in Computer Science and Engineering from SRM Institute of Science
         and Technology, and worked as a user experience intern at Tetrate. I maintain
-        open-source tools including heed, Elicitation Lab, SciFig and Matercolors, and I
-        teach on the Data Visualization course at Aarhus University.
+        open-source tools including heed, Elicitation Lab, SciFig and Matercolors, and I am
+        a teaching assistant on the Data Visualization course at Aarhus University.
   industry:
     short:
       third: >-
@@ -224,7 +224,7 @@ sections:
   grants: { title: Grants, icon: coins }
   awards: { title: Honors & awards, icon: trophy }
   talks: { title: Talks, icon: microphone-lines }
-  teaching: { title: Teaching, icon: chalkboard-user }
+  teaching: { title: Teaching assistance, icon: chalkboard-user }
   service: { title: Service, icon: handshake-angle }
   contact: { title: Contact, icon: envelope }
 
@@ -578,7 +578,7 @@ projects:
   #   summary: CA³ lab website and publications pipeline (Eleventy, Google Sheets/Drive as CMS, BibTeX tooling), and a HoloLens 2 experiment stack (Unity, Python WebSocket, MongoDB, music21/Verovio).
   #   tech: [Eleventy, Unity, MongoDB]
 
-# ── Teaching ────────────────────────────────────────────────────────────────
+# ── Teaching assistance ─────────────────────────────────────────────────────
 # `lead` names the person who runs the course.
 teaching:
   - role: Teaching assistant, Data Visualization
