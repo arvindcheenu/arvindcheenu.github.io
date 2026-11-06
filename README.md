@@ -53,6 +53,7 @@ CSS and JS are inlined into the page at build time, so the site ships as one HTM
 - Google Analytics only after a yes in the cookie question; "Cookie settings" in the footer changes the answer.
 - Contact form laid out as an email, with a recipient menu, a spam honeypot and a mail-app fallback.
 - Light, dark or system theme; synthesized button sounds with a mute toggle. Choices are remembered per visitor.
+- Section heading icons make their own sound and move slightly on hover (coins clink for Grants, the plane flies off for Talks). Sounds live in `sfx.ic` in `site.js`; motion in the `.sec-ic.jig` rules in `site.css`.
 
 ## Local preview
 

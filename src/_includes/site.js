@@ -75,6 +75,28 @@
     copy: () => { tone(880, 0.05, { gain: 0.045 }); tone(1320, 0.1, { gain: 0.045, delay: 0.06 }); },
     open: () => { tick(0.01, 0.05, 2600); tone(700, 0.07, { type: "triangle", gain: 0.035, to: 940 }); },
     cookie: () => { [0, 0.05, 0.11, 0.16].forEach((t, i) => tick(0.018, 0.07 - i * 0.012, 1800 + i * 500, t)); },
+    // Section icons, one sound each, played on hover.
+    ic: (k) => {
+      const at = (f, d, o = {}) => tone(f, d, o);
+      const S = {
+        news: () => { at(392, 0.09, { type: "square", gain: 0.018, to: 466 }); at(523, 0.12, { type: "square", gain: 0.016, delay: 0.08 }); },
+        biography: () => { tick(0.05, 0.05, 1800); tick(0.012, 0.04, 4200, 0.05); },
+        education: () => { at(659, 0.08, { type: "triangle", gain: 0.035 }); at(988, 0.16, { type: "triangle", gain: 0.035, delay: 0.08 }); },
+        experience: () => { tick(0.008, 0.09, 2400); tick(0.01, 0.07, 1500, 0.06); },
+        publications: () => { [0, 0.03, 0.06].forEach((t, i) => tick(0.03, 0.05 - i * 0.012, 2600 - i * 600, t)); },
+        projects: () => at(420, 0.14, { gain: 0.04, to: 840 }),
+        skills: () => { [0, 0.045, 0.09].forEach((t) => tick(0.006, 0.08, 5200, t)); at(1900, 0.05, { type: "triangle", gain: 0.012, delay: 0.09 }); },
+        certifications: () => { at(150, 0.1, { gain: 0.07, to: 90 }); tick(0.015, 0.06, 900); },
+        // Two coins touching: inharmonic partials with fast decay, the second a touch lower.
+        grants: () => { [[0, 1], [0.075, 0.94]].forEach(([t, m]) => [2630, 3950, 5270].forEach((f, i) => at(f * m, 0.16 - i * 0.04, { gain: 0.016 - i * 0.003, delay: t }))); },
+        awards: () => { at(1319, 0.18, { type: "triangle", gain: 0.03 }); at(1760, 0.26, { type: "triangle", gain: 0.026, delay: 0.07 }); at(2637, 0.3, { gain: 0.01, delay: 0.12 }); },
+        talks: () => sfx.fly(0.45),
+        teaching: () => { tick(0.012, 0.06, 5600); tick(0.02, 0.04, 4800, 0.07); },
+        service: () => { tick(0.02, 0.07, 700); tick(0.02, 0.06, 760, 0.11); },
+        contact: () => { tick(0.06, 0.035, 2200); at(1175, 0.14, { type: "triangle", gain: 0.03, delay: 0.06 }); },
+      };
+      (S[k] || (() => tick(0.01, 0.05, 3000)))();
+    },
     // Map: a soft detent while scrubbing, an airy pass while flying, a two-note chime on landing.
     detent: () => tick(0.006, 0.035, 3200),
     land: () => { tone(988, 0.12, { type: "triangle", gain: 0.03 }); tone(740, 0.22, { type: "triangle", gain: 0.03, delay: 0.1 }); },
@@ -94,6 +116,19 @@
     try { sfx[name] && sfx[name](arg); } catch (e) {}
   };
   const sound = play; // the map has its own play(); it uses this name for sounds
+
+  // Section icons: a sound and a small shake on hover (mouse only, at most once a second).
+  document.addEventListener("pointerover", (e) => {
+    if (e.pointerType && e.pointerType !== "mouse") return;
+    const ic = e.target.closest && e.target.closest(".sec-ic[data-ic]");
+    if (!ic || (e.relatedTarget && ic.contains(e.relatedTarget))) return;
+    const now = performance.now();
+    if (now - (+ic.dataset.at || 0) < 1000) return;
+    ic.dataset.at = String(now);
+    play("ic", false, ic.dataset.ic);
+    ic.classList.remove("jig"); void ic.offsetWidth; ic.classList.add("jig");
+  });
+  document.addEventListener("animationend", (e) => { const ic = e.target.closest && e.target.closest(".sec-ic.jig"); if (ic) ic.classList.remove("jig"); });
 
   // Every tactile control clicks on press; keyboard presses click on activation.
   const tactile = (el) => el && el.closest && el.closest(".tac");

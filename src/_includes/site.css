@@ -259,6 +259,20 @@ kbd{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;padding:
 /* A project still being built */
 .wip{display:inline-flex;align-items:center;gap:.3rem;margin-left:.35rem;vertical-align:.12em;color:var(--c-orange);font-size:var(--t-xs);font-weight:700;letter-spacing:.01em;white-space:nowrap}
 .sec-ic{display:inline-grid;place-items:center;flex:none;width:1.25rem;color:var(--c,var(--link));font-size:.95em}
+/* Hovering a section icon plays its sound and gives it a small shake;
+   a few icons move in their own way. */
+.sec-ic .ic{transform-origin:50% 60%}
+.sec-ic.jig .ic{animation:ic-jig .45s var(--ease-out,ease-out)}
+.sec-ic.jig[data-ic="talks"] .ic{animation-name:ic-fly}
+.sec-ic.jig[data-ic="awards"] .ic{animation-name:ic-hop}
+.sec-ic.jig[data-ic="grants"] .ic{animation-name:ic-clink;animation-duration:.4s}
+.sec-ic.jig[data-ic="publications"] .ic{animation-name:ic-flip}
+@keyframes ic-jig{0%,100%{transform:none}20%{transform:rotate(-12deg)}45%{transform:rotate(9deg)}70%{transform:rotate(-5deg)}85%{transform:rotate(2deg)}}
+@keyframes ic-fly{0%{transform:none;opacity:1}45%{transform:translate(.55rem,-.4rem) rotate(-8deg);opacity:0}46%{transform:translate(-.55rem,.4rem);opacity:0}100%{transform:none;opacity:1}}
+@keyframes ic-hop{0%,100%{transform:none}30%{transform:translateY(-.22rem) scale(1.08)}55%{transform:translateY(0) scale(.96,1.04)}75%{transform:translateY(-.06rem)}}
+@keyframes ic-clink{0%,100%{transform:none}15%{transform:translateY(-.12rem) rotate(-6deg)}35%{transform:translateY(0) rotate(5deg)}55%{transform:translateY(-.06rem) rotate(-3deg)}75%{transform:rotate(1deg)}}
+@keyframes ic-flip{0%,100%{transform:none}35%{transform:scaleX(-.85)}70%{transform:scaleX(1.05)}}
+@media (prefers-reduced-motion:reduce){.sec-ic.jig .ic{animation:none}}
 .sec-ctl{display:flex;flex-wrap:wrap;gap:.5rem}
 .list{display:flex;flex-direction:column;gap:var(--gap)}
 .item{display:grid;grid-template-columns:var(--when) minmax(0,1fr);gap:0 1.5rem;align-items:baseline}

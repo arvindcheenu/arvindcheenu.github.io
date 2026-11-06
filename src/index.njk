@@ -20,7 +20,7 @@ permalink: /index.html
 {%- macro head(key, sec, note="", extra="") -%}
     <div class="sec-head rv">
       <div class="sec-title">
-        <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}{% if sec.print_title %}<span class="no-print">{{ sec.title | md | safe }}</span><span class="print-only">{{ sec.print_title | md | safe }}</span>{% else %}<span>{{ sec.title | md | safe }}</span>{% endif %}</h2>
+        <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic" data-ic="{{ key }}">{{ icon(sec.icon) }}</span>{% endif %}{% if sec.print_title %}<span class="no-print">{{ sec.title | md | safe }}</span><span class="print-only">{{ sec.print_title | md | safe }}</span>{% else %}<span>{{ sec.title | md | safe }}</span>{% endif %}</h2>
       </div>
       {%- if caller %}{{ caller() }}{% endif %}
       {%- set nt = note if note else ((sec.note | md) if sec.note else "") %}
