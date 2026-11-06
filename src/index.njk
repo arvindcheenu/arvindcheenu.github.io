@@ -13,9 +13,12 @@ permalink: /index.html
 {%- macro icon(name, brand=false, cls="") -%}<i class="{% if brand %}fa-brands{% elif site.fontawesome_kit %}fa-duotone fa-solid{% else %}fa-solid{% endif %} fa-{{ name }}{% if cls %} {{ cls }}{% endif %}" aria-hidden="true"></i>{%- endmacro -%}
 {%- macro edge(pos) -%}<div class="edge {{ pos }}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><b></b></div>{%- endmacro -%}
 {%- macro perView(field) -%}{% for k, v in views %}<span data-only="{{ k }}">{{ v[field] }}</span>{% endfor %}{%- endmacro -%}
-{%- macro head(key, sec) -%}
+{%- macro head(key, sec, note="") -%}
     <div class="sec-head rv">
-      <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}<span>{{ sec.title | md | safe }}</span></h2>
+      <div class="sec-title">
+        <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}<span>{{ sec.title | md | safe }}</span></h2>
+        {%- if note %}<p class="sec-note">{{ note }}</p>{% endif %}
+      </div>
       {%- if caller %}{{ caller() }}{% endif %}
     </div>
 {%- endmacro -%}
@@ -36,12 +39,9 @@ permalink: /index.html
 <meta name="twitter:card" content="summary">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#18181b" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400..700&display=swap">
 <script>
 /* Runs before paint so the saved theme, sound, view and currency never flash.
    ?for=industry in the address opens that view. */
@@ -149,7 +149,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       </div>
     {%- endcall %}
     {%- elif key == "publications" %}
-    {%- call head(key, sec) %}
+    {%- call head(key, sec, "† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
       <div class="sec-ctl no-print">
         <div class="seg sm" role="radiogroup" aria-label="List publications by">
           <button type="button" class="seg-b tac" role="radio" aria-checked="true" data-pubsort="year">{{ icon("calendar") }}<span>Year</span></button>
@@ -178,7 +178,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}{% endfor %}{% endfor %}
 
     {%- elif key == "news" %}
-      {%- for n in s.news %}
+      {%- for n in s.news | newestFirst %}
       <article class="item rv{% if loop.index > s.news_visible %} fold{% endif %}">
         <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time></div>
         <div class="what">
@@ -192,7 +192,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endif %}
 
     {%- elif key == "publications" %}
-      {%- for r in s.publications | pubRows(s.pub_groups) %}
+      {%- for r in s.publications | newestFirst | pubRows(s.pub_groups) %}
       {%- set p = r.p %}
       {%- if r.head %}
       <h3 class="subhead rv" data-sub>{{ r.year }}</h3>
@@ -226,9 +226,6 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         </div>
       </article>
       {%- endfor %}
-      {%- if s.publications | selectattr("equal") | length %}
-      <p class="item foot-note rv"><span class="when"></span><span class="what">† Equal contribution</span></p>
-      {%- endif %}
 
     {%- elif key == "projects" %}
       {%- for p in s.projects %}
@@ -248,7 +245,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "experience" %}
-      {%- for e in s.experience %}
+      {%- for e in s.experience | newestFirst %}
       <article class="item rv">
         <div class="when">{{ e | period }}</div>
         <div class="what"><div class="main">
@@ -262,7 +259,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "teaching" %}
-      {%- for t in s.teaching %}
+      {%- for t in s.teaching | newestFirst %}
       <article class="item rv">
         <div class="when">{{ t.when }}</div>
         <div class="what"><div class="main"><h3 class="t">{{ t.role }}</h3><p class="sub">{{ t.org }}{% if t.lead %}<span class="sep">·</span>Course led by {{ t.lead }}{% endif %}</p>{% if t.detail %}<p class="text">{{ t.detail | md | safe }}</p>{% endif %}</div></div>
@@ -270,7 +267,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "talks" %}
-      {%- for t in s.talks %}
+      {%- for t in s.talks | newestFirst %}
       <article class="item rv">
         <div class="when">{{ t.date | ym }}</div>
         <div class="what"><div class="main"><h3 class="t">{% if t.link %}<a href="{{ t.link }}">{{ t.title }}</a>{% else %}{{ t.title }}{% endif %}</h3><p class="sub">{{ t.event }}</p></div></div>
@@ -278,11 +275,11 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "service" %}
-      {%- for r in s.service %}
+      {%- for r in s.service | newestFirst %}
       <article class="item rv">
         {%- if r.reviews %}
         <div class="when">{{ r.venue | year4 }}</div>
-        <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="hl">{{ icon("medal") }}{{ r.note }}</span>{% endif %}</p></div></div>
+        <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="award">{{ icon("medal") }}{{ r.note }}</span>{% endif %}</p></div></div>
         {%- else %}
         <div class="when">{{ r.when }}</div>
         <div class="what"><div class="main"><h3 class="t">{{ r.role }}</h3>{% if r.org %}<p class="sub">{{ r.org }}</p>{% endif %}{% if r.detail %}<p class="text">{{ r.detail | md | safe }}</p>{% endif %}</div></div>
@@ -291,7 +288,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "grants" %}
-      {%- for g in s.grants %}
+      {%- for g in s.grants | newestFirst %}
       {%- set m = g.amount | money %}
       <article class="item rv">
         <div class="when">{{ g.year }}</div>
@@ -309,15 +306,15 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}
 
     {%- elif key == "awards" %}
-      {%- for a in s.awards %}
+      {%- for a in s.awards | newestFirst %}
       <article class="item rv">
         <div class="when">{{ a.year }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ a.title }}</h3><p class="sub">{{ a.by }}</p>{% if a.for %}<p class="sub">For {% if a.link %}<a href="{{ a.link }}">{{ a.for }}</a>{% else %}{{ a.for }}{% endif %}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><h3 class="t award-t">{{ icon("trophy") }}<span>{{ a.title }}</span></h3><p class="sub">{{ a.by }}</p>{% if a.for %}<p class="sub">For {% if a.link %}<a href="{{ a.link }}">{{ a.for }}</a>{% else %}{{ a.for }}{% endif %}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 
     {%- elif key == "education" %}
-      {%- for e in s.education %}
+      {%- for e in s.education | newestFirst %}
       <article class="item rv">
         <div class="when">{{ e | period }}</div>
         <div class="what"><div class="main"><h3 class="t">{{ e.degree }}</h3><p class="sub">{{ e.org }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>{% if e.detail %}<p class="text">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
@@ -345,7 +342,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     <form class="mail rv" id="contact-form" novalidate data-endpoint="{{ cf.endpoint }}" data-subject="{{ cf.subject }}">
       <div class="mail-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="mail-title">New message</span></div>
       <div class="mail-row">
-        <label class="mail-k" for="cf-to">To</label>
+        <label class="mail-k" for="cf-to" id="cf-to-label">To</label>
         <div class="to-chip">
           {%- if s.avatar or s.photo %}<img src="{{ s.avatar or s.photo }}" alt="" width="24" height="24" loading="lazy">{% endif %}
           <select id="cf-to" name="to">
@@ -354,6 +351,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
             {%- endfor %}
           </select>
           {{ icon("chevron-down", false, "chev") }}
+          <button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cf-to-label dd-val" hidden><span class="dd-val" id="dd-val"></span>{{ icon("chevron-down", false, "chev") }}</button>
         </div>
       </div>
       <div class="mail-row">
@@ -403,7 +401,8 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
   <a class="btn tac icon float float-r" href="#top" aria-label="Back to top" title="Back to top">{{ icon("arrow-up") }}</a>
 </div>
 
-<div class="fx-menu" role="menu" aria-label="Currency" hidden>
+<div class="pop dd-menu" role="listbox" aria-label="Recipient" tabindex="-1" hidden></div>
+<div class="pop fx-menu" role="menu" aria-label="Currency" hidden>
   <p class="fx-head"></p>
   <div class="fx-list"></div>
   <p class="fx-note"></p>

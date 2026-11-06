@@ -40,6 +40,8 @@ contact_form:
     - { label: Personal, email: arvind@cheenu.net, access_key: "" }
     - { label: University, email: arvind@cs.au.dk, access_key: "" }
 
+# Every dated section is sorted newest first on the page, whatever order it has here.
+
 # Grant amounts convert live into the visitor's chosen currency. Rates come
 # from the European Central Bank via frankfurter.dev, refreshed on every visit.
 currency_default: EUR
@@ -450,13 +452,14 @@ experience:
     place: Aarhus, Denmark
     start: 2024-01
     end: present
-    summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step.
+    summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step. Used Unity on HoloLens 2 for XR prototyping during ideation and brainstorming.
     highlights:
       - Built attention-aware analytics end to end for the web, Meta Quest 3 and HoloLens 2, from gaze capture and per-mark visibility tracking to an event-logged back end.
       - Took the work from a single-user web prototype to co-located WebXR collaboration and asynchronous handoff between analysts, running the user study behind each step.
+      - Prototyped XR ideas in Unity on HoloLens 2 during ideation and brainstorming.
       - Released [heed](https://heed.arvindchee.nu), an open-source toolkit that records attention on any web page.
       - One of the centre's first hires; helped build its website, publication pipeline and shared tooling.
-    tags: [WebXR, React Three Fiber, Unity, eye tracking, user studies]
+    tags: [WebXR, React Three Fiber, Unity, HoloLens 2, eye tracking, user studies]
 
   - role: Visiting PhD Researcher
     org: VISUS, University of Stuttgart
@@ -590,6 +593,7 @@ teaching:
     detail: 70 hours of TA duties. Ran 3 hours of exercise sessions and 2 hours of Study Café sessions, and graded 25 of the course's 100 students.
   - role: Guest TA lecture, Data Visualization Summer School
     org: Aarhus University
+    lead: Hans-Jörg Schulz
     when: March 2024
 
 # ── Talks ───────────────────────────────────────────────────────────────────

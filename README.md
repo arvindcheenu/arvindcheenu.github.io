@@ -16,6 +16,8 @@ All content lives in **`src/_data/site.yaml`**: intro, biographies, news, public
 - `image:` adds one picture to a news item, publication or project. `images:` (a list of `src`, `alt`, `caption`) adds a strip of pictures that open full size; the Attention-Aware Visualization entry has an example.
 - Grant `amount`s written with a currency code or symbol (`20,000 DKK`, `US$400`) get a live conversion in brackets. `currency_default` and `currencies` set the default and the choices.
 - `sections` sets each section's heading and icon.
+- Dated sections (news, experience, education, teaching, talks, service, grants, awards, publications) are sorted newest first on the page, whatever order they have in the file.
+- Teaching entries take `lead` for the person who runs the course.
 - Empty fields are skipped, so a half-filled entry never shows a placeholder.
 
 Contact form: each address under `contact_form.recipients` appears in the "To" menu. Get a free access key per address at [web3forms.com](https://web3forms.com) and paste it next to that address. A recipient without a key opens the visitor's mail app instead, addressed to that email.
@@ -26,12 +28,12 @@ Look and feel:
 | --- | --- |
 | Font Awesome Pro kit | `fontawesome_kit` in `site.yaml` (blank uses Font Awesome Free) |
 | Default sound | `sound_default` in `site.yaml` |
-| Type scale and layout | `src/_includes/site.css` |
+| Colours (links, awards, availability), type scale and layout | `src/_includes/site.css`, tokens at the top |
 | Behaviour (views, switches, currency, form, viewer) | `src/_includes/site.js` |
 | Markup | `src/index.njk` |
 | Exchange-rate snapshot used when a build has no network | `src/_data/fx.js` |
 
-CSS and JS are inlined into the page at build time, so the site ships as one HTML file plus the portrait, the Google Sans Flex font and a QR encoder that loads on first hover.
+CSS and JS are inlined into the page at build time, so the site ships as one HTML file plus the portrait and a QR encoder that loads on first hover. Text uses each visitor's system font, so there is no font download.
 
 ## Features
 
@@ -53,4 +55,4 @@ npm run build      # writes _site/
 
 `src/accrete/` and `src/chimistry/` are standalone apps copied through untouched.
 
-Google Sans Flex is served by Google Fonts under the SIL Open Font License. qrcode-generator is © Kazuhiko Arase, MIT. Exchange rates: European Central Bank via frankfurter.dev.
+qrcode-generator is © Kazuhiko Arase, MIT. Exchange rates: European Central Bank via frankfurter.dev.

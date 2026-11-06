@@ -10,7 +10,31 @@
   const reduced = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   // Entries start hidden only once this script runs, so a failed script never hides the page.
   if (!reduced && "IntersectionObserver" in window) d.classList.add("rv-on");
-  const transition = (fn) => (document.startViewTransition && !reduced ? document.startViewTransition(fn) : fn());
+  // Switching a view fades the old content out, swaps it, then fades the new content in.
+  let swapTimer = 0;
+  const swap = (els, fn) => {
+    els = els.filter(Boolean);
+    if (reduced || !els.length) return fn();
+    clearTimeout(swapTimer);
+    els.forEach((el) => el.classList.add("swap", "out"));
+    swapTimer = setTimeout(() => {
+      fn();
+      requestAnimationFrame(() => requestAnimationFrame(() => els.forEach((el) => el.classList.remove("out"))));
+    }, 170);
+  };
+  const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  // Places a popover under its anchor, or above it when there is no room below.
+  const placePop = (pop, anchor, minW) => {
+    const r = anchor.getBoundingClientRect();
+    if (minW) pop.style.width = `${Math.max(minW, r.width)}px`;
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    if (r.bottom < 0 || r.top > innerHeight) return false;
+    const left = Math.min(Math.max(8, r.left), innerWidth - w - 8);
+    let top = r.bottom + 8;
+    if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 8);
+    pop.style.left = `${Math.round(left)}px`; pop.style.top = `${Math.round(top)}px`;
+    return true;
+  };
 
   /* ── Sound: tiny synthesized clicks, no audio files ─────────────────────── */
   let ctx = null;
@@ -125,14 +149,13 @@
   /* ── Biography: length and voice ────────────────────────────────────────── */
   const bioSec = $("#biography");
   const bio = { len: store.get("bio-len") || "short", person: store.get("bio-person") || "third" };
-  function syncBio(animate) {
+  function syncBio() {
     if (!bioSec) return;
     const key = `${d.dataset.tailor}-${bio.len}-${bio.person}`;
     $$(".bv", bioSec).forEach((el) => {
       const on = el.dataset.v === key;
       el.hidden = !on;
-      if (on && animate && !reduced) { el.classList.remove("in"); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("in"))); }
-      else if (on && el.getBoundingClientRect().top < innerHeight) el.classList.add("in");
+      if (on && el.getBoundingClientRect().top < innerHeight) { el.classList.add("in"); if (io) io.unobserve(el); }
     });
     $$("[data-bio]", bioSec).forEach((b) => b.setAttribute("aria-checked", String(bio[b.dataset.bio] === b.dataset.val)));
   }
@@ -156,12 +179,13 @@
     const apply = () => {
       d.dataset.tailor = v;
       arrange(v);
-      syncBio(false);
+      syncBio();
       $$("[data-set-tailor]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.setTailor === v)));
       revealOnScreen();
     };
     if (!fromUser) return apply();
-    transition(apply);
+    $$("[data-set-tailor]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.setTailor === v)));
+    swap([main], apply);
     store.set("tailor", v);
     try {
       const u = new URL(location.href);
@@ -170,7 +194,7 @@
     } catch (e) {}
     play("mode"); toast(`Tailored for ${viewLabel(v).toLowerCase()}`);
   }
-  if (views.length) setTailor(d.dataset.tailor, false); else syncBio(false);
+  if (views.length) setTailor(d.dataset.tailor, false); else syncBio();
 
   /* ── Publications: by year or by type ───────────────────────────────────── */
   const pubList = $("#publications .list");
@@ -200,7 +224,10 @@
         $$("[data-pubsort]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.pubsort === mode)));
         revealOnScreen();
       };
-      if (fromUser) { transition(apply); store.set("pubsort", mode); } else apply();
+      if (fromUser) {
+        $$("[data-pubsort]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.pubsort === mode)));
+        swap([pubList], apply); store.set("pubsort", mode);
+      } else apply();
     };
     if (store.get("pubsort") === "type") sortPubs("type", false);
   }
@@ -243,13 +270,7 @@
   }
   // The menu follows its button while the page scrolls, and closes once the button leaves the screen.
   function placeMenu() {
-    if (!menuFor) return;
-    const r = menuFor.getBoundingClientRect(), w = fxMenu.offsetWidth, h = fxMenu.offsetHeight;
-    if (r.bottom < 0 || r.top > innerHeight) return closeMenu();
-    const left = Math.min(Math.max(8, r.left), innerWidth - w - 8);
-    let top = r.bottom + 8;
-    if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 8);
-    fxMenu.style.left = `${Math.round(left)}px`; fxMenu.style.top = `${Math.round(top)}px`;
+    if (menuFor && !placePop(fxMenu, menuFor)) closeMenu();
   }
   function openMenu(btn) {
     closeMenu();
@@ -313,7 +334,11 @@
     if (tailorBtn) { if (tailorBtn.getAttribute("aria-checked") !== "true") setTailor(tailorBtn.dataset.setTailor, true); return; }
     const bioBtn = t.closest("[data-bio]");
     if (bioBtn) {
-      if (bio[bioBtn.dataset.bio] !== bioBtn.dataset.val) { bio[bioBtn.dataset.bio] = bioBtn.dataset.val; store.set(`bio-${bioBtn.dataset.bio}`, bioBtn.dataset.val); syncBio(true); }
+      if (bio[bioBtn.dataset.bio] !== bioBtn.dataset.val) {
+        bio[bioBtn.dataset.bio] = bioBtn.dataset.val; store.set(`bio-${bioBtn.dataset.bio}`, bioBtn.dataset.val);
+        $$(`[data-bio="${bioBtn.dataset.bio}"]`, bioSec).forEach((b) => b.setAttribute("aria-checked", String(b === bioBtn)));
+        swap([$(".list", bioSec)], syncBio);
+      }
       return;
     }
     const sortBtn = t.closest("[data-pubsort]");
@@ -350,6 +375,49 @@
   const baseTitle = document.title;
   window.addEventListener("beforeprint", () => { document.title = `Arvind Srinivasan — ${cvName()}`; closeMenu(); });
   window.addEventListener("afterprint", () => { document.title = baseTitle; });
+
+  /* ── Recipient dropdown: the native select stays in the form, hidden ────── */
+  const sel = $("#cf-to"), ddBtn = $(".dd-btn"), dd = $(".dd-menu");
+  let ddOpen = false, placeDd = () => {};
+  if (sel && ddBtn && dd) {
+    const chip = sel.closest(".to-chip"), face = $("img", chip);
+    const opts = Array.from(sel.options);
+    d.classList.add("dd-on"); ddBtn.hidden = false; ddBtn.id = "cf-to-btn"; sel.tabIndex = -1;
+    const lab = $("#cf-to-label"); if (lab) lab.htmlFor = "cf-to-btn";
+    const syncDd = () => {
+      const o = sel.selectedOptions[0] || opts[0];
+      $(".dd-val", ddBtn).innerHTML = `${esc(o.value)}<span> · ${esc(o.dataset.label || "")}</span>`;
+      $$(".dd-opt", dd).forEach((b) => b.setAttribute("aria-selected", String(+b.dataset.i === sel.selectedIndex)));
+    };
+    dd.innerHTML = opts.map((o, i) => `<button type="button" class="dd-opt" role="option" data-i="${i}" aria-selected="false">${face ? `<img src="${face.getAttribute("src")}" alt="">` : ""}<span class="dd-txt"><b>${esc(o.value)}</b><span>${esc(o.dataset.label || "")}</span></span><i class="fa-solid fa-check chk" aria-hidden="true"></i></button>`).join("");
+    syncDd();
+    placeDd = () => { if (ddOpen && !placePop(dd, chip, 256)) closeDd(); };
+    const openDd = () => {
+      ddOpen = true; dd.hidden = false; ddBtn.setAttribute("aria-expanded", "true"); placeDd();
+      const cur = $('.dd-opt[aria-selected="true"]', dd) || $(".dd-opt", dd); if (cur) cur.focus({ preventScroll: true });
+      play("open");
+    };
+    function closeDd(refocus) {
+      if (!ddOpen) return;
+      ddOpen = false; dd.hidden = true; ddBtn.setAttribute("aria-expanded", "false");
+      if (refocus) ddBtn.focus({ preventScroll: true });
+    }
+    ddBtn.addEventListener("click", () => (ddOpen ? closeDd() : openDd()));
+    ddBtn.addEventListener("keydown", (e) => { if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); openDd(); } });
+    dd.addEventListener("click", (e) => {
+      const b = e.target.closest(".dd-opt"); if (!b) return;
+      if (sel.selectedIndex !== +b.dataset.i) { sel.selectedIndex = +b.dataset.i; sel.dispatchEvent(new Event("change", { bubbles: true })); }
+      syncDd(); closeDd(true);
+    });
+    dd.addEventListener("keydown", (e) => {
+      const rows = $$(".dd-opt", dd), i = rows.indexOf(document.activeElement);
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); rows[(i + (e.key === "ArrowDown" ? 1 : -1) + rows.length) % rows.length].focus(); }
+      else if (e.key === "Escape" || e.key === "Tab") closeDd(e.key === "Escape");
+    });
+    document.addEventListener("pointerdown", (e) => { if (ddOpen && !dd.contains(e.target) && !chip.contains(e.target)) closeDd(); });
+    sel.addEventListener("change", syncDd);
+    window.addEventListener("resize", () => closeDd());
+  }
 
   /* ── Contact: a compose window ──────────────────────────────────────────── */
   const form = $("#contact-form");
@@ -529,7 +597,7 @@
     window.addEventListener("scroll", hide, { passive: true });
     document.addEventListener("pointerdown", hide);
   }
-  window.addEventListener("scroll", () => { if (menuFor) placeMenu(); }, { passive: true });
+  window.addEventListener("scroll", () => { if (menuFor) placeMenu(); placeDd(); }, { passive: true });
 
   /* ── Icon fallback: if the icon font never loads, show text labels ──────── */
   window.addEventListener("load", () => setTimeout(() => {

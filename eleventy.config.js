@@ -78,7 +78,7 @@ function cite(p, self) {
   else if (p.kind === "thesis") where = `${venue}.`;
   else where = `In <i>${venue}</i>${proc}${p.pages ? `, ${esc(p.pages)}` : ""}.`;
   const status = p.status === "to-appear" ? " To appear." : "";
-  const award = p.award ? ` <span class="hl">${esc(p.award)}.</span>` : "";
+  const award = p.award ? ` ${awardBadge(p.award)}` : "";
   let id = "";
   if (p.doi) id = ` <a class="cid" href="https://doi.org/${esc(p.doi)}">doi:${esc(p.doi)}</a>`;
   else if (p.links?.arxiv) id = ` <a class="cid" href="${esc(p.links.arxiv)}">arXiv:${esc(p.links.arxiv.replace(/.*\/abs\//, ""))}</a>`;
@@ -132,9 +132,38 @@ function venueLine(p) {
   if (p.status === "under-review") bits[0] = `Submitted to ${bits[0]}`;
   else if (!String(p.venue || "").includes(String(p.year))) bits.push(esc(p.year));
   if (p.status === "to-appear") bits.push("To appear");
-  if (p.award) bits.push(`<span class="hl">${esc(p.award)}</span>`);
+  if (p.award) bits.push(awardBadge(p.award));
   return bits.filter(Boolean).join('<span class="sep">·</span>');
 }
+
+function awardBadge(text) {
+  return `<span class="award"><i class="fa-solid fa-trophy" aria-hidden="true"></i>${esc(text)}</span>`;
+}
+
+// A sort key from whatever dates an entry carries: "2026-11", "Spring 2025",
+// "2024 — 2026", "ACM CHI 2027", end: present. Later is larger.
+const MONTH_WORDS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12, winter: 1, spring: 4, summer: 7, autumn: 10, fall: 10 };
+function dateKey(e) {
+  if (!e || typeof e !== "object") return 0;
+  if (e.end === "present") return 999999;
+  let best = 0;
+  for (const f of ["end", "date", "when", "year", "start", "venue"]) {
+    const v = e[f];
+    if (v === undefined || v === null || v === "") continue;
+    const str = String(v);
+    if (/present|now/i.test(str)) return 999999;
+    const ym = str.match(/(\d{4})-(\d{1,2})/);
+    if (ym) { best = Math.max(best, +ym[1] * 100 + +ym[2]); continue; }
+    const years = str.match(/\b(19|20)\d{2}\b/g);
+    if (!years) continue;
+    const y = Math.max(...years.map(Number));
+    const word = (str.toLowerCase().match(/[a-z]+/g) || []).map((w) => MONTH_WORDS[w.slice(0, 3)] || MONTH_WORDS[w]).find(Boolean);
+    best = Math.max(best, y * 100 + (word || (years.length > 1 ? 12 : 0)));
+  }
+  return best;
+}
+// Newest first; entries with the same date keep their order from site.yaml.
+const newestFirst = (list = []) => list.map((e, i) => ({ e, i, k: dateKey(e) })).sort((a, b) => b.k - a.k || a.i - b.i).map((x) => x.e);
 
 // "20,000 DKK", "US$400", "€500" → { v: 20000, c: "DKK" }. Anything else → null.
 const SYMBOLS = { "US$": "USD", "$": "USD", "€": "EUR", "£": "GBP", "₹": "INR", "¥": "JPY" };
@@ -185,6 +214,7 @@ export default function (eleventyConfig) {
   // 1-based position of a section in a view's order, 0 when that view hides it.
   eleventyConfig.addFilter("posIn", (order, key) => (order || []).indexOf(key) + 1);
   // "arvind@cheenu.net" → "arvind [at] cheenu.net"
+  eleventyConfig.addFilter("newestFirst", newestFirst);
   eleventyConfig.addFilter("keys", (o) => Object.keys(o || {}));
   eleventyConfig.addFilter("atSign", (e) => String(e).replace("@", " [at] "));
   eleventyConfig.addFilter("paras", (s) => String(s ?? "").trim().split(/\n\s*\n/).map((x) => x.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean));
