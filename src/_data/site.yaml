@@ -210,7 +210,7 @@ biography:
 
 # Profile links under the introduction and in the footer.
 links:
-  - { label: Google Scholar, url: "https://scholar.google.com/citations?user=lVhsLEMAAAAJ", icon: google-scholar, brand: true }
+  - { label: Scholar, url: "https://scholar.google.com/citations?user=lVhsLEMAAAAJ", icon: google-scholar, brand: true }
   - { label: GitHub, url: "https://github.com/arvindcheenu", icon: github, brand: true }
   - { label: LinkedIn, url: "https://www.linkedin.com/in/arvindcheenu", icon: linkedin, brand: true }
   - { label: ORCID, url: "https://orcid.org/0000-0002-3409-6077", icon: orcid, brand: true }
