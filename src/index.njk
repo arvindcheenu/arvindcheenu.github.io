@@ -3,23 +3,33 @@ permalink: /index.html
 ---
 {#- Everything visible comes from src/_data/site.yaml. This file only arranges it. -#}
 {%- set s = site -%}
-{%- set kinds = { journal: "Journal", conference: "Conference", article: "Article", short: "Short paper", workshop: "Workshop", abstract: "Extended abstract", demo: "Demo", poster: "Poster", preprint: "Preprint", thesis: "Thesis" } -%}
-{%- set statuses = { "to-appear": "To appear", "under-review": "Under review" } -%}
+{%- set views = s.tailor.views -%}
+{%- set dv = s.tailor.default or "research" -%}
+{%- set cur = s.currency_default or "EUR" -%}
+{%- set bioR = s.bio.research or s.bio -%}
 {%- set projectKinds = { library: "Library", tool: "Tool", research: "Research", game: "Game", infrastructure: "Infrastructure" } -%}
-{%- set actLabels = { pdf: "PDF", doi: "DOI", arxiv: "arXiv", code: "Code", video: "Video", blog: "Blog", supplement: "Supplement", poster: "Poster", web: "Web" } -%}
+{%- set actLabels = { pdf: "PDF", doi: "DOI", arxiv: "arXiv", code: "Code", video: "Video", blog: "Blog", supplement: "Supplement", poster: "Poster", web: "Project page", proquest: "ProQuest" } -%}
+{%- set actIcons = { pdf: "file-pdf", doi: "link", arxiv: "file-lines", code: "code", video: "circle-play", blog: "pen-nib", supplement: "folder-open", poster: "image", web: "globe", proquest: "book" } -%}
 {%- macro icon(name, brand=false, cls="") -%}<i class="{% if brand %}fa-brands{% elif site.fontawesome_kit %}fa-duotone fa-solid{% else %}fa-solid{% endif %} fa-{{ name }}{% if cls %} {{ cls }}{% endif %}" aria-hidden="true"></i>{%- endmacro -%}
 {%- macro edge(pos) -%}<div class="edge {{ pos }}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><b></b></div>{%- endmacro -%}
+{%- macro perView(field) -%}{% for k, v in views %}<span data-only="{{ k }}">{{ v[field] }}</span>{% endfor %}{%- endmacro -%}
+{%- macro head(key, sec) -%}
+    <div class="sec-head rv">
+      <h2 class="sec-label" id="h-{{ key }}">{% if sec.icon %}<span class="sec-ic">{{ icon(sec.icon) }}</span>{% endif %}<span>{{ sec.title | md | safe }}</span></h2>
+      {%- if caller %}{{ caller() }}{% endif %}
+    </div>
+{%- endmacro -%}
 <!doctype html>
-<html lang="en" class="at-top" data-sound="{{ 'on' if (s.sound_default | isOn) else 'off' }}" data-base="{{ s.url }}" data-tz="{{ s.timezone }}">
+<html lang="en" class="at-top" data-tailor="{{ dv }}" data-default-tailor="{{ dv }}" data-sound="{{ 'on' if (s.sound_default | isOn) else 'off' }}" data-currency="{{ cur }}" data-base="{{ s.url }}" data-tz="{{ s.timezone }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{{ s.name }} · {{ s.role }}</title>
-<meta name="description" content="{{ s.bio | join(' ') | md | striptags | truncate(155, true, '…') }}">
+<meta name="description" content="{{ bioR | join(' ') | md | striptags | truncate(155, true, '…') }}">
 <link rel="canonical" href="{{ s.url }}/">
 <meta property="og:type" content="profile">
 <meta property="og:title" content="{{ s.name }}">
-<meta property="og:description" content="{{ s.role }}">
+<meta property="og:description" content="{{ s.role }}, {{ s.affiliation }}">
 <meta property="og:url" content="{{ s.url }}/">
 {%- if s.og_image or s.photo %}
 <meta property="og:image" content="{{ s.url }}/{{ s.og_image or s.photo }}">{% endif %}
@@ -27,15 +37,20 @@ permalink: /index.html
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400..700&display=swap">
 <script>
-/* Runs before paint so the saved theme and sound setting never flash. */
+/* Runs before paint so the saved theme, sound, view and currency never flash.
+   ?for=industry in the address opens that view. */
 (function(){var d=document.documentElement,g=function(k){try{return localStorage.getItem(k)}catch(e){return null}};
 var t=g("theme");if(t==="light"||t==="dark")d.dataset.theme=t;
-var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
+var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;
+var views={{ views | keys | json | safe }},v=null;try{v=new URLSearchParams(location.search).get("for")}catch(e){}
+if(views.indexOf(v)<0)v=g("tailor");if(views.indexOf(v)>=0)d.dataset.tailor=v;
+var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
 </script>
 <style>
 {% inline "site.css" %}
@@ -56,11 +71,19 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 
 <header class="topbar" id="topbar">
   <div class="wrap bar">
-    <a class="brand" href="#top" aria-label="{{ s.name }}, back to top"><span class="mono" aria-hidden="true">{{ s.short }}</span><span class="brand-name">{{ s.name }}</span></a>
+    <a class="brand" href="#top" aria-label="{{ s.name }}, back to top">
+      {%- if s.avatar or s.photo %}<img class="mono" src="{{ s.avatar or s.photo }}" alt="" width="32" height="32" decoding="async">{% else %}<span class="mono" aria-hidden="true">{{ s.short }}</span>{% endif -%}
+      <span class="brand-name">{{ s.name }}</span>
+    </a>
     <div class="controls">
+      <div class="seg tailor" role="radiogroup" aria-label="Tailor this page for">
+        {%- for k, v in views %}
+        <button type="button" class="seg-b tac" role="radio" aria-checked="{{ 'true' if k == dv else 'false' }}" data-set-tailor="{{ k }}" data-sfx="none" title="Tailor for {{ v.label | lower }}">{{ icon(v.icon) }}<span class="seg-l">{{ v.label }}</span></button>
+        {%- endfor %}
+      </div>
       <button type="button" class="btn icon tac" data-action="sound" data-sfx="none" aria-label="Sound effects" title="Sound effects">{{ icon("volume-high", false, "i-on") }}{{ icon("volume-xmark", false, "i-off") }}<span class="fb">Sound</span></button>
       <button type="button" class="btn icon tac" data-action="theme" aria-label="Colour theme: system" title="Colour theme">{{ icon("circle-half-stroke", false, "i-system") }}{{ icon("sun", false, "i-light") }}{{ icon("moon", false, "i-dark") }}<span class="fb">Theme</span></button>
-      <button type="button" class="btn tac cv-btn" data-action="print" title="Save this CV as PDF">{{ icon("file-arrow-down") }}<span>CV</span></button>
+      <button type="button" class="btn tac cv-btn" data-action="print" title="Save as PDF">{{ icon("file-arrow-down") }}<span class="cv-l">{{ perView("cv") }}</span></button>
     </div>
   </div>
 </header>
@@ -81,45 +104,78 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
     <div class="intro" style="--i:1">
       <h1 class="name">{{ s.name }}</h1>
       <p class="role">{{ s.role }}</p>
-      {%- if s.status %}<p class="status no-print"><span class="dot" aria-hidden="true"></span>{{ s.status }}</p>{% endif %}
-      <p class="print-only contact-line"><a href="mailto:{{ s.email }}">{{ s.email }}</a> · <a href="{{ s.url }}">{{ s.url | host }}</a> · {{ s.location }}{% for l in s.links %}{% if l.brand %} · <a href="{{ l.url }}">{{ l.label }}</a>{% endif %}{% endfor %}</p>
+      <ul class="meta">
+        {%- if s.affiliation %}<li>{{ icon("building-columns") }}<span>{{ s.affiliation }}</span></li>{% endif %}
+        <li>{{ icon("location-dot") }}<span>{{ s.location }}</span></li>
+        <li class="no-print">{{ icon("clock") }}<span data-clock>&nbsp;</span></li>
+      </ul>
+      <p class="status no-print"><span class="dot" aria-hidden="true"></span>{{ perView("status") }}</p>
+      <p class="print-only contact-line"><a href="mailto:{{ s.email }}">{{ s.email }}</a>{% if s.work_email %} · <a href="mailto:{{ s.work_email }}">{{ s.work_email }}</a>{% endif %} · <a href="{{ s.url }}">{{ s.url | host }}</a>{% for l in s.links %} · <a href="{{ l.url }}">{{ l.label }}</a>{% endfor %}</p>
     </div>
     <div class="bio" style="--i:2">
-      {%- for para in s.bio %}<p>{{ para | md | safe }}</p>{% endfor %}
+      {%- if s.bio.research %}
+      {%- for k, v in views %}{% for para in s.bio[k] %}
+      <p data-only="{{ k }}"{% if loop.first %} class="lede"{% endif %}>{{ para | md | safe }}</p>
+      {%- endfor %}{% endfor %}
+      {%- else %}
+      {%- for para in s.bio %}<p{% if loop.first %} class="lede"{% endif %}>{{ para | md | safe }}</p>{% endfor %}
+      {%- endif %}
     </div>
     <div class="actions no-print" style="--i:3">
-      <div class="links">
-        {%- for l in s.links %}{% if l.primary %}
-        <a class="btn tac primary" href="{{ l.url }}">{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a>
-        {%- endif %}{% endfor %}
-        <button type="button" class="btn tac" data-action="print">{{ icon("file-arrow-down") }}<span>Download CV</span></button>
-      </div>
+      <button type="button" class="btn tac primary" data-action="print">{{ icon("file-arrow-down") }}<span>Download {{ perView("cv") }}</span></button>
       <ul class="profiles" aria-label="Profiles">
-        {%- for l in s.links %}{% if not l.primary %}
-        <li><a href="{{ l.url }}"{% if l.url.startsWith('http') %} rel="me noopener"{% endif %}>{{ icon(l.icon, l.brand) }}{{ l.label }}</a></li>
-        {%- endif %}{% endfor %}
+        {%- for l in s.links %}
+        <li><a href="{{ l.url }}"{% if l.url.startsWith('http') %} rel="me noopener"{% endif %}>{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a></li>
+        {%- endfor %}
       </ul>
     </div>
   </section>
 
-  {%- for key in s.order %}
-  {%- set title = s.sections[key] %}
+  {%- for key in s.tailor | sectionKeys %}
+  {%- set sec = s.sections[key] or { title: key } %}
   {%- if s[key] and (s[key].length or key == "biography") %}
-  <section class="sec" id="{{ key }}" aria-labelledby="h-{{ key }}">
-    <h2 class="sec-label rv" id="h-{{ key }}">{{ title | md | safe }}</h2>
+  <section class="sec" id="{{ key }}" aria-labelledby="h-{{ key }}"{% for k, v in views %} data-o-{{ k }}="{{ v.order | posIn(key) }}"{% endfor %}{% if (views[dv].order | posIn(key)) == 0 %} hidden{% endif %}>
+    {%- if key == "biography" %}
+    {%- call head(key, sec) %}
+      <div class="sec-ctl no-print">
+        <div class="seg sm" role="radiogroup" aria-label="Biography length">
+          <button type="button" class="seg-b tac" role="radio" aria-checked="true" data-bio="len" data-val="short">Short</button>
+          <button type="button" class="seg-b tac" role="radio" aria-checked="false" data-bio="len" data-val="long">Long</button>
+        </div>
+        <div class="seg sm" role="radiogroup" aria-label="Biography voice">
+          <button type="button" class="seg-b tac" role="radio" aria-checked="true" data-bio="person" data-val="third">Third person</button>
+          <button type="button" class="seg-b tac" role="radio" aria-checked="false" data-bio="person" data-val="first">First person</button>
+        </div>
+      </div>
+    {%- endcall %}
+    {%- elif key == "publications" %}
+    {%- call head(key, sec) %}
+      <div class="sec-ctl no-print">
+        <div class="seg sm" role="radiogroup" aria-label="List publications by">
+          <button type="button" class="seg-b tac" role="radio" aria-checked="true" data-pubsort="year">{{ icon("calendar") }}<span>Year</span></button>
+          <button type="button" class="seg-b tac" role="radio" aria-checked="false" data-pubsort="type">{{ icon("layer-group") }}<span>Type</span></button>
+        </div>
+      </div>
+    {%- endcall %}
+    {%- else %}
+    {{ head(key, sec) }}
+    {%- endif %}
     <div class="list">
 
     {%- if key == "biography" %}
-      {%- for k, label in { short: "Short", long: "Long" } %}{% if s.biography[k] %}
-      {%- set ps = s.biography[k] | paras %}
-      <article class="item bio-item rv">
-        <div class="when">{{ label }}</div>
+      {%- for k, v in views %}{% for len in ["short", "long"] %}{% for per in ["third", "first"] %}
+      {%- set txt = s.biography[k][len][per] if (s.biography[k] and s.biography[k][len]) else "" %}
+      {%- if txt %}
+      {%- set ps = txt | paras %}
+      <article class="item bv rv" data-v="{{ k }}-{{ len }}-{{ per }}"{% if not (k == dv and len == "short" and per == "third") %} hidden{% endif %}>
+        <div class="when">{{ ps | join(" ") | wordcount }} words</div>
         <div class="what"><div class="main">
           {%- for para in ps %}<p class="text">{{ para }}</p>{% endfor %}
-          <p class="acts no-print"><button type="button" class="tl" data-action="copy" data-copy="{{ ps | join('\n\n') }}" data-toast="{{ label }} biography copied">Copy {{ label | lower }} biography</button><span class="wc">{{ ps | join(" ") | wordcount }} words</span></p>
+          <p class="acts no-print"><button type="button" class="tl" data-action="copy" data-copy="{{ ps | join('\n\n') }}" data-toast="Biography copied">{{ icon("copy") }}Copy</button></p>
         </div></div>
       </article>
-      {%- endif %}{% endfor %}
+      {%- endif %}
+      {%- endfor %}{% endfor %}{% endfor %}
 
     {%- elif key == "news" %}
       {%- for n in s.news %}
@@ -132,31 +188,43 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
       </article>
       {%- endfor %}
       {%- if s.news.length > s.news_visible %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false"><span>Show all {{ s.news.length }}</span></button></div></div>
+      <div class="item fold-row no-print"><div class="when"></div><div class="what"><button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show all {{ s.news.length }}</span></button></div></div>
       {%- endif %}
 
     {%- elif key == "publications" %}
-      {%- for g in s.publications | pubGroups(s.pub_groups) %}
-      <h3 class="subhead rv">{{ g.title }}</h3>
-      {%- for row in g.items %}
-      {%- set p = row.p %}
-      <article class="item cite rv" id="{{ p.id }}" data-kind="{{ p.kind }}">
-        <div class="when">{{ row.label }}</div>
+      {%- for r in s.publications | pubRows(s.pub_groups) %}
+      {%- set p = r.p %}
+      {%- if r.head %}
+      <h3 class="subhead rv" data-sub>{{ r.year }}</h3>
+      {%- endif %}
+      <article class="item pub rv" id="{{ p.id }}" data-gi="{{ r.gi }}">
+        <div class="when pn" title="{{ r.group }}">{% if r.label %}{{ r.label }}{% else %}{{ icon(r.icon or "file") }}<span class="sr">{{ r.group }}</span>{% endif %}</div>
         <div class="what">
           <div class="main">
-            <p class="text">{{ p | cite(s.name) | safe }}</p>
-            {%- set hasActs = p.links or p.bibtex !== false %}
-            {%- if hasActs %}
+            <p class="text cite-r" data-only="research">{{ p | cite(s.name) | safe }}</p>
+            {%- set u = p | titleUrl %}
+            <div class="cite-i" data-only="industry">
+              <h4 class="t">{% if u %}<a href="{{ u }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h4>
+              <p class="venue">{{ p | venueLine | safe }}</p>
+              <p class="sub">{{ p.authors | authorList(s.name, p.equal) | safe }}</p>
+            </div>
+            {%- if p.images %}
+            <div class="gallery no-print" data-gallery role="list" aria-label="Images for {{ p.title }}">
+              {%- for im in p.images %}
+              <button type="button" class="g-item" role="listitem" data-src="{{ im.src }}" data-cap="{{ im.caption or im.alt }}" aria-label="View image {{ loop.index }} of {{ p.images.length }}{% if im.alt %}: {{ im.alt }}{% endif %}"><img src="{{ im.src }}" alt="" loading="lazy" decoding="async"></button>
+              {%- endfor %}
+            </div>
+            {%- endif %}
+            {%- if p.links or p.bibtex !== false %}
             <p class="acts no-print">
-              {%- for k, u in p.links %}{% if k != "arxiv" or p.doi %}<a class="tl" href="{{ u }}">{{ actLabels[k] or k }}</a>{% endif %}{% endfor %}
-              {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">BibTeX</button>{% endif %}
+              {%- for k, l in p.links %}<a class="tl" href="{{ l }}">{{ icon(actIcons[k] or "link") }}{{ actLabels[k] or k }}</a>{% endfor %}
+              {%- if p.bibtex !== false %}<button type="button" class="tl" data-action="copy" data-copy="{{ p | bibtex(s.name) }}" data-toast="BibTeX copied">{{ icon("quote-right") }}BibTeX</button>{% endif %}
             </p>
             {%- endif %}
           </div>
-          {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
+          {%- if p.image and not p.images %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
         </div>
       </article>
-      {%- endfor %}
       {%- endfor %}
       {%- if s.publications | selectattr("equal") | length %}
       <p class="item foot-note rv"><span class="when"></span><span class="what">† Equal contribution</span></p>
@@ -170,9 +238,9 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
         <div class="what">
           <div class="main">
             <h3 class="t">{% if purl %}<a href="{{ purl }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</h3>
-            <p class="sub">{{ p.summary | md | safe }}</p>
-            {%- if p.tech %}<p class="sub tech">{{ p.tech | join(" · ") }}</p>{% endif %}
-            {%- if p.links %}<p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{{ "Live" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>{% endif %}
+            <p class="text">{{ p.summary | md | safe }}</p>
+            {%- if p.tech %}<p class="tech">{{ p.tech | join(" · ") }}</p>{% endif %}
+            {%- if p.links %}<p class="acts no-print">{% for k, u in p.links %}<a class="tl" href="{{ u }}">{% if k == "code" and "github.com" in u %}{{ icon("github", true) }}{% else %}{{ icon(actIcons[k] or "link") }}{% endif %}{{ "Live" if k == "web" else (actLabels[k] or k) }}</a>{% endfor %}</p>{% endif %}
           </div>
           {%- if p.image %}<img class="thumb" src="{{ p.image }}" alt="" loading="lazy" decoding="async">{% endif %}
         </div>
@@ -185,9 +253,10 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
         <div class="when">{{ e | period }}</div>
         <div class="what"><div class="main">
           <h3 class="t">{{ e.role }}</h3>
-          <p class="sub">{{ e.org }}{% if e.place %}, {{ e.place }}{% endif %}</p>
-          {%- if e.summary %}<p class="text">{{ e.summary | md | safe }}</p>{% endif %}
-          {%- if e.tags %}<p class="sub tech">{{ e.tags | join(" · ") }}</p>{% endif %}
+          <p class="sub">{{ e.org }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>
+          {%- if e.summary %}<p class="text"{% if e.highlights %} data-only="research"{% endif %}>{{ e.summary | md | safe }}</p>{% endif %}
+          {%- if e.highlights %}<ul class="bullets"{% if e.summary %} data-only="industry"{% endif %}>{% for h in e.highlights %}<li>{{ h | md | safe }}</li>{% endfor %}</ul>{% endif %}
+          {%- if e.tags %}<p class="tech">{{ e.tags | join(" · ") }}</p>{% endif %}
         </div></div>
       </article>
       {%- endfor %}
@@ -196,7 +265,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
       {%- for t in s.teaching %}
       <article class="item rv">
         <div class="when">{{ t.when }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ t.role }}</h3><p class="sub">{{ t.org }}</p>{% if t.detail %}<p class="text">{{ t.detail | md | safe }}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><h3 class="t">{{ t.role }}</h3><p class="sub">{{ t.org }}{% if t.lead %}<span class="sep">·</span>Course led by {{ t.lead }}{% endif %}</p>{% if t.detail %}<p class="text">{{ t.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 
@@ -213,7 +282,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
       <article class="item rv">
         {%- if r.reviews %}
         <div class="when">{{ r.venue | year4 }}</div>
-        <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="hl">{{ r.note }}</span>{% endif %}</p></div></div>
+        <div class="what"><div class="main"><h3 class="t">Reviewer, {{ r.venue | noYear }}, {{ r.track }}</h3><p class="sub">{{ r.reviews }} review{% if r.reviews != 1 %}s{% endif %}{% if r.note %}<span class="sep">·</span><span class="hl">{{ icon("medal") }}{{ r.note }}</span>{% endif %}</p></div></div>
         {%- else %}
         <div class="when">{{ r.when }}</div>
         <div class="what"><div class="main"><h3 class="t">{{ r.role }}</h3>{% if r.org %}<p class="sub">{{ r.org }}</p>{% endif %}{% if r.detail %}<p class="text">{{ r.detail | md | safe }}</p>{% endif %}</div></div>
@@ -223,9 +292,19 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
 
     {%- elif key == "grants" %}
       {%- for g in s.grants %}
+      {%- set m = g.amount | money %}
       <article class="item rv">
         <div class="when">{{ g.year }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ g.title }}{% if g.amount %}<span class="sep">·</span>{{ g.amount }}{% endif %}</h3>{% if g.by %}<p class="sub">{{ g.by }}</p>{% endif %}{% if g.for %}<p class="sub">{{ g.for | md | safe }}</p>{% endif %}</div></div>
+        <div class="what"><div class="main">
+          <h3 class="t">{{ g.title }}</h3>
+          {%- if g.amount %}
+          <p class="amt">{{ g.amount }}
+            {%- if m %}{% set cv = m | convert(cur, fx) %} <button type="button" class="fx" data-fx data-v="{{ m.v }}" data-c="{{ m.c }}" aria-haspopup="menu" aria-expanded="false" title="Show in another currency"{% if m.c == cur or cv === null %} hidden{% endif %}>(≈&nbsp;<span class="fx-v">{{ cv | fmtMoney(cur) if cv !== null else "" }}</span>{{ icon("chevron-down", false, "fx-chev") }})</button>{% endif %}
+          </p>
+          {%- endif %}
+          {%- if g.by %}<p class="sub">{{ g.by }}</p>{% endif %}
+          {%- if g.for %}<p class="sub">{{ g.for | md | safe }}</p>{% endif %}
+        </div></div>
       </article>
       {%- endfor %}
 
@@ -241,7 +320,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
       {%- for e in s.education %}
       <article class="item rv">
         <div class="when">{{ e | period }}</div>
-        <div class="what"><div class="main"><h3 class="t">{{ e.degree }}</h3><p class="sub">{{ e.org }}{% if e.place %}, {{ e.place }}{% endif %}</p>{% if e.detail %}<p class="text">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><h3 class="t">{{ e.degree }}</h3><p class="sub">{{ e.org }}{% if e.place %}<span class="sep">·</span>{{ e.place }}{% endif %}</p>{% if e.detail %}<p class="text">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
       </article>
       {%- endfor %}
 
@@ -249,15 +328,7 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
       {%- for g in s.skills %}
       <article class="item rv">
         <div class="when">{{ g.group }}</div>
-        <div class="what"><div class="main"><p class="text">{{ g.items | join(", ") }}</p></div></div>
-      </article>
-      {%- endfor %}
-
-    {%- elif key == "elsewhere" %}
-      {%- for e in s.elsewhere %}
-      <article class="item rv">
-        <div class="when">{{ e.kind }}</div>
-        <div class="what"><div class="main"><h3 class="t"><a href="{{ e.url }}">{{ e.label }}</a></h3>{% if e.detail %}<p class="sub">{{ e.detail | md | safe }}</p>{% endif %}</div></div>
+        <div class="what"><div class="main"><ul class="chips">{% for it in g.items %}<li>{{ it }}</li>{% endfor %}</ul></div></div>
       </article>
       {%- endfor %}
     {%- endif %}
@@ -267,49 +338,84 @@ var sn=g("sound");if(sn==="on"||sn==="off")d.dataset.sound=sn;})();
   {%- endif %}
   {%- endfor %}
 
+  {%- set cf = s.contact_form or {} %}
+  {%- set csec = s.sections.contact or { title: "Contact", icon: "envelope" } %}
   <section class="sec contact no-print" id="contact" aria-labelledby="h-contact">
-    <h2 class="sec-label rv" id="h-contact">Contact</h2>
-    <div class="list">
-      <div class="item rv">
-        <div class="when">Email</div>
-        <div class="what"><div class="main">
-          <p class="t"><a href="mailto:{{ s.email }}">{{ s.email }}</a></p>
-          <p class="sub">{% if s.work_email %}University <a href="mailto:{{ s.work_email }}">{{ s.work_email }}</a><span class="sep">·</span>{% endif %}{{ s.location }}<span class="sep">·</span><span class="clock" data-clock>&nbsp;</span></p>
-        </div></div>
+    {{ head("contact", csec) }}
+    <form class="mail rv" id="contact-form" novalidate data-endpoint="{{ cf.endpoint }}" data-subject="{{ cf.subject }}">
+      <div class="mail-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="mail-title">New message</span></div>
+      <div class="mail-row">
+        <label class="mail-k" for="cf-to">To</label>
+        <div class="to-chip">
+          {%- if s.avatar or s.photo %}<img src="{{ s.avatar or s.photo }}" alt="" width="24" height="24" loading="lazy">{% endif %}
+          <select id="cf-to" name="to">
+            {%- for r in cf.recipients or [{ label: "Email", email: s.email }] %}
+            <option value="{{ r.email }}" data-key="{{ r.access_key }}" data-label="{{ r.label }}">{{ r.email }} · {{ r.label }}</option>
+            {%- endfor %}
+          </select>
+          {{ icon("chevron-down", false, "chev") }}
+        </div>
       </div>
-      <div class="item rv">
-        <div class="when">Message</div>
-        <div class="what"><div class="main">
-          {%- set cf = s.contact_form or {} %}
-          <form class="form" id="contact-form" novalidate data-endpoint="{{ cf | formEndpoint }}" data-key="{{ cf.access_key }}" data-subject="{{ cf.subject }}" data-to="{{ s.email }}">
-            <div class="field">
-              <label for="cf-name">Name</label>
-              <input id="cf-name" name="name" type="text" autocomplete="name" required>
-            </div>
-            <div class="field">
-              <label for="cf-email">Email</label>
-              <input id="cf-email" name="email" type="email" autocomplete="email" required>
-            </div>
-            <div class="field wide">
-              <label for="cf-message">Message</label>
-              <textarea id="cf-message" name="message" rows="5" required></textarea>
-            </div>
-            <input class="hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <div class="form-foot wide">
-              <button type="submit" class="btn tac primary">{{ icon("paper-plane") }}<span>Send message</span></button>
-              <button type="button" class="btn tac" data-action="copy" data-copy="{{ s.email }}" data-toast="Email address copied">{{ icon("copy") }}<span>Copy email</span></button>
-              <p class="form-status" role="status" aria-live="polite"></p>
-            </div>
-          </form>
-        </div></div>
+      <div class="mail-row">
+        <label class="mail-k" for="cf-name">From</label>
+        <div class="mail-from">
+          <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Your name" required>
+          <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email" required>
+        </div>
       </div>
-    </div>
+      <div class="mail-row">
+        <label class="mail-k" for="cf-subject">Subject</label>
+        <input id="cf-subject" name="subject" type="text" placeholder="What is this about?">
+      </div>
+      <textarea id="cf-message" class="mail-body" name="message" rows="7" placeholder="Write your message…" aria-label="Message" required></textarea>
+      <input class="hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="mail-foot">
+        <button type="submit" class="btn tac primary">{{ icon("paper-plane") }}<span>Send</span></button>
+        <button type="button" class="btn icon tac" data-action="copy-to" title="Copy this address" aria-label="Copy this address">{{ icon("copy") }}</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
   </section>
 </main>
 
-<footer class="wrap foot no-print">
-  <p>© {% buildYear %} {{ s.name }}<span class="sep">·</span>Updated {% buildDate %}<span class="sep">·</span><a href="#top">Back to top</a></p>
+<footer class="foot no-print" id="footer">
+  <div class="wrap">
+    <p class="foot-name">{{ s.name }}</p>
+    <div class="foot-grid">
+      <div class="foot-col">
+        <p class="foot-muted">{{ s.name }}</p>
+        <p><a class="ob" href="mailto:{{ s.email }}">{{ s.email | atSign }}</a></p>
+        {%- if s.work_email %}<p><a class="ob" href="mailto:{{ s.work_email }}">{{ s.work_email | atSign }}</a></p>{% endif %}
+      </div>
+      <ul class="foot-col foot-links">
+        {%- for l in s.links %}
+        <li><a href="{{ l.url }}" rel="me noopener">{{ icon(l.icon, l.brand) }}<span>{{ l.label }}</span></a></li>
+        {%- endfor %}
+      </ul>
+      <p class="foot-col foot-muted">{{ s.footer | md | safe }}</p>
+    </div>
+    <p class="foot-meta">© {% buildYear %} {{ s.name }}<span class="sep">·</span>Updated {% buildDate %}<span class="sep">·</span><span data-clock>&nbsp;</span></p>
+  </div>
 </footer>
+
+<div class="floats no-print" inert>
+  <a class="btn tac icon float float-l" href="#contact" data-float="mail" aria-label="Email" title="Email">{{ icon("envelope") }}</a>
+  <a class="btn tac icon float float-r" href="#top" aria-label="Back to top" title="Back to top">{{ icon("arrow-up") }}</a>
+</div>
+
+<div class="fx-menu" role="menu" aria-label="Currency" hidden>
+  <p class="fx-head"></p>
+  <div class="fx-list"></div>
+  <p class="fx-note"></p>
+</div>
+<script type="application/json" id="fx-data">{{ { rates: fx.rates, date: fx.date, list: s.currencies, def: cur } | json | safe }}</script>
+
+<dialog class="lightbox" aria-label="Image viewer">
+  <figure><img alt=""><figcaption><span class="lb-cap"></span><span class="lb-n"></span></figcaption></figure>
+  <button type="button" class="btn icon tac lb-prev" aria-label="Previous image">{{ icon("chevron-left") }}</button>
+  <button type="button" class="btn icon tac lb-next" aria-label="Next image">{{ icon("chevron-right") }}</button>
+  <button type="button" class="btn icon tac lb-close" aria-label="Close">{{ icon("xmark") }}</button>
+</dialog>
 
 <div class="qr-pop" aria-hidden="true"><div class="qr-code"></div><div class="qr-cap"></div></div>
 <div class="toast" role="status" aria-live="polite"></div>

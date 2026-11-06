@@ -6,8 +6,12 @@
 #  • `image:` is optional on news, publications and projects. Put the file in
 #    src/assets/ and write `image: assets/name.webp`. Leave it out for none.
 #    Keep images small: about 640 px wide, WebP, under 80 KB.
+#  • `images:` (a list) shows a strip of pictures that open full size, as on the
+#    Attention-Aware Visualization publication below. Keep each under 1200 px.
 #  • Dates are YYYY-MM (or YYYY). Use `end: present` for ongoing roles.
 #  • Empty values are skipped, so a half-filled entry never shows "[todo]".
+#  • A field written as { research: …, industry: … } shows the matching text
+#    for whichever way the page is tailored (the Research / Industry switch).
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: Arvind Srinivasan
@@ -17,100 +21,217 @@ location: Aarhus, Denmark
 timezone: Europe/Copenhagen
 email: arvind@cheenu.net
 work_email: arvind@cs.au.dk
-photo: assets/profile.webp        # remove to fall back to initials
+photo: assets/profile.webp         # remove to fall back to initials
+avatar: assets/avatar-96.webp      # small round portrait for the top bar and the form
 og_image: assets/profile-og.jpg    # preview image for link unfurls
 
 # Font Awesome Pro kit id: the part between kit.fontawesome.com/ and .js.
 # Leave blank to fall back to Font Awesome Free (solid icons, no duotone).
 fontawesome_kit: ""
 
-# Contact form. Get a free access key at web3forms.com (it emails you the key)
-# and paste it below; messages then arrive at the address you signed up with.
-# Any service that accepts a JSON POST works: put its URL in `endpoint`.
-# With no key and no endpoint the form opens the visitor's mail app instead.
+# Contact form, laid out like an email. Visitors pick a recipient in "To".
+# Get a free access key per address at web3forms.com (each key delivers to the
+# address you signed up with) and paste it next to that address. A recipient
+# without a key opens the visitor's mail app instead, addressed to that email.
 contact_form:
   endpoint: https://api.web3forms.com/submit
-  access_key: ""
   subject: New message from arvindchee.nu
+  recipients:
+    - { label: Personal, email: arvind@cheenu.net, access_key: "" }
+    - { label: University, email: arvind@cs.au.dk, access_key: "" }
+
+# Grant amounts convert live into the visitor's chosen currency. Rates come
+# from the European Central Bank via frankfurter.dev, refreshed on every visit.
+currency_default: EUR
+currencies: [EUR, USD, DKK, GBP, INR, SEK, NOK, CHF, JPY]
 
 # Sounds play on button presses. Visitors can mute them; this is the default.
 sound_default: on
 
+# ── Tailoring ───────────────────────────────────────────────────────────────
+# The Research / Industry switch in the top bar. Each view has its own section
+# order, status line and CV title. Links can open a view: arvindchee.nu/?for=industry
+tailor:
+  default: research
+  views:
+    research:
+      label: Research
+      icon: flask
+      cv: CV
+      status: Open to postdoc and research roles from January 2027
+      order: [news, biography, education, experience, publications, grants, awards, talks, teaching, service, projects, skills]
+    industry:
+      label: Industry
+      icon: briefcase
+      cv: Résumé
+      status: Open to research scientist and research engineer roles from January 2027
+      order: [news, biography, experience, projects, skills, education, publications, awards, talks, teaching, grants, service]
+
 # ── Introduction ────────────────────────────────────────────────────────────
-role: PhD candidate in visualization and HCI, Aarhus University
-status: Open to postdoc and research roles from January 2027
+role: PhD candidate in visualization and HCI
+affiliation: Center for Anytime Anywhere Analytics, Aarhus University
 ring: "Open to work · From January 2027 · "   # text spinning round the portrait
 bio:
-  - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later.
-  - "My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, systems that capture, record and revisualize where people look for four readers, each further from the moment it happened: the analyst during their own task, collaborators sharing a mixed-reality space, an observer reviewing the session afterwards, and a stranger who only receives the findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2."
-  - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
+  research:
+    - I build systems that record where people look and show it back to them, their collaborators and the people who read their work later.
+    - "My PhD at the Center for Anytime Anywhere Analytics (CA³), [Aarhus University](https://cs.au.dk), with [Niklas Elmqvist](https://cs.au.dk/~elm/), develops *attention-aware analytics*, systems that capture, record and revisualize where people look for four readers, each further from the moment it happened: the analyst during their own task, collaborators sharing a mixed-reality space, an observer reviewing the session afterwards, and a stranger who only receives the findings. I build these systems myself for the web, Meta Quest 3 and HoloLens 2."
+    - Before Aarhus I did a master's in HCI at the University of Maryland with Joel Chan, building creativity support tools for analogical reasoning and running early studies of LLMs as analogy generators. Next, I want attention to become a first-class signal in data work that people share with AI agents.
+  industry:
+    - I build analytics interfaces that track where people look and put that record to use, for the person at the screen, for collaborators in the same mixed-reality space, and for whoever picks up the analysis next.
+    - "At the Center for Anytime Anywhere Analytics, Aarhus University, I write these systems end to end for the web, Meta Quest 3 and HoloLens 2: gaze capture, per-mark visibility tracking, event-logged back ends and the views that replay them. I run the user studies that test them, and I maintain [heed](https://heed.arvindchee.nu), an open-source toolkit that records attention on any web page."
+    - Before Aarhus I did a master's in HCI at the University of Maryland and worked as a UX intern at Tetrate, redesigning its core platform for a new brand identity. I work mostly in TypeScript, React, WebXR, Python and Unity.
 
-# Third-person biographies for talk introductions, programmes and applications.
-# Each has a Copy button on the page. Separate paragraphs with a blank line.
+# Biographies for talk introductions, programmes and applications. The page has
+# Short / Long and First / Third person switches; the Research / Industry switch
+# picks the set. Separate paragraphs with a blank line.
 biography:
-  short: >-
-    Arvind Srinivasan is a PhD candidate at the Center for Anytime Anywhere Analytics,
-    Aarhus University, advised by Niklas Elmqvist. He builds systems that capture,
-    record and revisualize where people look, from a single analyst at a dashboard to
-    collaborators sharing a mixed-reality space. His work appears in IEEE TVCG and at
-    IEEE VIS and ACM Creativity & Cognition, where two of his papers received Best
-    Paper Honorable Mentions.
-  long: |
-    Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University. He
-    joined the Center for Anytime Anywhere Analytics (CA³) as one of its first hires and
-    is advised by Niklas Elmqvist. His research develops attention-aware analytics,
-    systems that capture where people look during analysis, record it, and show it back
-    to a reader. His thesis follows that record outward from the person who produced it,
-    to collaborators sharing a mixed-reality space, to an observer reviewing a session
-    afterwards, and to a stranger who receives only the findings. He builds these systems
-    himself for the web, Meta Quest 3 and HoloLens 2, and has published them in IEEE TVCG
-    and at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a
-    visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair, studying
-    gaze in band rehearsals with mobile eye tracking.
+  research:
+    short:
+      third: >-
+        Arvind Srinivasan is a PhD candidate at the Center for Anytime Anywhere Analytics,
+        Aarhus University, advised by Niklas Elmqvist. He builds systems that capture,
+        record and revisualize where people look, from a single analyst at a dashboard to
+        collaborators sharing a mixed-reality space. His work appears in IEEE TVCG and at
+        IEEE VIS and ACM Creativity & Cognition, where two of his papers received Best
+        Paper Honorable Mentions.
+      first: >-
+        I am a PhD candidate at the Center for Anytime Anywhere Analytics, Aarhus
+        University, advised by Niklas Elmqvist. I build systems that capture, record and
+        revisualize where people look, from a single analyst at a dashboard to
+        collaborators sharing a mixed-reality space. My work appears in IEEE TVCG and at
+        IEEE VIS and ACM Creativity & Cognition, where two of my papers received Best
+        Paper Honorable Mentions.
+    long:
+      third: |
+        Arvind Srinivasan is a PhD candidate in Computer Science at Aarhus University. He
+        joined the Center for Anytime Anywhere Analytics (CA³) as one of its first hires and
+        is advised by Niklas Elmqvist. His research develops attention-aware analytics,
+        systems that capture where people look during analysis, record it, and show it back
+        to a reader. His thesis follows that record outward from the person who produced it,
+        to collaborators sharing a mixed-reality space, to an observer reviewing a session
+        afterwards, and to a stranger who receives only the findings. He builds these systems
+        himself for the web, Meta Quest 3 and HoloLens 2, and has published them in IEEE TVCG
+        and at workshops of ACM CHI and ACM ETRA. From October 2025 to February 2026 he was a
+        visiting researcher at VISUS, University of Stuttgart, with Michael Sedlmair, studying
+        gaze in band rehearsals with mobile eye tracking.
 
-    Before Aarhus, he earned an MS in Human-Computer Interaction at the University of
-    Maryland, where he worked with Joel Chan on creativity support tools for analogical
-    reasoning and on early studies of large language models as analogy generators. That
-    work received Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and
-    2024. He holds a BTech in Computer Science and Engineering from SRM Institute of
-    Science and Technology, and worked as a user experience intern at Tetrate. He
-    maintains open-source tools including heed, Elicitation Lab, SciFig and Matercolors,
-    and teaches on the Data Visualization course at Aarhus University.
+        Before Aarhus, he earned an MS in Human-Computer Interaction at the University of
+        Maryland, where he worked with Joel Chan on creativity support tools for analogical
+        reasoning and on early studies of large language models as analogy generators. That
+        work received Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and
+        2024. He holds a BTech in Computer Science and Engineering from SRM Institute of
+        Science and Technology, and worked as a user experience intern at Tetrate. He
+        maintains open-source tools including heed, Elicitation Lab, SciFig and Matercolors,
+        and teaches on the Data Visualization course at Aarhus University.
+      first: |
+        I am a PhD candidate in Computer Science at Aarhus University. I joined the Center
+        for Anytime Anywhere Analytics (CA³) as one of its first hires, and I am advised by
+        Niklas Elmqvist. My research develops attention-aware analytics, systems that capture
+        where people look during analysis, record it, and show it back to a reader. My thesis
+        follows that record outward from the person who produced it, to collaborators sharing
+        a mixed-reality space, to an observer reviewing a session afterwards, and to a
+        stranger who receives only the findings. I build these systems myself for the web,
+        Meta Quest 3 and HoloLens 2, and have published them in IEEE TVCG and at workshops of
+        ACM CHI and ACM ETRA. From October 2025 to February 2026 I was a visiting researcher
+        at VISUS, University of Stuttgart, with Michael Sedlmair, studying gaze in band
+        rehearsals with mobile eye tracking.
 
-# Sections in page order. Remove a line to hide that section.
-order: [news, biography, education, experience, publications, projects, skills, grants, awards, talks, teaching, service]
+        Before Aarhus, I earned an MS in Human-Computer Interaction at the University of
+        Maryland, where I worked with Joel Chan on creativity support tools for analogical
+        reasoning and on early studies of large language models as analogy generators. That
+        work received Best Paper Honorable Mentions at ACM Creativity & Cognition in 2023 and
+        2024. I hold a BTech in Computer Science and Engineering from SRM Institute of Science
+        and Technology, and worked as a user experience intern at Tetrate. I maintain
+        open-source tools including heed, Elicitation Lab, SciFig and Matercolors, and I
+        teach on the Data Visualization course at Aarhus University.
+  industry:
+    short:
+      third: >-
+        Arvind Srinivasan builds analytics interfaces that track and respond to where people
+        look. At the Center for Anytime Anywhere Analytics, Aarhus University, he has built
+        attention-aware systems for the web, Meta Quest 3 and HoloLens 2, and he maintains
+        heed, an open-source toolkit that records attention on any web page. He works in
+        TypeScript, React, WebXR, Python and Unity, and runs the user studies that test what
+        he builds.
+      first: >-
+        I build analytics interfaces that track and respond to where people look. At the
+        Center for Anytime Anywhere Analytics, Aarhus University, I have built
+        attention-aware systems for the web, Meta Quest 3 and HoloLens 2, and I maintain
+        heed, an open-source toolkit that records attention on any web page. I work in
+        TypeScript, React, WebXR, Python and Unity, and I run the user studies that test what
+        I build.
+    long:
+      third: |
+        Arvind Srinivasan builds analytics interfaces that track and respond to where people
+        look. As a PhD fellow at the Center for Anytime Anywhere Analytics (CA³), Aarhus
+        University, where he was one of the first hires, he took attention-aware
+        visualization from a single-user web prototype to co-located collaboration in WebXR
+        on Meta Quest 3 and to asynchronous handoff between analysts. He wrote the gaze
+        capture, per-mark visibility tracking and event-logged back end himself and ran the
+        user studies behind each step. He also helped build the centre's website,
+        publication pipeline and shared tooling.
 
-# Links under the bio. The `primary: true` link becomes the filled button.
+        He maintains open-source tools including heed, which records attention on any web
+        page from cursor, viewport and webcam gaze; Elicitation Lab, an offline
+        requirements-elicitation simulator; SciFig, a generator for research figures; and
+        Matercolors, a palette library on npm. Before his PhD he earned an MS in
+        Human-Computer Interaction at the University of Maryland, where he built a
+        paper-processing pipeline and Elasticsearch-based analogical search as a graduate
+        research assistant, and he redesigned Tetrate's core platform for a new brand
+        identity as a UX intern. His work has appeared in IEEE TVCG and received two Best
+        Paper Honorable Mentions at ACM Creativity & Cognition.
+      first: |
+        I build analytics interfaces that track and respond to where people look. As a PhD
+        fellow at the Center for Anytime Anywhere Analytics (CA³), Aarhus University, where I
+        was one of the first hires, I took attention-aware visualization from a single-user
+        web prototype to co-located collaboration in WebXR on Meta Quest 3 and to
+        asynchronous handoff between analysts. I wrote the gaze capture, per-mark visibility
+        tracking and event-logged back end myself and ran the user studies behind each step.
+        I also helped build the centre's website, publication pipeline and shared tooling.
+
+        I maintain open-source tools including heed, which records attention on any web page
+        from cursor, viewport and webcam gaze; Elicitation Lab, an offline
+        requirements-elicitation simulator; SciFig, a generator for research figures; and
+        Matercolors, a palette library on npm. Before my PhD I earned an MS in
+        Human-Computer Interaction at the University of Maryland, where I built a
+        paper-processing pipeline and Elasticsearch-based analogical search as a graduate
+        research assistant, and I redesigned Tetrate's core platform for a new brand
+        identity as a UX intern. My work has appeared in IEEE TVCG and received two Best
+        Paper Honorable Mentions at ACM Creativity & Cognition.
+
+# Profile links under the introduction and in the footer.
 links:
-  - { label: Email, url: "mailto:arvind@cheenu.net", icon: envelope, primary: true }
   - { label: Google Scholar, url: "https://scholar.google.com/citations?user=lVhsLEMAAAAJ", icon: google-scholar, brand: true }
   - { label: GitHub, url: "https://github.com/arvindcheenu", icon: github, brand: true }
   - { label: LinkedIn, url: "https://www.linkedin.com/in/arvindcheenu", icon: linkedin, brand: true }
   - { label: ORCID, url: "https://orcid.org/0000-0002-3409-6077", icon: orcid, brand: true }
-  - { label: Medium, url: "https://arvindcheenu.medium.com", icon: medium, brand: true }
+
+# One line on the right of the footer.
+footer: PhD candidate at Aarhus University, working at the Center for Anytime Anywhere Analytics.
 
 # ── Sections ────────────────────────────────────────────────────────────────
+# Heading and Font Awesome icon for each section. Order lives under `tailor`.
 sections:
-  news: News
-  biography: Biography
-  education: Education
-  experience: Experience
-  publications: Publications
-  projects: Active OSS projects
-  skills: Skills
-  grants: Grants
-  awards: Honors & awards
-  talks: Talks
-  teaching: Teaching
-  service: Service
-  elsewhere: Elsewhere
+  news: { title: News, icon: newspaper }
+  biography: { title: Biography, icon: id-card }
+  education: { title: Education, icon: graduation-cap }
+  experience: { title: Experience, icon: briefcase }
+  publications: { title: Publications, icon: book-open }
+  projects: { title: Active OSS projects, icon: code-branch }
+  skills: { title: Skills, icon: screwdriver-wrench }
+  grants: { title: Grants, icon: coins }
+  awards: { title: Honors & awards, icon: trophy }
+  talks: { title: Talks, icon: microphone-lines }
+  teaching: { title: Teaching, icon: chalkboard-user }
+  service: { title: Service, icon: handshake-angle }
+  contact: { title: Contact, icon: envelope }
 
 # Newest first. The first `news_visible` items show; the rest fold away.
 news_visible: 6
 news:
   - date: 2026-11
     text: Presenting **HeedVision**, attention awareness for pairs analysing data in mixed reality, at IEEE VIS 2026.
-    link: https://arxiv.org/abs/2505.07069
+    link: https://heedvision.arvindchee.nu
   - date: 2026-10
     text: Released [heed](https://heed.arvindchee.nu), an open-source toolkit that records attention on any web page from cursor, viewport and webcam gaze.
   - date: 2026-09
@@ -136,22 +257,24 @@ news:
     text: Started my PhD at CA³, Aarhus University.
 
 # ── Publications ────────────────────────────────────────────────────────────
-# Groups appear in this order. Entries with a prefix are numbered newest first
-# (J3, J2, J1); entries without one show their year. Items land in the first group
+# Listed by year by default; visitors can switch to grouping by type. Types with
+# a prefix are numbered newest first (J3, J2, J1). Items land in the first group
 # whose `kinds` include their kind; `status: under-review` goes to that group.
+# The Research view shows each entry as a citation; Industry leads with the title.
 pub_groups:
   - { title: Journal articles, prefix: J, kinds: [journal, article] }
   - { title: Conference papers, prefix: C, kinds: [conference] }
   - { title: Workshop papers, prefix: W, kinds: [workshop, short] }
   - { title: "Posters, demos and extended abstracts", prefix: P, kinds: [poster, demo, abstract] }
-  - { title: Under review, status: under-review }
-  - { title: Preprints, kinds: [preprint] }
-  - { title: Theses, kinds: [thesis] }
+  - { title: Under review, status: under-review, icon: hourglass-half }
+  - { title: Preprints, kinds: [preprint], icon: file-lines }
+  - { title: Theses, kinds: [thesis], icon: scroll }
 
 # kind: journal | conference | article | short | workshop | abstract | demo | poster | preprint | thesis
 # status: published (default) | to-appear | under-review
+# url: where the title links (defaults to the DOI, then arXiv, then the PDF)
 # equal: names that share first authorship (marked with †)
-# links: any of pdf, doi, arxiv, code, video, blog, supplement, poster, web
+# links: any of pdf, doi, arxiv, code, video, blog, supplement, poster, web, proquest
 # bibtex: generated automatically; set `bibtex: false` to hide the button
 publications:
   - id: srinivasan2027amanuensis
@@ -173,7 +296,9 @@ publications:
     year: 2026
     kind: journal
     status: to-appear
+    url: https://heedvision.arvindchee.nu
     links:
+      web: https://heedvision.arvindchee.nu
       arxiv: https://arxiv.org/abs/2505.07069
 
   - id: hubenschmid2026ambient
@@ -235,7 +360,12 @@ publications:
     year: 2025
     kind: journal
     doi: 10.1109/TVCG.2024.3456300
-    # image: assets/pubs/srinivasan2025attention.webp
+    # Sample of several images on one entry: the teaser and its three panels.
+    images:
+      - { src: assets/pubs/aav/aav-teaser.webp, alt: "Teaser figure of Attention-Aware Visualization", caption: "Attention-aware visualization in 3D on Meta Quest 3 and in 2D with a Pupil Labs Neon eye tracker." }
+      - { src: assets/pubs/aav/aav-techniques.webp, alt: "Explicit heatmap, implicit desaturation and always-on heatmap techniques", caption: "Three ways of showing attention: explicit heatmap, implicit desaturation and an always-on heatmap." }
+      - { src: assets/pubs/aav/aav-devices.webp, alt: "Input signals for 3D and 2D attention tracking", caption: "Orientation, rotation and location drive the 3D version; gaze, pointer and keys drive the 2D one." }
+      - { src: assets/pubs/aav/aav-frames.webp, alt: "Bar, area and heat frames around a chart", caption: "Bar, area and heat frames summarise cumulative attention along each axis." }
     links:
       pdf: https://arxiv.org/pdf/2404.10732
       supplement: https://osf.io/8mfhp/
@@ -290,7 +420,7 @@ publications:
     year: 2023
     kind: thesis
     links:
-      web: https://www.proquest.com/openview/5c1d854b35961b28251685dd7095fcba/
+      proquest: https://www.proquest.com/openview/5c1d854b35961b28251685dd7095fcba/
 
   - id: srinivasan2022hotshots
     title: "Hotshots: Visualizing Stroke-by-Stroke Tennis Data"
@@ -312,6 +442,8 @@ publications:
     bibtex: false
 
 # ── Experience ──────────────────────────────────────────────────────────────
+# `summary` is the paragraph the Research view shows; `highlights` are the
+# bullet points the Industry view shows. Either can be left out.
 experience:
   - role: PhD Fellow
     org: Center for Anytime Anywhere Analytics (CA³), Aarhus University
@@ -319,6 +451,11 @@ experience:
     start: 2024-01
     end: present
     summary: One of the centre's first hires; helped build its website, publication pipeline and shared tooling. Took attention-aware visualization from a single-user web prototype to co-located WebXR collaboration on Meta Quest 3 and asynchronous handoff between analysts, building gaze capture, per-mark visibility tracking and an event-logged backend, and running the user studies behind each step.
+    highlights:
+      - Built attention-aware analytics end to end for the web, Meta Quest 3 and HoloLens 2, from gaze capture and per-mark visibility tracking to an event-logged back end.
+      - Took the work from a single-user web prototype to co-located WebXR collaboration and asynchronous handoff between analysts, running the user study behind each step.
+      - Released [heed](https://heed.arvindchee.nu), an open-source toolkit that records attention on any web page.
+      - One of the centre's first hires; helped build its website, publication pipeline and shared tooling.
     tags: [WebXR, React Three Fiber, Unity, eye tracking, user studies]
 
   - role: Visiting PhD Researcher
@@ -327,6 +464,10 @@ experience:
     start: 2025-10
     end: 2026-02
     summary: Hosted by Michael Sedlmair. Analysed mobile eye-tracking recordings of band rehearsals (Pupil Labs Neon) with YOLOv8-assisted area-of-interest annotation.
+    highlights:
+      - Analysed mobile eye-tracking recordings of band rehearsals captured with Pupil Labs Neon.
+      - Used YOLOv8 to assist area-of-interest annotation across the recordings.
+      - Published the study at the ETVIS 2026 workshop at ACM ETRA.
     tags: [Pupil Labs Neon, YOLOv8, Python]
 
   - role: Graduate Research Assistant
@@ -335,6 +476,10 @@ experience:
     start: 2022-06
     end: 2023-08
     summary: With Joel Chan. Prototyped a sociotechnical analogical matchmaking system, a Python pipeline for processing research papers, and Elasticsearch-based analogical search.
+    highlights:
+      - Prototyped a sociotechnical system that matches researchers through analogies between their problems.
+      - Wrote a Python pipeline for processing research papers and an Elasticsearch-based analogical search.
+      - Work from this period received two Best Paper Honorable Mentions at ACM Creativity & Cognition.
     tags: [Python, Elasticsearch, React]
 
   - role: User Experience Intern
@@ -343,6 +488,9 @@ experience:
     start: 2020-09
     end: 2021-03
     summary: Redesigned the core platform for a new brand identity, from information architecture to multi-fidelity Figma prototypes.
+    highlights:
+      - Redesigned the core platform for a new brand identity.
+      - Took the redesign from information architecture to multi-fidelity Figma prototypes.
     tags: [Figma, design systems]
 
 # ── Education ───────────────────────────────────────────────────────────────
@@ -428,15 +576,19 @@ projects:
   #   tech: [Eleventy, Unity, MongoDB]
 
 # ── Teaching ────────────────────────────────────────────────────────────────
+# `lead` names the person who runs the course.
 teaching:
   - role: Teaching assistant, Data Visualization
     org: Aarhus University
+    lead: Hans-Jörg Schulz
     when: 2024 — 2026
     detail: Autumn 2024, a double load in autumn 2025, and a half load in autumn 2026. TA sessions, weekly critique exercises and the mock oral exam. Developed [visualization.info](https://visualization.info/), the course's curated index of visualization teaching material (2025), and [Elicitation Lab](https://arvindchee.nu/elicitation-lab/), an offline client persona for requirements-elicitation practice (2026).
   - role: Teaching assistant, Implementation and Applications of Databases
     org: Aarhus University
+    lead: Ira Assent
     when: Spring 2025
-  - role: Guest lecture, Summer School of Data Visualization
+    detail: 70 hours of TA duties. Ran 3 hours of exercise sessions and 2 hours of Study Café sessions, and graded 25 of the course's 100 students.
+  - role: Guest TA lecture, Data Visualization Summer School
     org: Aarhus University
     when: March 2024
 
@@ -488,6 +640,8 @@ service:
     detail: Grouped the centre's researchers by research problem to start collaborations.
 
 # ── Grants ──────────────────────────────────────────────────────────────────
+# Write amounts with a currency code (20,000 DKK) or a symbol (US$400, €500, £300).
+# The page adds the converted value in brackets; visitors click it to switch currency.
 grants:
   - title: International Mobility Grant
     by: ""
@@ -540,14 +694,3 @@ skills:
     items: [Figma, Prototyping, Design systems]
   - group: Spoken
     items: [Tamil (native), English (fluent)]
-
-# ── Elsewhere (hidden; add `elsewhere` to `order` to show it) ──────────────
-elsewhere:
-  - kind: Writing
-    label: Medium
-    detail: Posts on research and tools, including *When Data Pays Attention*.
-    url: https://arvindcheenu.medium.com
-  # - kind: Writing
-  #   label: Ponderlust
-  #   detail: Essays and poetry on time, meaning and lived experience.
-  #   url: https://…

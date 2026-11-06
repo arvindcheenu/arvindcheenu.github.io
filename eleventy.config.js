@@ -48,17 +48,6 @@ function bibtex(p, siteName) {
   return `@${type}{${p.id},\n${body}\n}`;
 }
 
-// Full author list, the site owner in bold, equal contribution marked with †.
-function authors(list, self, equal = []) {
-  if (!list) return "";
-  return list
-    .map((n) => {
-      const mark = equal.includes(n) ? "†" : "";
-      return n === self ? `<b class="self">${esc(n)}${mark}</b>` : `${esc(n)}${mark}`;
-    })
-    .join(", ");
-}
-
 // "A, B, and C" with the site owner in bold, as in ACM reference style.
 function authorList(list = [], self, equal = []) {
   const fmt = (n) => {
@@ -74,7 +63,7 @@ function authorList(list = [], self, equal = []) {
 // One publication as a citation: authors. year. title. venue details. award. doi.
 function cite(p, self) {
   const md1 = (x) => md.renderInline(String(x));
-  const url = p.doi ? `https://doi.org/${p.doi}` : (p.links?.arxiv || p.links?.pdf || p.links?.web || "");
+  const url = titleUrl(p);
   const title = url ? `<a class="ct" href="${esc(url)}">${esc(p.title)}</a>` : `<span class="ct">${esc(p.title)}</span>`;
   const venue = esc(p.venue_long || p.venue || "");
   const proc = p.proc ? ` (Proc. ${esc(p.proc)})` : "";
@@ -96,28 +85,78 @@ function cite(p, self) {
   return `${authorList(p.authors, self, p.equal || [])}. ${esc(p.year)}. ${title}. ${where}${status}${award}${id}`;
 }
 
-// Splits publications into the configured groups and numbers each group newest first.
-function pubGroups(pubs = [], groups = []) {
-  const out = groups.map((g) => ({ ...g, items: [] }));
-  const find = (p) =>
-    out.find((g) => g.status && g.status === p.status) ||
-    out.find((g) => !g.status && (g.kinds || []).includes(p.kind) && p.status !== "under-review");
-  for (const p of pubs) {
-    const g = find(p);
-    if (g) g.items.push(p);
-  }
-  return out
-    .filter((g) => g.items.length)
-    .map((g) => ({
-      ...g,
-      items: g.items.map((p, i) => ({ p, label: g.prefix ? `${g.prefix}${g.items.length - i}` : String(p.year) })),
-    }));
-}
-
-function primaryUrl(p) {
+function titleUrl(p) {
+  if (p.url) return p.url;
   if (p.doi) return `https://doi.org/${p.doi}`;
   const l = p.links || {};
   return l.arxiv || l.pdf || l.web || l.code || l.poster || "";
+}
+
+// The group a publication belongs to: its status first (under review), then its kind.
+function groupOf(p, groups) {
+  return (
+    groups.findIndex((g) => g.status && g.status === p.status) + 1 ||
+    groups.findIndex((g) => !g.status && (g.kinds || []).includes(p.kind) && p.status !== "under-review") + 1
+  ) - 1;
+}
+
+// One row per publication, newest first, with its type label (J3, C2, …) or icon
+// and the heading it sits under when listed by year ("Under review", "2026", …).
+function pubRows(pubs = [], groups = []) {
+  const count = groups.map(() => 0);
+  const gi = pubs.map((p) => groupOf(p, groups));
+  gi.forEach((g) => { if (g >= 0) count[g]++; });
+  const seen = groups.map(() => 0);
+  return pubs
+    .map((p, i) => {
+      const g = gi[i];
+      if (g < 0) return null;
+      const grp = groups[g];
+      seen[g]++;
+      return {
+        p,
+        gi: g,
+        group: grp.title,
+        label: grp.prefix ? `${grp.prefix}${count[g] - seen[g] + 1}` : "",
+        icon: grp.icon || "",
+        year: p.status === "under-review" ? grp.title : String(p.year),
+      };
+    })
+    .filter(Boolean)
+    .map((r, i, all) => ({ ...r, head: i === 0 || all[i - 1].year !== r.year }));
+}
+
+// The publication as industry readers scan it: venue, year and award on one line.
+function venueLine(p) {
+  const bits = [esc(p.venue || p.venue_long || "")];
+  if (p.status === "under-review") bits[0] = `Submitted to ${bits[0]}`;
+  else if (!String(p.venue || "").includes(String(p.year))) bits.push(esc(p.year));
+  if (p.status === "to-appear") bits.push("To appear");
+  if (p.award) bits.push(`<span class="hl">${esc(p.award)}</span>`);
+  return bits.filter(Boolean).join('<span class="sep">·</span>');
+}
+
+// "20,000 DKK", "US$400", "€500" → { v: 20000, c: "DKK" }. Anything else → null.
+const SYMBOLS = { "US$": "USD", "$": "USD", "€": "EUR", "£": "GBP", "₹": "INR", "¥": "JPY" };
+function money(s) {
+  const str = String(s ?? "");
+  const num = str.match(/\d[\d,.\s]*/);
+  if (!num) return null;
+  let c = (str.match(/\b([A-Z]{3})\b/) || [])[1];
+  if (!c) for (const [sym, code] of Object.entries(SYMBOLS)) if (str.includes(sym)) { c = code; break; }
+  if (!c) return null;
+  const v = Number(num[0].replace(/[,\s]/g, ""));
+  return Number.isFinite(v) ? { v, c } : null;
+}
+function fmtMoney(v, c) {
+  try { return new Intl.NumberFormat("en-GB", { style: "currency", currency: c, maximumFractionDigits: 0 }).format(v); }
+  catch (e) { return `${Math.round(v).toLocaleString("en-GB")} ${c}`; }
+}
+function convert(m, to, fx) {
+  const r = fx?.rates || {};
+  const from = m.c === "EUR" ? 1 : r[m.c], dest = to === "EUR" ? 1 : r[to];
+  if (!from || !dest) return null;
+  return (m.v / from) * dest;
 }
 
 export default function (eleventyConfig) {
@@ -128,10 +167,26 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("ym", ym);
   eleventyConfig.addFilter("esc", esc);
   eleventyConfig.addFilter("bibtex", bibtex);
-  eleventyConfig.addFilter("authors", authors);
-  eleventyConfig.addFilter("primaryUrl", primaryUrl);
+  eleventyConfig.addFilter("authorList", (list, self, equal) => authorList(list, self, equal || []));
+  eleventyConfig.addFilter("titleUrl", titleUrl);
   eleventyConfig.addFilter("cite", cite);
-  eleventyConfig.addFilter("pubGroups", pubGroups);
+  eleventyConfig.addFilter("pubRows", pubRows);
+  eleventyConfig.addFilter("venueLine", venueLine);
+  eleventyConfig.addFilter("money", money);
+  eleventyConfig.addFilter("fmtMoney", fmtMoney);
+  eleventyConfig.addFilter("convert", convert);
+  // Every section key either view shows, in the default view's order first.
+  eleventyConfig.addFilter("sectionKeys", (tailor) => {
+    const views = Object.values(tailor?.views || {});
+    const keys = [];
+    for (const v of views) for (const k of v.order || []) if (!keys.includes(k)) keys.push(k);
+    return keys;
+  });
+  // 1-based position of a section in a view's order, 0 when that view hides it.
+  eleventyConfig.addFilter("posIn", (order, key) => (order || []).indexOf(key) + 1);
+  // "arvind@cheenu.net" → "arvind [at] cheenu.net"
+  eleventyConfig.addFilter("keys", (o) => Object.keys(o || {}));
+  eleventyConfig.addFilter("atSign", (e) => String(e).replace("@", " [at] "));
   eleventyConfig.addFilter("paras", (s) => String(s ?? "").trim().split(/\n\s*\n/).map((x) => x.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean));
   eleventyConfig.addFilter("isOn", (v) => v === true || v === "on" || v === "true" || v === "yes");
   eleventyConfig.addFilter("year", (v) => String(v ?? "").slice(0, 4));
@@ -143,46 +198,11 @@ export default function (eleventyConfig) {
     if (a && b && a === b) return a;
     return [a, b].filter(Boolean).join(" — ");
   });
-  // Marks publications whose year repeats the one above, separately for each mode,
-  // so each year label shows once per group whichever entries are visible.
-  eleventyConfig.addFilter("pubRows", (pubs = []) => {
-    const label = (p) => (p.status === "under-review" ? "In review" : String(p.year));
-    const seen = { research: new Set(), industry: new Set() };
-    return pubs.map((p) => {
-      const vis = {
-        research: p.only ? p.only === "research" : true,
-        industry: p.only ? p.only === "industry" : !!p.selected,
-      };
-      const rep = {};
-      for (const m of MODES) {
-        rep[m] = vis[m] && seen[m].has(label(p));
-        if (vis[m]) seen[m].add(label(p));
-      }
-      return { p, label: label(p), repR: rep.research, repI: rep.industry };
-    });
-  });
-  // Months between a YYYY-MM value and the build date, for "New" labels.
-  eleventyConfig.addFilter("ageMonths", (v) => {
-    const m = String(v).match(/^(\d{4})-(\d{1,2})/);
-    if (!m) return 99;
-    const now = new Date();
-    return (now.getFullYear() - +m[1]) * 12 + (now.getMonth() + 1 - +m[2]);
-  });
   eleventyConfig.addFilter("host", (u) => String(u).replace(/^mailto:/, "").replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""));
   eleventyConfig.addFilter("json", (v) => JSON.stringify(v));
   eleventyConfig.addFilter("sameAs", (links = []) => JSON.stringify(links.map((l) => l.url).filter((u) => /^https?:/.test(u))));
-  eleventyConfig.addFilter("sectionOrder", (order, key) => {
-    const i = (order || []).indexOf(key);
-    return i < 0 ? 0 : i + 1;
-  });
   eleventyConfig.addFilter("year4", (v) => (String(v).match(/\b(19|20)\d{2}\b/) || [""])[0]);
   eleventyConfig.addFilter("noYear", (v) => String(v).replace(/\s*\b(19|20)\d{2}\b\s*/, " ").trim());
-  // The form posts only when it has somewhere to go: a Web3Forms key, or another service's URL.
-  eleventyConfig.addFilter("formEndpoint", (cf = {}) => {
-    if (!cf || !cf.endpoint) return "";
-    if (/web3forms/.test(cf.endpoint) && !cf.access_key) return "";
-    return cf.endpoint;
-  });
   eleventyConfig.addShortcode("buildDate", () => {
     const d = new Date();
     return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
@@ -193,7 +213,8 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addPassthroughCopy({
     "src/assets": "assets",
-    "src/favicon.svg": "favicon.svg",
+    "src/favicon.png": "favicon.png",
+    "src/apple-touch-icon.png": "apple-touch-icon.png",
     "src/robots.txt": "robots.txt",
     "src/CNAME": "CNAME",
     "src/_redirects": "_redirects",
