@@ -851,6 +851,13 @@
     const pins = $$(".pin", mapEl), cards = $$(".map-card", mapEl);
     const routes = new Map($$(".map-route", mapEl).map((r) => [+r.dataset.i, r]));
     const plane = $(".map-plane", mapEl), planeIcon = plane && $("svg", plane);
+    // Track colours: the stretch leading up to each place is that place's colour.
+    {
+      const tc = $$(".tick", mapEl).map((tk) => `var(--c-${tk.dataset.c || "fuchsia"})`);
+      const pc = (k) => ((k / Math.max(1, tc.length - 1)) * 100).toFixed(3);
+      const stops = tc.slice(1).map((c, k) => `${c} ${pc(k)}% ${pc(k + 1)}%`);
+      if (stops.length) range.style.setProperty("--segs", `linear-gradient(90deg,${stops.join(",")})`);
+    }
     // Route lengths, measured on first use (the map may not be rendered at load).
     const lens = new Map();
     const lenOf = (i, r) => { if (!lens.get(i)) { try { lens.set(i, r.getTotalLength()); } catch (e) { lens.set(i, 0); } } return lens.get(i); };

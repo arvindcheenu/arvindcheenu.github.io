@@ -97,7 +97,7 @@ affiliation: Center for Anytime Anywhere Analytics, Aarhus University
 ring: "Open to work · From January 2027 · "   # text spinning round the portrait
 bio:
   research:
-    - "What people attend to shapes what they find, and in data analysis it disappears the moment it happens. I build systems that reflect attention back: where you have looked, what you passed over, where others looked before you. Seeing your own attention helps you manage it. Seeing someone else's lets you follow, question and build on their work without first sharing their expertise, which is what it takes to open analysis to anyone, anytime, anywhere."
+    - "What people attend to shapes what they find, and in data analysis it disappears the moment it happens. I build systems that reflect attention back: where you have looked, what you passed over, where others looked before you. Seeing your own attention helps you manage it. Seeing someone else's lets you retrace how they reached a conclusion, question it and build on it. A trail like that lowers the bar for joining an analysis, a step toward opening it to anyone, anytime, anywhere."
     - "My PhD at the [Center for Anytime Anywhere Analytics (CA³)](https://cs.au.dk/ca3), [Aarhus University](https://cs.au.dk), advised by [Niklas Elmqvist](https://cs.au.dk/~elm/), develops this as *attention-aware analytics* on the web and in mixed reality, following attention from the analyst at work to collaborators sharing a space, an observer reviewing the session afterwards and a reader who receives only the findings. The first two systems, [Attention-Aware Visualization](#srinivasan2025attention) and [HeedVision](#srinivasan2026heedvision), appeared at IEEE VIS and in IEEE TVCG."
     - "It began with my master's in HCI at the [University of Maryland](https://umd.edu/) with [Joel Chan](https://joelchan.me/), where I studied how people notice useful analogies; that work earned two Best Paper Honorable Mentions at ACM Creativity & Cognition. It now runs across ubiquitous analytics, collaborative immersive analytics, context-aware systems and human-centred AI."
     - "As AI systems take on more of the looking for us, the same questions reach them: what did they attend to, and what did they miss? And with us humans in the loop, how would we know if they did? Making attention visible on both sides is how people keep their cognitive autonomy, deciding for themselves where to look, what to trust and what to conclude."
@@ -143,9 +143,9 @@ biography:
         Anywhere Analytics (CA³). He studies attention in data analysis. What people look at
         shapes what they find, and it disappears the moment it happens. His systems reflect
         it back: seeing their own attention helps analysts manage it, and seeing someone
-        else's lets people follow, question and build on work without first sharing the
-        expertise behind it. That is his route to analysis open to anyone, anytime,
-        anywhere.
+        else's lets people retrace how a conclusion was reached, question it and build on
+        it. That trail lowers the bar for joining an analysis, a step toward analysis open
+        to anyone, anytime, anywhere.
 
         His thesis develops attention-aware analytics on the web, Meta Quest 3 and
         HoloLens 2, following attention from the analyst at work to collaborators sharing a
@@ -174,8 +174,9 @@ biography:
         (CA³). I study attention in data analysis. What people look at shapes what they
         find, and it disappears the moment it happens. My systems reflect it back: seeing
         their own attention helps analysts manage it, and seeing someone else's lets people
-        follow, question and build on work without first sharing the expertise behind it.
-        That is my route to analysis open to anyone, anytime, anywhere.
+        retrace how a conclusion was reached, question it and build on it. That trail
+        lowers the bar for joining an analysis, a step toward analysis open to anyone,
+        anytime, anywhere.
 
         My thesis develops attention-aware analytics on the web, Meta Quest 3 and
         HoloLens 2, following attention from the analyst at work to collaborators sharing a
