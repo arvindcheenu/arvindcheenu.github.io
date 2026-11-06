@@ -297,6 +297,12 @@ export default function (eleventyConfig) {
   // "arvind@cheenu.net" → "arvind [at] cheenu.net"
   eleventyConfig.addFilter("newestFirst", newestFirst);
   eleventyConfig.addFilter("travelMap", travelMap);
+  // Each entry with its 1-based position among entries of the same tag (work by default).
+  eleventyConfig.addFilter("byTag", (list = []) => {
+    const seen = {};
+    return list.map((n) => { const tag = n.tag || "work"; seen[tag] = (seen[tag] || 0) + 1; return { n, tag, ti: seen[tag] }; });
+  });
+  eleventyConfig.addFilter("countTag", (list = [], tag) => list.filter((n) => (n.tag || "work") === tag).length);
   // Selected entries first, then the rest, each group keeping its order.
   eleventyConfig.addFilter("selectedFirst", (list = []) => [...list.filter((e) => e.selected), ...list.filter((e) => !e.selected)]);
   // An update counts as new for two months after its date.

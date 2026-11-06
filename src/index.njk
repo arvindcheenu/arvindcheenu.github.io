@@ -152,6 +152,15 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         </div>
       </div>
     {%- endcall %}
+    {%- elif key == "news" and (s.news | countTag("life")) %}
+    {%- call head(key, sec) %}
+      <div class="sec-ctl no-print">
+        <div class="seg sm" role="radiogroup" aria-label="Show updates about">
+          <button type="button" class="seg-b tac" role="radio" aria-checked="true" data-newstag="work">{{ icon("briefcase") }}<span>Work</span></button>
+          <button type="button" class="seg-b tac" role="radio" aria-checked="false" data-newstag="life">{{ icon("heart") }}<span>Life</span></button>
+        </div>
+      </div>
+    {%- endcall %}
     {%- elif key == "publications" %}
     {%- set pnote = (s.publications_note | md) if s.publications_note else ("† Equal contribution" if (s.publications | selectattr("equal") | length) else "") %}
     {%- call head(key, sec, pnote) %}
@@ -165,7 +174,7 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
     {%- else %}
     {{ head(key, sec) }}
     {%- endif %}
-    <div class="list">
+    <div class="list"{% if key == "news" %} data-visible="{{ s.news_visible }}" data-show="work"{% endif %}>
 
     {%- if key == "biography" %}
       {%- for k, v in views %}{% for len in ["short", "long"] %}{% for per in ["third", "first"] %}
@@ -183,8 +192,9 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
       {%- endfor %}{% endfor %}{% endfor %}
 
     {%- elif key == "news" %}
-      {%- for n in s.news | newestFirst %}
-      <article class="item rv{% if loop.index > s.news_visible %} fold{% endif %}">
+      {%- for r in s.news | newestFirst | byTag %}
+      {%- set n = r.n %}
+      <article class="item rv news-item{% if r.ti > s.news_visible %} fold{% endif %}" data-tag="{{ r.tag }}"{% if r.tag != "work" %} hidden{% endif %}>
         <div class="when"><time datetime="{{ n.date }}">{{ n.date | ym }}</time>{% if n.date | isNew %}<span class="new" data-new="{{ n.date }}">{{ icon("wand-magic-sparkles") }}New</span>{% endif %}</div>
         <div class="what">
           <div class="main"><p class="text">{{ n.text | md | safe }}{% if n.link %} <a href="{{ n.link }}">More</a>{% endif %}</p></div>
@@ -192,8 +202,9 @@ var c=g("currency");if(c&&/^[A-Z]{3}$/.test(c))d.dataset.currency=c;})();
         </div>
       </article>
       {%- endfor %}
+      {%- set nWork = s.news | countTag("work") %}
       {%- if s.news.length > s.news_visible %}
-      <div class="item fold-row no-print"><div class="when"></div><div class="what">{%- set nMore = (s.news.length - s.news_visible) %}<button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show {{ nMore }} more {{ "update" if nMore == 1 else "updates" }}</span></button></div></div>
+      <div class="item fold-row no-print"{% if nWork <= s.news_visible %} hidden{% endif %}><div class="when"></div><div class="what">{%- set nMore = (nWork - s.news_visible) if nWork > s.news_visible else 0 %}<button type="button" class="tl fold-btn" data-action="fold" aria-expanded="false">{{ icon("chevron-down") }}<span>Show {{ nMore }} more {{ "update" if nMore == 1 else "updates" }}</span></button></div></div>
       {%- endif %}
 
     {%- elif key == "publications" %}

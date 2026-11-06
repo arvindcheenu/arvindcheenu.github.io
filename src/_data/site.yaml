@@ -239,7 +239,9 @@ sections:
   service: { title: Reviewing experience, icon: handshake-angle, color: pink }
   contact: { title: Contact, icon: envelope, color: blue }
 
-# Newest first. The first `news_visible` items show; "Show more" opens the rest.
+# Newest first. Updates are Work by default; mark personal ones `tag: life` and
+# visitors can switch between Work and Life (Work shows first).
+# The first `news_visible` items show; "Show more" opens the rest.
 # Open source and certifications work the same way: entries marked `selected: true`
 # show first, and "Show more" opens the others.
 news_visible: 6
@@ -266,6 +268,12 @@ news:
     text: "[Best Paper Honorable Mention](#award-srinivasan2024improving) at ACM Creativity & Cognition 2024 for AnalogiLead."
   - date: 2024-01
     text: Started my [PhD at CA³](#ca3), Aarhus University.
+  - date: 2024-01
+    tag: life
+    text: Moved to Aarhus, Denmark.
+  - date: 2021-08
+    tag: life
+    text: Moved to College Park, Maryland, for my master's at the University of Maryland.
 
 # ── Publications ────────────────────────────────────────────────────────────
 # Listed by year by default; visitors can switch to grouping by type. Types with

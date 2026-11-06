@@ -198,6 +198,38 @@
   }
   if (views.length) setTailor(d.dataset.tailor, false); else syncBio();
 
+  /* ── Updates: Work or Life ─────────────────────────────────────────────── */
+  const newsList = $("#news .list");
+  let setNewsTag = () => {};
+  if (newsList && $("[data-newstag]")) {
+    const items = $$(".news-item", newsList), N = +newsList.dataset.visible || 6;
+    const btn = $(".fold-btn", newsList), row = btn && btn.closest(".fold-row");
+    const apply = (tag) => {
+      newsList.dataset.show = tag;
+      let i = 0;
+      items.forEach((el) => {
+        const on = el.dataset.tag === tag;
+        el.hidden = !on;
+        if (on) { i++; el.classList.toggle("fold", i > N); }
+      });
+      const more = Math.max(0, i - N);
+      if (row) {
+        row.hidden = !more;
+        const sp = $("span", btn);
+        sp.dataset.label = `Show ${more} more ${more === 1 ? "update" : "updates"}`;
+        if (!newsList.classList.contains("folded-open")) sp.textContent = sp.dataset.label;
+      }
+      $$("[data-newstag]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.newstag === tag)));
+      revealOnScreen();
+    };
+    setNewsTag = (tag, fromUser) => {
+      if (!fromUser) return apply(tag);
+      $$("[data-newstag]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.newstag === tag)));
+      swap([newsList], () => apply(tag));
+    };
+    apply("work");
+  }
+
   /* ── Publications: by year or by type ───────────────────────────────────── */
   const pubList = $("#publications .list");
   let sortPubs = () => {};
@@ -348,6 +380,8 @@
       }
       return;
     }
+    const newsBtn = t.closest("[data-newstag]");
+    if (newsBtn) { if (newsBtn.getAttribute("aria-checked") !== "true") setNewsTag(newsBtn.dataset.newstag, true); return; }
     const sortBtn = t.closest("[data-pubsort]");
     if (sortBtn) { if (sortBtn.getAttribute("aria-checked") !== "true") sortPubs(sortBtn.dataset.pubsort, true); return; }
     const fxBtn = t.closest("[data-fx]");
